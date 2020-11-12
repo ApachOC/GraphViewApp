@@ -1,11 +1,11 @@
 # GraphViewApp
 
-The aim of this project is to create a web application which is able to view and manipulate graphs / networks. 
+The aim of this project is to create a web application which will allow the user to view and manipulate graphs / networks. 
 In addition to this the app will be able to run the graph data through external library and display results.
 
+This project has been started as a part of KIV/PIA and KIV/PRJ5 courses.
 
-
-This repo contains Spring Boot application which both serves HTML content, acts as a backend, plus Angular
+This repo Spring Boot application which both serves HTML content and acts as a backend, plus Angular
  application which serves as a frontend. 
 
 ## Build
@@ -15,7 +15,7 @@ Then run `mvn install`. This will build both application and provide an executab
 
 ## Run
 
-Simply execute the JAR. No further configuration is necessary.
+Simply execute the JAR. No further configuration is currently necessary.
 
 ## TODO
 
