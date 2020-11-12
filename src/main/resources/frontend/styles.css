@@ -1,0 +1,21 @@
+.graph-editor-viewer-canvas {
+    border: 1px solid black;
+    width: 100%;
+    height: 600px;
+}
+
+.graph-editor-viewer {
+    display: flex;
+}
+
+.graph-editor-viewer .btn-group-vertical .btn {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: none;
+}
+
+.graph-editor-viewer .graph-editor-toolbars {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}

@@ -1,0 +1,156 @@
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <ngb-alert *ngIf="showNodeAlert" type="success" (close)="showNodeAlert = false">
+                Nodes imported successfully.
+            </ngb-alert>
+            <ngb-alert *ngIf="showEdgeAlert" type="success" (close)="showEdgeAlert = false">
+                Edges imported successfully.
+            </ngb-alert>
+
+            <div class="card" [hidden]="project.nodeCount && project.edgeCount">
+                <div class="card-header" i18n>
+                    <h5 class="d-inline-block">Import graph data from file</h5>
+                    <button (click)="showGenerateModal(generateModal)" class="close">
+                        <i class="fa fa-random" ngbTooltip="Generate random graph"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <ngx-dropzone (change)="onAddFile($event)" [accept]="acceptFiles"
+                                  [hidden]="nodeImportOptions.show || edgeImportOptions.show || project.edgeCount">
+                        <ngx-dropzone-label>
+                            <h5 [hidden]="project.nodeCount > 0">Please upload CSV file containing node information.</h5>
+                            <h5 [hidden]="project.nodeCount === 0">Please upload CSV file containing edge information.</h5>
+                        </ngx-dropzone-label>
+                    </ngx-dropzone>
+
+                    <div *ngIf="nodeImportOptions.show">
+                        <h5>Node import options</h5>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="nodeHeaderLine"
+                                   [(ngModel)]="nodeImportOptions.firstLineHeader">
+                            <label class="form-check-label" for="nodeHeaderLine">Use first line as a header</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="usePers"
+                                   [(ngModel)]="nodeImportOptions.importPers">
+                            <label class="form-check-label" for="usePers">Import personalization data</label>
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label for="idColumn">ID Column</label>
+                            <select class="form-control" [(ngModel)]="nodeImportOptions.id" id="idColumn">
+                                <option *ngFor="let name of nodeImportOptions.values; index as i"
+                                        value="{{i}}">{{nodeImportOptions.firstLineHeader ? name : i}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="nameColumn">Name Column</label>
+                            <select class="form-control" [(ngModel)]="nodeImportOptions.name" id="nameColumn">
+                                <option *ngFor="let name of nodeImportOptions.values; index as i"
+                                        value="{{i}}">{{nodeImportOptions.firstLineHeader ? name : i}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group" *ngIf="nodeImportOptions.importPers">
+                            <label for="persColumn">Personalization Column</label>
+                            <select class="form-control" [(ngModel)]="nodeImportOptions.personalization" id="persColumn">
+                                <option *ngFor="let name of nodeImportOptions.values; index as i"
+                                        value="{{i}}">{{nodeImportOptions.firstLineHeader ? name : i}}</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" (click)="nodeImportOptions.finish()">Import nodes</button>
+                        <button class="btn btn-danger float-right" (click)="nodeImportOptions.cancel()">Cancel import</button>
+                    </div>
+                    <div *ngIf="edgeImportOptions.show">
+                        <h5>Edge import options</h5>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="edgeHeaderLine"
+                                   [(ngModel)]="edgeImportOptions.firstLineHeader">
+                            <label class="form-check-label" for="edgeHeaderLine">Use first line as a header</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="importWeights"
+                                   [(ngModel)]="edgeImportOptions.importWeights">
+                            <label class="form-check-label" for="importWeights">Import edge weight information</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="generateLayout"
+                                   [(ngModel)]="edgeImportOptions.generateLayout">
+                            <label class="form-check-label" for="generateLayout">
+                                Generate force directed layout during import (may slow down import considerably)
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label for="sIdColumn">Source ID Column</label>
+                            <select class="form-control" [(ngModel)]="edgeImportOptions.from" id="sIdColumn">
+                                <option *ngFor="let name of edgeImportOptions.values; index as i"
+                                        value="{{i}}">{{edgeImportOptions.firstLineHeader ? name : i}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dIdColumn">Destination ID Column</label>
+                            <select class="form-control" [(ngModel)]="edgeImportOptions.to" id="dIdColumn">
+                                <option *ngFor="let name of edgeImportOptions.values; index as i"
+                                        value="{{i}}">{{edgeImportOptions.firstLineHeader ? name : i}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group" *ngIf="edgeImportOptions.importWeights ">
+                            <label for="weightColumn">Personalization Column</label>
+                            <select class="form-control" [(ngModel)]="edgeImportOptions.weight" id="weightColumn">
+                                <option *ngFor="let name of edgeImportOptions.values; index as i"
+                                        value="{{i}}">{{edgeImportOptions.firstLineHeader ? name : i}}</option>
+                            </select>
+                        </div>
+
+                        <button class="btn btn-primary" (click)="edgeImportOptions.finish()">Import edges</button>
+                        <button class="btn btn-danger float-right" (click)="edgeImportOptions.cancel()">Cancel import</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ng-template #generateModal let-modal>
+            <div class="modal-header" i18n>Generate random graph</div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="genNodeCount" i18n>Total node count in the graph</label>
+                    <input id="genNodeCount" class="form-control" value="20"  type="number" #count>
+                </div>
+                <div class="form-group">
+                    <label for="genEdgeCount" i18n>Max number of edges per node</label>
+                    <input id="genEdgeCount" class="form-control" value="3" type="number" #count2>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="text-center">
+                    <button class="btn btn-secondary" i18n
+                            (click)="modal.close( {nodeCount: count.valueAsNumber, edgeCount: count2.valueAsNumber} )">
+                        Generate!
+                    </button>
+                </div>
+            </div>
+        </ng-template>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col">
+            <div class="card">
+                <div class="card-header" i18n>Project options</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="newProjectName" i18n>Project title:</label>
+                        <input type="text" class="form-control" [(ngModel)]="project.title" id="newProjectName">
+                    </div>
+
+                    <h5 class="card-title" i18n>Graph details</h5>
+                    <p i18n>Nodes: {{ project.nodeCount }}</p>
+                    <p i18n>Edges: {{ project.edgeCount }}</p>
+                </div>
+                <div class="card-footer">
+                    <div class="text-center">
+                        <button class="btn btn-primary" (click)="readyProject()" i18n>Create project</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
