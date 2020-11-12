@@ -1,27 +1,26 @@
-# Frontend
+# GraphViewApp
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.1.7.
+The aim of this project is to create a web application which is able to view and manipulate graphs / networks. 
+In addition to this the app will be able to run the graph data through external library and display results.
 
-## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+This repo contains Spring Boot application which both serves HTML content, acts as a backend, plus Angular
+ application which serves as a frontend. 
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+First you need to have Maven and Java installed.
+Then run `mvn install`. This will build both application and provide an executable JAR.
 
-## Running unit tests
+## Run
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Simply execute the JAR. No further configuration is necessary.
 
-## Running end-to-end tests
+## TODO
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+- Dockerize
+- Add standalone database (MongoDB?)
+- Implement user management
+- Implement external library management
+- Implement basic graph editor operations
