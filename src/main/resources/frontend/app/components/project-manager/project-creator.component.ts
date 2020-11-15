@@ -97,7 +97,7 @@ export class ProjectCreatorComponent{
         const text = await file.text();
         const lines = text.split('\n');
         lines.forEach(line => {
-            const words = line.split(';');
+            const words = line.trim().split(';');
             if (words.length > 2) {
                 output.push(words);
             }
@@ -143,8 +143,8 @@ export class ProjectCreatorComponent{
             for (let i = m.firstLineHeader ? 1 : 0;
                  i < lines.length; i++) {
                 const line = lines[i];
-                const edge = new ProjectData.Edge(this.project.nodeMap[line[m.from]],
-                    this.project.nodeMap[line[m.to]],m.importWeights ?
+                const edge = new ProjectData.Edge(this.project.nodeMap.get(line[m.from]),
+                    this.project.nodeMap.get(line[m.to]),m.importWeights ?
                         parseInt(line[m.weight]) : null);
                 this.project.edges.push(edge);
             }
