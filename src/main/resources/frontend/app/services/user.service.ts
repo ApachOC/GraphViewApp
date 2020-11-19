@@ -38,7 +38,7 @@ export class UserService {
             })
         };
 
-        this.http.get('http://localhost:8080/user', httpOptions).subscribe(response => {
+        this.http.get('http://localhost:8080/api/login', httpOptions).subscribe(response => {
             if (response['name']) {
                 this.userObject = response;
             } else {

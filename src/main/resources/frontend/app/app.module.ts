@@ -1,9 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
-import { AppRoutingModule } from './app-routing.module';
 import { AppRootComponent } from './components/app-root/app-root.component';
-import { HttpClientModule } from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import { LoginModalComponent } from "./components/login-modal/login-modal.component";
 import {NgbAlertModule, NgbDropdownModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {ProjectCreatorComponent} from "./components/project-manager/project-creator.component";
@@ -14,6 +13,8 @@ import {SortablejsModule} from "ngx-sortablejs";
 import {FormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import {GraphEditorComponent} from "./components/project-manager/graph-editor.component";
+import {UserService} from "./services/user.service";
+import {XhrInterceptor} from "./other/interceptors";
 
 @NgModule({
   declarations: [
@@ -25,7 +26,6 @@ import {GraphEditorComponent} from "./components/project-manager/graph-editor.co
   ],
     imports: [
         BrowserModule,
-        AppRoutingModule,
         FormsModule,
         HttpClientModule,
         NgbAlertModule,
@@ -36,7 +36,7 @@ import {GraphEditorComponent} from "./components/project-manager/graph-editor.co
         SortablejsModule,
         CommonModule
     ],
-  providers: [],
+  providers: [UserService ,{ provide: HTTP_INTERCEPTORS, useClass: XhrInterceptor, multi: true }],
   bootstrap: [AppRootComponent]
 })
 export class AppModule { }
