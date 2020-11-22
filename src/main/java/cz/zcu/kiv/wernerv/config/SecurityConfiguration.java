@@ -1,13 +1,10 @@
-package cz.zcu.kiv.wernerv;
+package cz.zcu.kiv.wernerv.config;
 
 import cz.zcu.kiv.wernerv.services.MongoUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.core.MongoClientFactoryBean;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -23,10 +20,38 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
-@SpringBootApplication
-public class DemoApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(DemoApplication.class, args);
+@Configuration
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    private final MongoUserDetailsService userDetailsService;
+
+    public SecurityConfiguration(MongoUserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers(HttpMethod.POST,"/api/register");
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.cors().and().anonymous().and().authorizeRequests()
+                .antMatchers("/index.html", "/", "/logout").permitAll()
+                .antMatchers("/api/register").permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .anyRequest().authenticated()
+                .and().httpBasic().and().csrf().disable();
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService);
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -39,41 +64,5 @@ public class DemoApplication {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
-
-    @EnableWebSecurity
-    @EnableMongoRepositories
-    @Configuration
-    public static class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-        private final MongoUserDetailsService userDetailsService;
-
-        public SecurityConfig(MongoUserDetailsService userDetailsService) {
-            this.userDetailsService = userDetailsService;
-        }
-
-        @Override
-        public void configure(WebSecurity web) throws Exception {
-            //web.ignoring()
-        }
-
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http.cors().and().authorizeRequests()
-                    .antMatchers("/index.html", "/").permitAll()
-                    .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .antMatchers("/api/**").authenticated()
-                    .and().httpBasic();
-        }
-
-        @Bean
-        public PasswordEncoder passwordEncoder() {
-            return new BCryptPasswordEncoder();
-        }
-
-        @Override
-        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-            auth.userDetailsService(userDetailsService);
-        }
     }
 }

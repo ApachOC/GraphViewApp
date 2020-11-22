@@ -26,7 +26,7 @@ export class UserService {
 
     constructor(private http: HttpClient) { }
 
-    authenticate(credentials, callback, error) {
+    login(credentials) {
 
         const httpOptions = {
             headers: new HttpHeaders({
@@ -38,15 +38,15 @@ export class UserService {
             })
         };
 
-        this.http.get('http://localhost:8080/api/login', httpOptions).subscribe(response => {
+        const request = this.http.get('http://localhost:8080/api/login', httpOptions);
+        request.subscribe(response => {
             if (response['name']) {
                 this.userObject = response;
             } else {
                 this.userObject = null;
-                error();
             }
-            return callback && callback();
-        }, error);
+        });
+        return request;
     }
 
     logout() {
@@ -65,5 +65,23 @@ export class UserService {
         }, (error) => {
             this.userObject = null;
         });
+    }
+
+    register(credentials) {
+        const httpOptions = {
+            headers: new HttpHeaders({
+                'Content-Type':  'application/json',
+                'Accept':  'application/json',
+                'Authorization': 'Basic ' + btoa(
+                    `${credentials.username}:${credentials.password}`
+                )
+            })
+        };
+
+        const userObject = {
+            username: credentials.username,
+            password: credentials.password
+        }
+        return this.http.post('http://localhost:8080/api/register', userObject, httpOptions);
     }
 }

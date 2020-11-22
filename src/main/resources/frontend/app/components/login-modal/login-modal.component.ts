@@ -18,12 +18,15 @@ export class LoginModalComponent {
     constructor(public modal: NgbActiveModal, private user: UserService) {}
 
     login() {
-        this.user.authenticate(this.credentials, () => {
-            this.modal.close(true);
-        }, () => {
-            this.showAlert = true;
-        });
+        this.user.login(this.credentials).subscribe(
+            () => this.showAlert = false,
+            () => this.showAlert = true
+        );
         return false;
+    }
+
+    register() {
+        this.user.register(this.credentials);
     }
 }
 
