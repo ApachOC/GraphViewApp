@@ -1,7 +1,5 @@
 package cz.zcu.kiv.wernerv.services;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.internal.MongoClientImpl;
 import cz.zcu.kiv.wernerv.models.Users;
@@ -24,7 +22,7 @@ public class MongoUserDetailsService implements UserDetailsService {
 
     private MongoUserRepository repository;
 
-    public MongoUserDetailsService(MongoUserRepository repository, MongoTemplate tpt) {
+    public MongoUserDetailsService(MongoUserRepository repository) {
         this.repository = repository;
     }
 

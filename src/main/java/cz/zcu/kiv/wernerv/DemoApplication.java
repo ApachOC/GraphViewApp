@@ -54,14 +54,14 @@ public class DemoApplication {
 
         @Override
         public void configure(WebSecurity web) throws Exception {
-            web.ignoring()
-                    .antMatchers("/index.html", "/")
-                    .antMatchers(HttpMethod.OPTIONS, "/**");
+            //web.ignoring()
         }
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.cors().and().authorizeRequests()
+                    .antMatchers("/index.html", "/").permitAll()
+                    .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .antMatchers("/api/**").authenticated()
                     .and().httpBasic();
         }
