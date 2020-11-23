@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from "@angular/common/http";
+import {environment} from "../../environments/environment";
 
 @Injectable({
     providedIn: 'root',
@@ -7,7 +8,7 @@ import {HttpClient, HttpHeaders, HttpResponse} from "@angular/common/http";
 export class UserService {
 
     get authenticated(): boolean {
-        return (this.userObject && this.userObject.authenticated) || false;
+        return this.userObject != null;
     }
 
     get isUser(): boolean {
@@ -16,6 +17,10 @@ export class UserService {
 
     get isAdmin(): boolean {
         return this.userObject && this.userObject.roles.includes('admin');
+    }
+
+    get user():UserObject {
+        return this.userObject;
     }
 
     private userObject: UserObject;
@@ -28,7 +33,9 @@ export class UserService {
         withCredentials: true,
     };
 
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient) {
+        this.getCurrentUser();
+    }
 
     login(credentials) {
 
@@ -42,9 +49,9 @@ export class UserService {
         const formData = new FormData();
         formData.append("username", credentials.username);
         formData.append("password", credentials.password);
-        const request = this.http.post('http://localhost:8080/api/login', formData).toPromise();
+        const request = this.http.post(`${environment.apiUrl}/login`, formData).toPromise();
         request.then(() => {
-            this.getUser();
+            this.getCurrentUser();
         });
         return request;
     }
@@ -57,7 +64,7 @@ export class UserService {
             })
         };
 
-        this.http.post('http://localhost:8080/api/logout', {}, httpOptions).subscribe(() => {
+        this.http.post(`${environment.apiUrl}/logout`, {}, httpOptions).subscribe(() => {
             this.userObject = null;
         }, (error) => {
             this.userObject = null;
@@ -75,11 +82,11 @@ export class UserService {
         const formData = new FormData();
         formData.append("username", credentials.username);
         formData.append("password", credentials.password);
-        return this.http.post('http://localhost:8080/api/user', formData, httpOptions);
+        return this.http.post(`${environment.apiUrl}/user`, formData, httpOptions).toPromise();
     }
 
-    getUser() {
-        return this.http.get<UserObject>('http://localhost:8080/api/user', this.httpOptions).subscribe((user) => {
+    getCurrentUser() {
+        this.http.get<UserObject>(`${environment.apiUrl}/user`, this.httpOptions).subscribe((user) => {
             this.userObject = user;
         });
     }
@@ -87,19 +94,19 @@ export class UserService {
 
 export class UserObject {
 
-    public username: String;
+    username: String;
 
-    public password: String;
+    password: String;
 
-    public email: String;
+    email: String;
 
-    public displayName: String;
+    displayName: String;
 
-    public roles: String[];
+    roles: String[];
 
-    public projects: String[];
+    projects: String[];
 
-    public get authenticated(): boolean {
+    get authenticated(): boolean {
         return this.roles.length > 0;
     }
 

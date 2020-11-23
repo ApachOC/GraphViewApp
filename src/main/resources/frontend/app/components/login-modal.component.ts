@@ -1,10 +1,9 @@
 import {Component} from '@angular/core';
 
-import {UserService} from "../../services/user.service";
+import {UserService} from "../services/user.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
-    selector: 'login-modal-content',
     templateUrl: './login-modal.component.html'
 })
 export class LoginModalComponent {
@@ -19,7 +18,9 @@ export class LoginModalComponent {
 
     login() {
         this.user.login(this.credentials).then(
-            () => this.showAlert = false,
+            () => {
+                this.modal.close();
+            },
             () => this.showAlert = true
         );
         return false;

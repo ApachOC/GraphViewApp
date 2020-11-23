@@ -19,11 +19,16 @@
     </ul>
 
     <div class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
-        <div [hidden]="authenticated()">
-            <button class="btn btn-outline-primary" (click)="openLoginDlg()">Login</button>
+        <div *ngIf="!user.authenticated">
+            <button type="button" class="btn btn-primary" (click)="openLoginDlg()">Login</button>
+            <span class="navbar-text p-2">or</span>
+            <button type="button" class="btn btn-primary" (click)="openRegDlg()">Register</button>
         </div>
-        <div [hidden]="!authenticated()">
-            <button class="btn btn-outline-danger" (click)="logout()">Logout</button>
+        <div class="btn-group" *ngIf="user.authenticated">
+            <button type="button" class="btn btn-light" (click)="openPreferences()">
+                {{ user.user.displayName }}
+            </button>
+            <button type="button" class="btn btn-danger" (click)="user.logout()">Logout</button>
         </div>
     </div>
 </nav>

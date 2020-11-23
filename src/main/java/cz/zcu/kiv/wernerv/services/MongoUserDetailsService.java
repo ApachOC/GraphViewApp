@@ -28,6 +28,8 @@ public class MongoUserDetailsService implements UserDetailsService {
             user = new AppUser("user", encoder.encode("pass"));
             user.roles.add("user");
             user.roles.add("admin");
+            user.displayName = "Temp User";
+            user.email = "user.example.com";
             repository.insert(user);
         }
     }

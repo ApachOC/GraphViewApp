@@ -1,6 +1,7 @@
 package cz.zcu.kiv.wernerv.config;
 
 import cz.zcu.kiv.wernerv.services.MongoUserDetailsService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.*;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -42,8 +45,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().anonymous().and().authorizeRequests()
-                .antMatchers("/index.html", "/", "/logout").permitAll()
-                .antMatchers("/api/register").permitAll()
+                .antMatchers("/", "/*", "/api/register").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(authEntryPoint())
@@ -51,7 +53,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/api/login")
                 .successHandler(new AuthSuccessHandler())
                 .failureHandler(new SimpleUrlAuthenticationFailureHandler())
-                .and().csrf().disable(); //todo
+                .and().logout().logoutUrl("/api/logout")
+                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
+                .and().csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+                //.and().csrf().disable(); //todo comment out if going into production!
     }
 
     @Override

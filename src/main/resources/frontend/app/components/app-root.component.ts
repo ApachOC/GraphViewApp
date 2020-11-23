@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import {LoginModalComponent} from "../login-modal/login-modal.component";
-import {UserService} from "../../services/user.service";
+import {LoginModalComponent} from "./login-modal.component";
+import {UserService} from "../services/user.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {RegistrationModalComponent} from "./registration-modal.component";
 
 @Component({
   selector: 'app-root',
@@ -13,16 +14,17 @@ export class AppRootComponent {
 
   }
 
-  authenticated() {
-    return this.user.authenticated;
-  }
-
-  logout() {
-    this.user.logout();
-  }
-
   openLoginDlg() {
     const modalRef = this.modalService.open(LoginModalComponent);
     modalRef.componentInstance.name = 'World';
+  }
+
+    openRegDlg() {
+      const modalRef = this.modalService.open(RegistrationModalComponent);
+      modalRef.componentInstance.name = 'World';
+    }
+
+  openPreferences() {
+    //todo
   }
 }
