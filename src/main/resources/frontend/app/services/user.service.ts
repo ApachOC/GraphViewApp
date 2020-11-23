@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpResponse} from "@angular/common/http";
 
 @Injectable({
     providedIn: 'root',
@@ -11,18 +11,22 @@ export class UserService {
     }
 
     get isUser(): boolean {
-        return this.userObject && this.userObject.authorities
-            .map(auth => {return auth.authority})
-            .includes('ROLE_USER');
+        return this.userObject && this.userObject.roles.includes('user');
     }
 
     get isAdmin(): boolean {
-        return this.userObject && this.userObject.authorities
-            .map(auth => {return auth.authority})
-            .includes('ROLE_ADMIN');
+        return this.userObject && this.userObject.roles.includes('admin');
     }
 
-    private userObject: any;
+    private userObject: UserObject;
+
+    private httpOptions = {
+        headers: new HttpHeaders({
+            'Content-Type':  'application/json',
+            'Accept':  'application/json',
+        }),
+        withCredentials: true,
+    };
 
     constructor(private http: HttpClient) { }
 
@@ -30,21 +34,17 @@ export class UserService {
 
         const httpOptions = {
             headers: new HttpHeaders({
-                'Content-Type':  'application/json',
-                'Accept':  'application/json',
-                'Authorization': 'Basic ' + btoa(
-                    `${credentials.username}:${credentials.password}`
-                )
-            })
+                'Content-Type':  'multipart/form-data',
+            }),
+            withCredentials: true
         };
 
-        const request = this.http.get('http://localhost:8080/api/login', httpOptions);
-        request.subscribe(response => {
-            if (response['name']) {
-                this.userObject = response;
-            } else {
-                this.userObject = null;
-            }
+        const formData = new FormData();
+        formData.append("username", credentials.username);
+        formData.append("password", credentials.password);
+        const request = this.http.post('http://localhost:8080/api/login', formData).toPromise();
+        request.then(() => {
+            this.getUser();
         });
         return request;
     }
@@ -53,14 +53,11 @@ export class UserService {
         const httpOptions = {
             headers: new HttpHeaders({
                 'Content-Type':  'application/json',
-                'Accept':  'application/json',
-                'Authorization': 'Basic ' + btoa(
-                    `user:pass`
-                )
+                'Accept':  'application/json'
             })
         };
 
-        this.http.post('http://localhost:8080/logout', {}, httpOptions).subscribe(() => {
+        this.http.post('http://localhost:8080/api/logout', {}, httpOptions).subscribe(() => {
             this.userObject = null;
         }, (error) => {
             this.userObject = null;
@@ -71,17 +68,39 @@ export class UserService {
         const httpOptions = {
             headers: new HttpHeaders({
                 'Content-Type':  'application/json',
-                'Accept':  'application/json',
-                'Authorization': 'Basic ' + btoa(
-                    `${credentials.username}:${credentials.password}`
-                )
+                'Accept':  'application/json'
             })
         };
 
-        const userObject = {
-            username: credentials.username,
-            password: credentials.password
-        }
-        return this.http.post('http://localhost:8080/api/register', userObject, httpOptions);
+        const formData = new FormData();
+        formData.append("username", credentials.username);
+        formData.append("password", credentials.password);
+        return this.http.post('http://localhost:8080/api/user', formData, httpOptions);
     }
+
+    getUser() {
+        return this.http.get<UserObject>('http://localhost:8080/api/user', this.httpOptions).subscribe((user) => {
+            this.userObject = user;
+        });
+    }
+}
+
+export class UserObject {
+
+    public username: String;
+
+    public password: String;
+
+    public email: String;
+
+    public displayName: String;
+
+    public roles: String[];
+
+    public projects: String[];
+
+    public get authenticated(): boolean {
+        return this.roles.length > 0;
+    }
+
 }
