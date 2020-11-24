@@ -8,22 +8,22 @@ import {environment} from "../../environments/environment";
 export class UserService {
 
     get authenticated(): boolean {
-        return this.userObject != null;
+        return this.currentUser != null;
     }
 
     get isUser(): boolean {
-        return this.userObject && this.userObject.roles.includes('user');
+        return this.currentUser && this.currentUser.roles.includes('user');
     }
 
     get isAdmin(): boolean {
-        return this.userObject && this.userObject.roles.includes('admin');
+        return this.currentUser && this.currentUser.roles.includes('admin');
     }
 
     get user():UserObject {
-        return this.userObject;
+        return this.currentUser;
     }
 
-    private userObject: UserObject;
+    private currentUser: UserObject;
 
     private httpOptions = {
         headers: new HttpHeaders({
@@ -34,7 +34,7 @@ export class UserService {
     };
 
     constructor(private http: HttpClient) {
-        this.getCurrentUser();
+        this.http.get<UserObject>(`${environment.apiUrl}/ping`, this.httpOptions);
     }
 
     login(credentials) {
@@ -49,9 +49,11 @@ export class UserService {
         const formData = new FormData();
         formData.append("username", credentials.username);
         formData.append("password", credentials.password);
-        const request = this.http.post(`${environment.apiUrl}/login`, formData).toPromise();
-        request.then(() => {
-            this.getCurrentUser();
+        const request = this.http.post<UserObject>(`${environment.apiUrl}/login`, formData).toPromise();
+        request.then((userObj) => {
+            this.currentUser = userObj;
+        }, () => {
+            this.currentUser = null;
         });
         return request;
     }
@@ -65,9 +67,9 @@ export class UserService {
         };
 
         this.http.post(`${environment.apiUrl}/logout`, {}, httpOptions).subscribe(() => {
-            this.userObject = null;
+            this.currentUser = null;
         }, (error) => {
-            this.userObject = null;
+            this.currentUser = null;
         });
     }
 
@@ -85,10 +87,12 @@ export class UserService {
         return this.http.post(`${environment.apiUrl}/user`, formData, httpOptions).toPromise();
     }
 
-    getCurrentUser() {
-        this.http.get<UserObject>(`${environment.apiUrl}/user`, this.httpOptions).subscribe((user) => {
-            this.userObject = user;
-        });
+    save() {
+        return this.update(this.currentUser);
+    }
+
+    update(user: UserObject) {
+        return this.http.put(`${environment.apiUrl}/user`, user, this.httpOptions).toPromise();
     }
 }
 

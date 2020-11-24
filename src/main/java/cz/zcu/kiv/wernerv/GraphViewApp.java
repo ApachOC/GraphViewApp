@@ -1,6 +1,6 @@
 package cz.zcu.kiv.wernerv;
 
-import cz.zcu.kiv.wernerv.config.MongoConfiguration;
+import cz.zcu.kiv.wernerv.config.MongoConfigurationDev;
 import cz.zcu.kiv.wernerv.config.SecurityConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,7 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @SpringBootApplication
 @EnableMongoRepositories
 @EnableWebSecurity
-@Import({ MongoConfiguration.class, SecurityConfiguration.class })
+@Import({ MongoConfigurationDev.class, SecurityConfiguration.class })
 public class GraphViewApp {
     public static void main(String[] args) {
         SpringApplication.run(GraphViewApp.class, args);

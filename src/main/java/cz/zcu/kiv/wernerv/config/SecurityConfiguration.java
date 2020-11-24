@@ -1,5 +1,7 @@
 package cz.zcu.kiv.wernerv.config;
 
+import cz.zcu.kiv.wernerv.models.AppUser;
+import cz.zcu.kiv.wernerv.models.Message;
 import cz.zcu.kiv.wernerv.services.MongoUserDetailsService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -55,8 +58,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .failureHandler(new SimpleUrlAuthenticationFailureHandler())
                 .and().logout().logoutUrl("/api/logout")
                 .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
-                .and().csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-                //.and().csrf().disable(); //todo comment out if going into production!
+                //.and().csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+                .and().csrf().disable(); //todo comment out if going into production!
     }
 
     @Override
@@ -90,6 +93,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                             Authentication authentication) throws IOException, ServletException {
             clearAuthenticationAttributes(request);
+            AppUser details = (AppUser) authentication.getPrincipal();
+            response.getWriter().print(details.toString());
+            response.setContentType("application/json");
+            response.getWriter().flush();
         }
     }
 }

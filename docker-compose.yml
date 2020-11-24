@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - "mongo"
+    container_name: graph-app
+    volumes:
+      - temp:/data/temp
+      - libs:/data/libs
+  mongo:
+    image: "mongo:4.4.2"
+    expose:
+      - 27017
+    container_name: mongo
+    volumes:
+      - db:/data/db
+      - configdb:/data/configdb
+volumes:
+  db:
+  configdb:
+  temp:
+  libs:
