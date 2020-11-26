@@ -18,6 +18,11 @@ services:
     volumes:
       - db:/data/db
       - configdb:/data/configdb
+      - ./mongodb-init:/docker-entrypoint-initdb.d
+    environment:
+      MONGO_INITDB_DATABASE: graph-app
+      #MONGO_INITDB_ROOT_USERNAME: root
+      #MONGO_INITDB_ROOT_PASSWORD: toor
 volumes:
   db:
   configdb:

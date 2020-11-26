@@ -73,7 +73,7 @@ export class UserService {
         });
     }
 
-    register(credentials) {
+    register(user: UserObject) {
         const httpOptions = {
             headers: new HttpHeaders({
                 'Content-Type':  'application/json',
@@ -81,10 +81,7 @@ export class UserService {
             })
         };
 
-        const formData = new FormData();
-        formData.append("username", credentials.username);
-        formData.append("password", credentials.password);
-        return this.http.post(`${environment.apiUrl}/user`, formData, httpOptions).toPromise();
+        return this.http.post(`${environment.apiUrl}/users`, user, httpOptions).toPromise();
     }
 
     save() {

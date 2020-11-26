@@ -9,9 +9,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Component
 public class MongoUserDetailsService implements UserDetailsService {
 
@@ -20,20 +17,6 @@ public class MongoUserDetailsService implements UserDetailsService {
 
     public MongoUserDetailsService(MongoUserRepository repository) {
         this.repository = repository;
-
-        //todo
-//        AppUser user = repository.findByUsername("user");
-//        if (user == null) {
-//            List<String> roles = new ArrayList<>();
-//            roles.add("user");
-//            roles.add("admin");
-//            user = new AppUser("user",
-//                    encoder.encode("pass"),
-//                    "user.example.com",
-//                    "Temp User",
-//                    roles, new ArrayList<>());
-//            repository.insert(user);
-//        }
     }
 
     @Override

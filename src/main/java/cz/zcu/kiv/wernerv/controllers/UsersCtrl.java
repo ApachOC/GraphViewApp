@@ -20,8 +20,9 @@ public class UsersCtrl {
 
     @PostMapping("/users")
     public void register(@RequestBody AppUser newUser) {
+        //todo find if user is duplicate
         PasswordEncoder enc = new BCryptPasswordEncoder();
-        newUser.password = enc.encode(newUser.password);
+        newUser.setPassword(enc.encode(newUser.getPassword()));
         repo.insert(newUser);
     }
 

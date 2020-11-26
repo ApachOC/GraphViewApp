@@ -15,11 +15,10 @@ import java.util.stream.Collectors;
 
 @Document(collection = "users")
 public class AppUser implements UserDetails {
-    @Id
+
     private String username;
 
-    @JsonIgnore
-    public String password;
+    private String password;
 
     private String email;
 
@@ -44,13 +43,15 @@ public class AppUser implements UserDetails {
         return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 
-    @JsonIgnore
     @Override
     public String getPassword() {
         return password;
     }
 
-    @JsonIgnore
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public String getUsername() {
         return username;

@@ -48,7 +48,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().anonymous().and().authorizeRequests()
-                .antMatchers("/", "/*", "/api/register").permitAll()
+                .antMatchers("/", "/*").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/users").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(authEntryPoint())
