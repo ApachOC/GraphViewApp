@@ -10,17 +10,21 @@ This repo Spring Boot application which both serves HTML content and acts as a b
 
 ## Build
 
-First you need to have Maven and Java installed.
-Then run `mvn install`. This will build both application and provide an executable JAR.
+If you have Docker installed you can use `docker-compose up` to automatically
+download all dependencies, build and launch the application in a container.
+
+You can also use Maven to build the application manually.
+In that case there first needs to be a MongoDB instance running.
+Then run `mvn install`. This will build the application and provide an
+executable JAR.
 
 ## Run
 
-Simply execute the JAR. No further configuration is currently necessary.
+Use Docker or execute the JAR build using Maven.
 
 ## TODO
 
-- Dockerize
-- Add standalone database (MongoDB?)
 - Implement user management
 - Implement external library management
 - Implement basic graph editor operations
+- Implement persistent project storage
