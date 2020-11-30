@@ -8,12 +8,9 @@ import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 
 import static java.util.Collections.singletonList;
 
-@Configuration
-@Profile("prod")
-public class MongoConfigurationProd {
-
     @Configuration
-    public static class ApplicationContextEventTestsAppConfig extends AbstractMongoClientConfiguration {
+    @Profile("prod")
+    public class MongoConfigurationProd extends AbstractMongoClientConfiguration {
 
         @Override
         public String getDatabaseName() {
@@ -28,4 +25,3 @@ public class MongoConfigurationProd {
         }
     }
 
-}

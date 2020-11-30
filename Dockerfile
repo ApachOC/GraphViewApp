@@ -1,7 +1,7 @@
 FROM maven:3.6.3-jdk-11 AS build
 WORKDIR /build
 COPY . /build
-RUN mvn install
+RUN mvn install -P prod
 
 FROM openjdk:11
 WORKDIR /app
