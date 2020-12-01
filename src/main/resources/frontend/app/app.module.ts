@@ -3,19 +3,24 @@ import { NgModule } from '@angular/core';
 
 import { AppRootComponent } from './components/app-root.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
-import { LoginModalComponent } from "./components/login-modal.component";
+import { LoginModalComponent } from "./components/modals/login-modal.component";
 import {NgbAlertModule, NgbDropdownModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import {ProjectCreatorComponent} from "./components/project-creator.component";
+import {ProjectCreatorComponent} from "./components/projects/project-creator.component";
 import {NgxDropzoneModule} from "ngx-dropzone";
-import {ProjectManagerComponent} from "./components/project-manager.component";
+import {ProjectManagerComponent} from "./components/projects/project-manager.component";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {SortablejsModule} from "ngx-sortablejs";
 import {FormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
-import {GraphEditorComponent} from "./components/graph-editor.component";
-import {UserService} from "./services/user.service";
+import {GraphEditorComponent} from "./components/projects/graph-editor.component";
+import {SessionService} from "./services/session.service";
 import {XhrInterceptor} from "./other/interceptors";
-import {RegistrationModalComponent} from "./components/registration-modal.component";
+import {UserDetailsModalComponent} from "./components/modals/user-details-modal.component";
+import {RouterModule} from "@angular/router";
+import {AdministrationComponent} from "./components/administration/administration.component";
+import {ProjectManagerService} from "./services/project-manager.service";
+import {RestUsersService} from "./services/rest-users.service";
+import {ConfirmModalComponent} from "./components/modals/confirm-modal.component";
 
 @NgModule({
   declarations: [
@@ -24,7 +29,10 @@ import {RegistrationModalComponent} from "./components/registration-modal.compon
       ProjectCreatorComponent,
       ProjectManagerComponent,
       GraphEditorComponent,
-      RegistrationModalComponent
+      UserDetailsModalComponent,
+      AdministrationComponent,
+      ConfirmModalComponent,
+      UserDetailsModalComponent
   ],
     imports: [
         BrowserModule,
@@ -36,9 +44,16 @@ import {RegistrationModalComponent} from "./components/registration-modal.compon
         BrowserAnimationsModule,
         NgbModule,
         SortablejsModule,
-        CommonModule
+        CommonModule,
+        RouterModule.forRoot([
+            { path: "projects", component: ProjectManagerComponent },
+            { path: "administration", component: AdministrationComponent },
+            { path: "preferences", component: AdministrationComponent },
+            { path: '', redirectTo: '/projects', pathMatch: 'full'},
+        ])
     ],
-  providers: [UserService ,{ provide: HTTP_INTERCEPTORS, useClass: XhrInterceptor, multi: true }],
+  providers: [SessionService, ProjectManagerService, RestUsersService,
+      { provide: HTTP_INTERCEPTORS, useClass: XhrInterceptor, multi: true }],
   bootstrap: [AppRootComponent]
 })
 export class AppModule { }

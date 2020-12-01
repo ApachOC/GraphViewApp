@@ -19,3 +19,24 @@
     flex-direction: column;
     justify-content: space-between;
 }
+
+.administration-table tbody tr {
+    cursor: pointer;
+}
+
+.administration-table td:last-child {
+    text-align: right;
+}
+
+.administration-table td:last-child > * {
+    visibility: hidden;
+}
+
+.administration-table tr:hover td:last-child > * {
+    visibility: visible;
+}
+
+.fa-alert {
+    font-size: 62pt;
+    color: #d0d0d0;
+}

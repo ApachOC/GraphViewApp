@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import {LoginModalComponent} from "./login-modal.component";
-import {UserService} from "../services/user.service";
+import {LoginModalComponent} from "./modals/login-modal.component";
+import {SessionService} from "../services/session.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {RegistrationModalComponent} from "./registration-modal.component";
+import {UserDetailsModalComponent} from "./modals/user-details-modal.component";
 
 @Component({
   selector: 'app-root',
@@ -10,7 +10,7 @@ import {RegistrationModalComponent} from "./registration-modal.component";
 })
 export class AppRootComponent {
 
-  constructor(public user: UserService, public modalService: NgbModal) {
+  constructor(public user: SessionService, public modalService: NgbModal) {
 
   }
 
@@ -19,12 +19,8 @@ export class AppRootComponent {
     modalRef.componentInstance.name = 'World';
   }
 
-    openRegDlg() {
-      const modalRef = this.modalService.open(RegistrationModalComponent);
-      modalRef.componentInstance.name = 'World';
-    }
-
-  openPreferences() {
-    //todo
+  openRegDlg() {
+    const modalRef = this.modalService.open(UserDetailsModalComponent);
+    modalRef.componentInstance.name = 'World';
   }
 }

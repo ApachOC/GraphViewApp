@@ -1,7 +1,7 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<header class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand auto" href="#">GraphView</a>
     <ul class="navbar-nav">
-        <li class="nav-item" ngbDropdown>
+        <!--<li class="nav-item" ngbDropdown>
             <a class="nav-link" ngbDropdownToggle id="navFileDropdown" href="#">
                 Project
             </a>
@@ -12,11 +12,15 @@
                 <button ngbDropdownItem *ngIf="user.authenticated">Save project</button>
                 <button ngbDropdownItem *ngIf="user.authenticated">Load project</button>
             </div>
+        </li>-->
+        <li>
+            <a class="nav-link" routerLink="/projects" routerLinkActive="active">Projects</a>
         </li>
         <li *ngIf="user.isAdmin">
-            <a class="nav-link">Administration</a>
+            <a class="nav-link" routerLink="/administration" routerLinkActive="active">Administration</a>
         </li>
     </ul>
+
 
     <div class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
         <div *ngIf="!user.authenticated">
@@ -31,5 +35,5 @@
             <button type="button" class="btn btn-danger" (click)="user.logout()">Logout</button>
         </div>
     </div>
-</nav>
-<project-manager #prjMgr></project-manager>
+</header>
+<router-outlet></router-outlet>

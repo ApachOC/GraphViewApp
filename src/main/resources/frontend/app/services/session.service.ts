@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from "@angular/common/http";
 import {environment} from "../../environments/environment";
+import {RestBase} from "./rest-base";
+import {RestUsersService} from "./rest-users.service";
 
 @Injectable({
     providedIn: 'root',
 })
-export class UserService {
+export class SessionService extends RestBase{
 
     get authenticated(): boolean {
         return this.currentUser != null;
@@ -19,33 +21,15 @@ export class UserService {
         return this.currentUser && this.currentUser.roles.includes('admin');
     }
 
-    get user():UserObject {
+    get user(): UserObject {
         return this.currentUser;
     }
 
     private currentUser: UserObject;
 
-    private httpOptions = {
-        headers: new HttpHeaders({
-            'Content-Type':  'application/json',
-            'Accept':  'application/json',
-        }),
-        withCredentials: true,
-    };
-
-    constructor(private http: HttpClient) {
-        this.http.get<UserObject>(`${environment.apiUrl}/ping`, this.httpOptions);
-    }
+    constructor(private mgmt: RestUsersService, protected http: HttpClient) { super(http) }
 
     login(credentials) {
-
-        const httpOptions = {
-            headers: new HttpHeaders({
-                'Content-Type':  'multipart/form-data',
-            }),
-            withCredentials: true
-        };
-
         const formData = new FormData();
         formData.append("username", credentials.username);
         formData.append("password", credentials.password);
@@ -59,14 +43,7 @@ export class UserService {
     }
 
     logout() {
-        const httpOptions = {
-            headers: new HttpHeaders({
-                'Content-Type':  'application/json',
-                'Accept':  'application/json'
-            })
-        };
-
-        this.http.post(`${environment.apiUrl}/logout`, {}, httpOptions).subscribe(() => {
+        this.http.post(`${environment.apiUrl}/logout`, {}).subscribe(() => {
             this.currentUser = null;
         }, (error) => {
             this.currentUser = null;
@@ -74,22 +51,11 @@ export class UserService {
     }
 
     register(user: UserObject) {
-        const httpOptions = {
-            headers: new HttpHeaders({
-                'Content-Type':  'application/json',
-                'Accept':  'application/json'
-            })
-        };
-
-        return this.http.post(`${environment.apiUrl}/users`, user, httpOptions).toPromise();
+        return this.mgmt.addUser(user);
     }
 
     save() {
-        return this.update(this.currentUser);
-    }
-
-    update(user: UserObject) {
-        return this.http.put(`${environment.apiUrl}/user`, user, this.httpOptions).toPromise();
+        return this.mgmt.updateUser(this.currentUser);
     }
 }
 
@@ -103,9 +69,9 @@ export class UserObject {
 
     displayName: String;
 
-    roles: String[];
+    roles: String[] = [];
 
-    projects: String[];
+    projects: String[] = [];
 
     get authenticated(): boolean {
         return this.roles.length > 0;

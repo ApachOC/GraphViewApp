@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 
-import {UserService} from "../services/user.service";
+import {SessionService} from "../../services/session.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
@@ -14,7 +14,7 @@ export class LoginModalComponent {
 
     alertText = "Error during login";
 
-    constructor(public modal: NgbActiveModal, private user: UserService) {}
+    constructor(public modal: NgbActiveModal, private user: SessionService) {}
 
     login() {
         this.user.login(this.credentials).then(

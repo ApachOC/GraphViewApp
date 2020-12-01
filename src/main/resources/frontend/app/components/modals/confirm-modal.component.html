@@ -1,0 +1,26 @@
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">{{title}}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-4">
+                <i class="fa fa-exclamation-triangle fa-alert"></i>
+            </div>
+            <div class="col-8">
+                <p>{{message}}</p>
+                <div *ngIf="withInput">
+                    <label for="confirmField">Please type <b>{{withInput}}</b> into the field below.</label>
+                    <div class="form-group">
+                        <input type="text" id="confirmField" class="form-control"
+                               [(ngModel)]="inputText" [placeholder]="withInput"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="submit()">Confirm</button>
+    </div>

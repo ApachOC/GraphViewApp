@@ -5,15 +5,12 @@ import cz.zcu.kiv.wernerv.repos.MongoUserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MongoUserDetailsService implements UserDetailsService {
 
     private final MongoUserRepository repository;
-    private final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public MongoUserDetailsService(MongoUserRepository repository) {
         this.repository = repository;

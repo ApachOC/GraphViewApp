@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @SpringBootApplication
 @EnableMongoRepositories
 @EnableWebSecurity
-@Import({ MongoConfigurationTest.class, SecurityConfiguration.class })
 public class GraphViewApp {
     public static void main(String[] args) {
         SpringApplication.run(GraphViewApp.class, args);

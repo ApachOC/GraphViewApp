@@ -18,14 +18,6 @@ public class UsersCtrl {
         this.repo = repo;
     }
 
-    @PostMapping("/users")
-    public void register(@RequestBody AppUser newUser) {
-        //todo find if user is duplicate
-        PasswordEncoder enc = new BCryptPasswordEncoder();
-        newUser.setPassword(enc.encode(newUser.getPassword()));
-        repo.insert(newUser);
-    }
-
     @GetMapping("/users")
     public List<AppUser> list() {
         return repo.findAll();
@@ -36,11 +28,21 @@ public class UsersCtrl {
         return repo.findByUsername(username);
     }
 
+    @PostMapping("/users")
+    public void register(@RequestBody AppUser newUser) {
+        //todo find if user is duplicate
+        PasswordEncoder enc = new BCryptPasswordEncoder();
+        newUser.setPassword(enc.encode(newUser.getPassword()));
+        repo.insert(newUser);
+    }
+
     @PutMapping("/users")
     public void update(@RequestBody AppUser newUser) {
         repo.save(newUser);
     }
 
-    @GetMapping("/ping")
-    public void ping() { }
+    @DeleteMapping("/users/{username}")
+    public void delete(@PathVariable String username) {
+        repo.deleteByUsername(username);
+    }
 }

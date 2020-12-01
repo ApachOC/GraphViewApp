@@ -1,34 +1,14 @@
-import {Component, Input} from '@angular/core';
+import {Injectable} from "@angular/core";
 
-@Component({
-    selector: 'project-manager',
-    templateUrl: './project-manager.component.html'
+@Injectable({
+    providedIn: 'root',
 })
-export class ProjectManagerComponent{
+export class ProjectManagerService {
+    projectList: ProjectData[] = [];
+    current: ProjectData;
 
-    constructor() {
-        this.newProject()
-        this.currentProject = this.projects[0];
-    }
-
-    projects : ProjectData[] = []
-    currentProject: ProjectData;
-
-    newProject() {
-        const defaultName = 'Untitled project'
-
-        let count = 0;
-        this.projects.forEach(prj => {
-            if (prj.title.startsWith(defaultName)) {
-                count++;
-            }
-        });
-
-        this.currentProject = new ProjectData(
-            count ? `${defaultName}  (${count})` : defaultName
-        );
-
-        this.projects.push(this.currentProject);
+    addProject(projectData: ProjectData) {
+        this.projectList.push(projectData);
     }
 }
 
