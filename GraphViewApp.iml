@@ -26,8 +26,8 @@
       <excludeFolder url="file://$MODULE_DIR$/src/main/resources/frontend/dist" />
       <excludeFolder url="file://$MODULE_DIR$/src/main/resources/frontend/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/src/main/resources/public" />
-      <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="jdk" jdkName="14" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -16,11 +16,23 @@ import {GraphEditorComponent} from "./components/projects/graph-editor.component
 import {SessionService} from "./services/session.service";
 import {XhrInterceptor} from "./other/interceptors";
 import {UserDetailsModalComponent} from "./components/modals/user-details-modal.component";
-import {RouterModule} from "@angular/router";
+import {RouterModule, Routes} from "@angular/router";
 import {AdministrationComponent} from "./components/administration/administration.component";
 import {ProjectManagerService} from "./services/project-manager.service";
 import {RestUsersService} from "./services/rest-users.service";
 import {ConfirmModalComponent} from "./components/modals/confirm-modal.component";
+import {UserAdministrationComponent} from "./components/administration/user-admin.component";
+import {LibraryAdministrationComponent} from "./components/administration/libs-admin.component";
+
+const routes: Routes = [
+    { path: "projects", component: ProjectManagerComponent },
+    { path: "administration", component: AdministrationComponent, children: [
+            { path: "users", component: UserAdministrationComponent },
+            { path: "libs", component: LibraryAdministrationComponent },
+        ]
+    },
+    { path: '', redirectTo: '/projects', pathMatch: 'full'},
+];
 
 @NgModule({
   declarations: [
@@ -32,7 +44,9 @@ import {ConfirmModalComponent} from "./components/modals/confirm-modal.component
       UserDetailsModalComponent,
       AdministrationComponent,
       ConfirmModalComponent,
-      UserDetailsModalComponent
+      UserDetailsModalComponent,
+      UserAdministrationComponent,
+      LibraryAdministrationComponent
   ],
     imports: [
         BrowserModule,
@@ -45,12 +59,7 @@ import {ConfirmModalComponent} from "./components/modals/confirm-modal.component
         NgbModule,
         SortablejsModule,
         CommonModule,
-        RouterModule.forRoot([
-            { path: "projects", component: ProjectManagerComponent },
-            { path: "administration", component: AdministrationComponent },
-            { path: "preferences", component: AdministrationComponent },
-            { path: '', redirectTo: '/projects', pathMatch: 'full'},
-        ])
+        RouterModule.forRoot(routes)
     ],
   providers: [SessionService, ProjectManagerService, RestUsersService,
       { provide: HTTP_INTERCEPTORS, useClass: XhrInterceptor, multi: true }],

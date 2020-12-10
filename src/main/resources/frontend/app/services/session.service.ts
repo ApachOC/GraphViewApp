@@ -71,8 +71,6 @@ export class UserObject {
 
     roles: String[] = [];
 
-    projects: String[] = [];
-
     get authenticated(): boolean {
         return this.roles.length > 0;
     }

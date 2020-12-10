@@ -29,8 +29,10 @@ public class UsersCtrl {
     }
 
     @PostMapping("/users")
-    public void register(@RequestBody AppUser newUser) {
-        //todo find if user is duplicate
+    public void register(@RequestBody AppUser newUser) throws Exception {
+        if (repo.findByUsername(newUser.getUsername()) != null) {
+            throw new Exception("User already exists!");
+        }
         PasswordEncoder enc = new BCryptPasswordEncoder();
         newUser.setPassword(enc.encode(newUser.getPassword()));
         repo.insert(newUser);

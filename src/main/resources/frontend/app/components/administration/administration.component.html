@@ -1,33 +1,18 @@
+<div class="sidebar float-left">
+    <nav class="navbar navbar-light">
+        <ul class="navbar-nav">
+            <li>
+                <a class="nav-link" routerLink="users" routerLinkActive="active">Users</a>
+            </li>
+            <li>
+                <a class="nav-link" routerLink="libs" routerLinkActive="active">Libraries</a>
+            </li>
+            <li>
+                <a class="nav-link disabled" routerLink="system" routerLinkActive="active">System</a>
+            </li>
+        </ul>
+    </nav>
+</div>
 <div class="container">
-    <h2>User administration</h2>
-    <table class="table table-striped table-hover administration-table">
-        <thead>
-            <tr>
-                <th>User</th>
-                <th>Email</th>
-                <th>Saved projects</th>
-                <th>Status</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let user of users"
-                (click)="editUser(user)"
-                [ngClass]="{'table-warning': user.roles.length == 0}">
-                <td>{{user.displayName}}</td>
-                <td>{{user.email}}</td>
-                <td>{{user.projects.length}}</td>
-                <td>
-                    <span *ngIf="!user.roles.length">New</span>
-                    <span *ngIf="user.roles.length && !user.roles.includes('admin')">User</span>
-                    <span *ngIf="user.roles.length && user.roles.includes('admin')">Admin</span>
-                </td>
-                <td>
-                    <button class="btn" (click)="deleteUser(user)">
-                        <i class="fa fa-times"></i>
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <router-outlet></router-outlet>
 </div>
