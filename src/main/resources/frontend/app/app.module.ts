@@ -23,13 +23,17 @@ import {RestUsersService} from "./services/rest-users.service";
 import {ConfirmModalComponent} from "./components/modals/confirm-modal.component";
 import {UserAdministrationComponent} from "./components/administration/user-admin.component";
 import {LibraryAdministrationComponent} from "./components/administration/libs-admin.component";
+import {AuthGuardService} from "./services/auth-guard.service";
+import {LibraryDetailsModalComponent} from "./components/modals/library-details-modal.component";
+import {RestLibsService} from "./services/rest-libs.service";
 
 const routes: Routes = [
     { path: "projects", component: ProjectManagerComponent },
     { path: "administration", component: AdministrationComponent, children: [
+            { path: '', redirectTo: 'users', pathMatch: 'full'},
             { path: "users", component: UserAdministrationComponent },
             { path: "libs", component: LibraryAdministrationComponent },
-        ]
+        ], canActivate: [AuthGuardService], data: { role: 'admin' }
     },
     { path: '', redirectTo: '/projects', pathMatch: 'full'},
 ];
@@ -46,7 +50,8 @@ const routes: Routes = [
       ConfirmModalComponent,
       UserDetailsModalComponent,
       UserAdministrationComponent,
-      LibraryAdministrationComponent
+      LibraryAdministrationComponent,
+      LibraryDetailsModalComponent
   ],
     imports: [
         BrowserModule,
@@ -61,8 +66,13 @@ const routes: Routes = [
         CommonModule,
         RouterModule.forRoot(routes)
     ],
-  providers: [SessionService, ProjectManagerService, RestUsersService,
+  providers: [
+      SessionService,
+      ProjectManagerService,
+      RestUsersService,
+      AuthGuardService,
+      RestLibsService,
       { provide: HTTP_INTERCEPTORS, useClass: XhrInterceptor, multi: true }],
-  bootstrap: [AppRootComponent]
+  bootstrap: [ AppRootComponent ]
 })
 export class AppModule { }

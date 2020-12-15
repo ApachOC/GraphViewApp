@@ -23,5 +23,9 @@ export class RestUsersService extends RestBase {
     deleteUser(user: UserObject) {
         return this.http.delete(`${environment.apiUrl}/users/${user.username}`).toPromise();
     }
+
+    getUser(): Promise<UserObject> {
+        return this.http.get<UserObject>(`${environment.apiUrl}/user`).toPromise();
+    }
 }
 

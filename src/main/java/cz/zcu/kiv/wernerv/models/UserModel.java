@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Document(collection = "users")
-public class AppUser implements UserDetails {
+public class UserModel implements UserDetails {
 
     private String username;
 
@@ -28,7 +28,7 @@ public class AppUser implements UserDetails {
 
     private List<String> projects;
 
-    public AppUser(String username, String password, String email, String displayName, List<String> roles, List<String> projects) {
+    public UserModel(String username, String password, String email, String displayName, List<String> roles, List<String> projects) {
         this.username = username;
         this.password = password;
         this.email = email;

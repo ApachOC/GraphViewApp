@@ -1,11 +1,12 @@
 package cz.zcu.kiv.wernerv.controllers;
 
-import cz.zcu.kiv.wernerv.models.AppUser;
+import cz.zcu.kiv.wernerv.models.UserModel;
 import cz.zcu.kiv.wernerv.repos.MongoUserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -19,17 +20,17 @@ public class UsersCtrl {
     }
 
     @GetMapping("/users")
-    public List<AppUser> list() {
+    public List<UserModel> list() {
         return repo.findAll();
     }
 
     @GetMapping("/users/{username}")
-    public AppUser get(@PathVariable String username) {
+    public UserModel get(@PathVariable String username) {
         return repo.findByUsername(username);
     }
 
     @PostMapping("/users")
-    public void register(@RequestBody AppUser newUser) throws Exception {
+    public void register(@RequestBody UserModel newUser) throws Exception {
         if (repo.findByUsername(newUser.getUsername()) != null) {
             throw new Exception("User already exists!");
         }
@@ -39,12 +40,17 @@ public class UsersCtrl {
     }
 
     @PutMapping("/users")
-    public void update(@RequestBody AppUser newUser) {
+    public void update(@RequestBody UserModel newUser) {
         repo.save(newUser);
     }
 
     @DeleteMapping("/users/{username}")
     public void delete(@PathVariable String username) {
         repo.deleteByUsername(username);
+    }
+
+    @GetMapping("/user")
+    public UserModel currentUser(Principal user) {
+        return repo.findByUsername(user.getName());
     }
 }

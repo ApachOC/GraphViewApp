@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable, OnInit} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {RestBase} from "./rest-base";
@@ -7,7 +7,7 @@ import {RestUsersService} from "./rest-users.service";
 @Injectable({
     providedIn: 'root',
 })
-export class SessionService extends RestBase{
+export class SessionService extends RestBase {
 
     get authenticated(): boolean {
         return this.currentUser != null;
@@ -27,7 +27,11 @@ export class SessionService extends RestBase{
 
     private currentUser: UserObject;
 
-    constructor(private mgmt: RestUsersService, protected http: HttpClient) { super(http) }
+    constructor(private mgmt: RestUsersService, protected http: HttpClient) {
+        super(http);
+        mgmt.getUser().then((user) => {
+            this.currentUser = user;
+        });}
 
     login(credentials) {
         const formData = new FormData();

@@ -1,6 +1,6 @@
 package cz.zcu.kiv.wernerv.services;
 
-import cz.zcu.kiv.wernerv.models.AppUser;
+import cz.zcu.kiv.wernerv.models.UserModel;
 import cz.zcu.kiv.wernerv.repos.MongoUserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,7 +18,7 @@ public class MongoUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUser user = repository.findByUsername(username);
+        UserModel user = repository.findByUsername(username);
         if(user == null) {
             throw new UsernameNotFoundException("User not found!");
         }
