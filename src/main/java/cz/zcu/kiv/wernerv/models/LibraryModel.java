@@ -15,4 +15,12 @@ public class LibraryModel {
 
     public List<LibraryParameter> parameters;
 
+    public String inputArg;
+
+    public String inputFileType;
+
+    public String outputArg;
+
+    public String outputFileType;
+
 }

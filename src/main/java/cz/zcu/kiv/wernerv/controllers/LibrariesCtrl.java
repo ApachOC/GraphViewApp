@@ -25,7 +25,7 @@ public class LibrariesCtrl {
     }
 
     @PostMapping("/libs")
-    public void upload(@RequestBody LibraryModel newLibrary,
+    public void upload(@RequestParam("metadata") LibraryModel newLibrary,
                        @RequestParam("file") MultipartFile file) throws Exception {
         libraryStorage.save(newLibrary, file);
     }

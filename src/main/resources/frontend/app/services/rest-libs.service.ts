@@ -1,6 +1,7 @@
 import {Injectable} from "@angular/core";
 import {RestBase} from "./rest-base";
 import {environment} from "../../environments/environment";
+import {HttpHeaders} from "@angular/common/http";
 
 @Injectable({
     providedIn: 'root',
@@ -11,8 +12,13 @@ export class RestLibsService extends RestBase {
         return this.http.get<LibraryObject[]>(`${environment.apiUrl}/libs`).toPromise();
     }
 
-    addLibrary(lib: LibraryObject) {
-        return this.http.post(`${environment.apiUrl}/libs`, lib).toPromise();
+    addLibrary(lib: LibraryObject, file: File) {
+        //const headers = new HttpHeaders({ 'enctype': 'multipart/form-data' });
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('metadata', JSON.stringify(lib));
+
+        return this.http.post(`${environment.apiUrl}/libs`, formData).toPromise();
     }
 
     updateLibrary(lib: LibraryObject) {
@@ -25,16 +31,26 @@ export class RestLibsService extends RestBase {
 }
 
 export class LibraryObject {
-    id: string;
-    name: string;
-    description: string;
-    parameters: LibraryParameter[];
+    id: string = '';
+    name: string = '';
+    description: string = '';
+    parameters: LibraryParameter[] = [];
+    inputArg: string = '';
+    inputFileType: string = '';
+    outputArg: string = '';
+    outputFileType: string = '';
 }
 
 export class LibraryParameter {
+    name: string;
     option: string;
     defaultValue: string | number;
     type: LibraryParameterType;
+    mandatory: boolean;
+
+    constructor(init?:Partial<LibraryParameter>) {
+        Object.assign(this, init);
+    }
 }
 
 export enum LibraryParameterType {

@@ -1,5 +1,7 @@
 import {Component, OnInit} from "@angular/core";
 import {LibraryObject, RestLibsService} from "../../services/rest-libs.service";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {LibraryDetailsModalComponent} from "../modals/library-details-modal.component";
 
 @Component({
     templateUrl: './libs-admin.component.html'
@@ -7,16 +9,16 @@ import {LibraryObject, RestLibsService} from "../../services/rest-libs.service";
 export class LibraryAdministrationComponent implements OnInit{
     libraries: LibraryObject[] = [];
 
-    constructor(private rest: RestLibsService) {}
+    constructor(private rest: RestLibsService, private modal: NgbModal) {}
 
     ngOnInit(): void {
-        this.rest.listLibraries().then((libs) => {
-            this.libraries = libs;
-        });
+        this.loadLibs();
     }
 
     addLibrary() {
-
+        this.modal.open(LibraryDetailsModalComponent, {size: "lg"}).result.then(() => {
+            this.loadLibs();
+        })
     }
 
     deleteLibrary(lib: LibraryObject) {
@@ -25,5 +27,11 @@ export class LibraryAdministrationComponent implements OnInit{
 
     editLibrary(lib: LibraryObject) {
 
+    }
+
+    private loadLibs() {
+        this.rest.listLibraries().then((libs) => {
+            this.libraries = libs;
+        });
     }
 }
