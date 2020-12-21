@@ -6,12 +6,20 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document("lib_paths")
 public class LibraryPath {
     @Id
-    public String id;
+    private String id;
 
-    public String path;
+    private String path;
 
     public LibraryPath(String id, String path) {
         this.id = id;
         this.path = path;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public String getId() {
+        return id;
     }
 }

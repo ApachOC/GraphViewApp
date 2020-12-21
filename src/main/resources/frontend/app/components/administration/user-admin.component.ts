@@ -36,7 +36,7 @@ export class UserAdministrationComponent implements OnInit {
         modal.componentInstance.title = "Confirm deletion";
         modal.componentInstance.message = "Warning!\nThis action is irreversible!\n";
         modal.componentInstance.withInput = "DELETE";
-        modal.result.then((result) => {
+        modal.result.then(() => {
             this.rest.deleteUser(user).then(() => {
                 this.getUserList();
             });

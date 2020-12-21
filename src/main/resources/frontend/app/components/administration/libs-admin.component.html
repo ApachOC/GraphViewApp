@@ -18,7 +18,7 @@
         <td>{{lib.name}}</td>
         <td>{{lib.description}}</td>
         <td>
-            <button class="btn" (click)="deleteLibrary(lib)">
+            <button class="btn" (click)="$event.stopPropagation(); deleteLibrary(lib)">
                 <i class="fa fa-times"></i>
             </button>
         </td>

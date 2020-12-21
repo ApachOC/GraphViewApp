@@ -1,6 +1,5 @@
 import {Component} from '@angular/core';
 
-import {SessionService} from "../../services/session.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {LibraryObject, LibraryParameter, RestLibsService} from "../../services/rest-libs.service";
 import {NgxDropzoneChangeEvent} from "ngx-dropzone";
@@ -19,12 +18,15 @@ export class LibraryDetailsModalComponent {
     constructor(public modal: NgbActiveModal, private rest: RestLibsService) {}
 
     submit() {
-        this.rest.addLibrary(this.libraryObj, this.libraryFile);
+        this.rest.addLibrary(this.libraryObj, this.libraryFile).then(() => {
+            this.modal.close(true);
+        });
     }
 
     onAddFile(event: NgxDropzoneChangeEvent) {
-        //const type = event.rejectedFiles[0].type;
-        this.libraryFile = event.addedFiles[0];
+        if (event.addedFiles.length > 0) {
+            this.libraryFile = event.addedFiles.pop();
+        }
     }
 
     newParameter() {

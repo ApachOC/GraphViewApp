@@ -1,9 +1,11 @@
 package cz.zcu.kiv.wernerv.models;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
+@Document("libraries")
 public class LibraryModel {
 
     @Id
@@ -15,7 +17,9 @@ public class LibraryModel {
 
     public List<LibraryParameter> parameters;
 
-    public String inputArg;
+    public String nodeInputArg;
+
+    public String edgeInputArg;
 
     public String inputFileType;
 

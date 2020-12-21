@@ -5,9 +5,9 @@ import cz.zcu.kiv.wernerv.repos.MongoUserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class MongoUserDetailsService implements UserDetailsService {
 
     private final MongoUserRepository repository;

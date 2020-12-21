@@ -1,7 +1,5 @@
 package cz.zcu.kiv.wernerv.repos;
 
-import cz.zcu.kiv.wernerv.models.LibraryModel;
-import cz.zcu.kiv.wernerv.models.LibraryPath;
 import cz.zcu.kiv.wernerv.models.UserModel;
 import org.springframework.data.mongodb.repository.MongoRepository;
 

@@ -5,13 +5,12 @@
         </button>
     </div>
         <div class="modal-body">
-            <!--<ngb-alert type="danger" [hidden]="!showAlert" (close)="showAlert = false" >{{alertText}}</ngb-alert>-->
             <ngx-dropzone (change)="onAddFile($event)" [accept]="acceptFiles" *ngIf="!libraryFile">
                 <ngx-dropzone-label>
                     <h5>Please upload JAR which contains the library application.</h5>
                 </ngx-dropzone-label>
             </ngx-dropzone>
-            <ngb-alert type="success" [hidden]="!libraryFile" >Library file loaded!</ngb-alert>
+            <ngb-alert type="success" [hidden]="!libraryFile" (close)="libraryFile = null">Library file loaded!</ngb-alert>
             <div class="form-group">
                 <label for="name">Library name:</label>
                 <input type="text" [disabled]="libraryObj.id.length > 0" class="form-control" id="name" name="name"
@@ -22,7 +21,32 @@
                 <input type="text" class="form-control" id="description" name="description"
                        [(ngModel)]="libraryObj.description"/>
             </div>
-                <label>Argument mapping:</label>
+            <div class="form-group">
+                <label for="nodeInput">Node input argument:</label>
+                <input type="text" class="form-control" id="nodeInput" name="nodeInput"
+                       [(ngModel)]="libraryObj.nodeInputArg"/>
+            </div>
+            <div class="form-group">
+                <label for="edgeInput">Edge input argument:</label>
+                <input type="text" class="form-control" id="edgeInput" name="edgeInput"
+                       [(ngModel)]="libraryObj.edgeInputArg"/>
+            </div>
+            <div class="form-group">
+                <label for="inputFormat">Input file format:</label>
+                <input type="text" class="form-control" id="inputFormat" name="inputFormat"
+                       [(ngModel)]="libraryObj.inputFileType"/>
+            </div>
+            <div class="form-group">
+                <label for="outputFile">Output argument:</label>
+                <input type="text" class="form-control" id="outputFile" name="outputFile"
+                       [(ngModel)]="libraryObj.outputArg"/>
+            </div>
+            <div class="form-group">
+                <label for="outputFormat">Output file format:</label>
+                <input type="text" class="form-control" id="outputFormat" name="outputFormat"
+                       [(ngModel)]="libraryObj.outputFileType"/>
+            </div>
+                <label>More arguments:</label>
                 <table class="table table-striped table-hover w-100">
                     <thead>
                         <tr>
@@ -56,22 +80,6 @@
                                 <button class="btn" (click)="removeParameter(parameter)">
                                     <i class="fa fa-times"></i>
                                 </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Input file</td>
-                            <td><input type="text" [(ngModel)]="libraryObj.inputArg" class="form-control form-control-sm"></td>
-                            <td colspan="3">
-                                <input type="text" [(ngModel)]="libraryObj.inputFileType" class="form-control form-control-sm"
-                                       placeholder="File type">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Output file</td>
-                            <td><input type="text" [(ngModel)]="libraryObj.outputArg" class="form-control form-control-sm"></td>
-                            <td colspan="3">
-                                <input type="text" [(ngModel)]="libraryObj.outputFileType"  class="form-control form-control-sm"
-                                       placeholder="File type">
                             </td>
                         </tr>
                     </tbody>

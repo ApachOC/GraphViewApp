@@ -35,7 +35,8 @@ export class LibraryObject {
     name: string = '';
     description: string = '';
     parameters: LibraryParameter[] = [];
-    inputArg: string = '';
+    nodeInputArg: string = '';
+    edgeInputArg: string = '';
     inputFileType: string = '';
     outputArg: string = '';
     outputFileType: string = '';

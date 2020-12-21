@@ -25,7 +25,7 @@
                     <span *ngIf="user.roles.length && user.roles.includes('admin')">Admin</span>
                 </td>
                 <td>
-                    <button class="btn" (click)="deleteUser(user)">
+                    <button class="btn" (click)="$event.stopPropagation(); deleteUser(user)">
                         <i class="fa fa-times"></i>
                     </button>
                 </td>
