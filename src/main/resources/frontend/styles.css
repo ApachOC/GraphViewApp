@@ -44,3 +44,31 @@
 .sidebar {
     width: 300px
 }
+
+.card .card-header {
+    border-bottom: none;
+}
+
+nav {
+    height: 56px;
+    overflow: visible;
+}
+
+.navbar-project {
+    background: cadetblue;
+    color: white;
+}
+
+.navbar-project a {
+    color: white;
+}
+
+.nav-tabs .nav-item-project .nav-link {
+    background: lightgray;
+    color: black;
+}
+
+.nav-tabs .nav-item-project .nav-link.active {
+    background: cadetblue;
+    color: white;
+}

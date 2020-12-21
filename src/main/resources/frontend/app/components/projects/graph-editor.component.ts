@@ -3,7 +3,7 @@ import * as Chart from 'chart.js';
 import 'chartjs-chart-graph';
 import 'chartjs-plugin-datalabels';
 import 'chartjs-plugin-dragdata';
-import {ProjectData} from "../../services/project-manager.service";
+import {ProjectData} from "../../models/project-models";
 
 declare module 'chart.js' {
     interface ChartOptions {

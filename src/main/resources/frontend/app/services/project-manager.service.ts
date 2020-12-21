@@ -1,4 +1,7 @@
 import {Injectable} from "@angular/core";
+import {ProjectData} from "../models/project-models";
+import {SessionService} from "./session.service";
+import {RestProjectsService} from "./rest-projects.service";
 
 @Injectable({
     providedIn: 'root',
@@ -7,78 +10,37 @@ export class ProjectManagerService {
     projectList: ProjectData[] = [];
     current: ProjectData;
 
-    addProject(projectData: ProjectData) {
-        this.projectList.push(projectData);
-    }
-}
-
-export class ProjectData {
-    title: string;
-
-    nodeMap = new Map<string, ProjectData.Node>();
-
-    get nodes(): ProjectData.Node[] {
-        return Array.from(this.nodeMap.values())
-    }
-    edges: ProjectData.Edge[] = [];
-    ready: boolean = false;
-
-    get state(): ProjectData.State {
-        if (this.nodeCount > 0) {
-            if (this.edgeCount > 0) {
-                return ProjectData.State.Full
-            } else {
-                return ProjectData.State.PointCloud
-            }
-        } else if (this.edgeCount > 0) {
-            return ProjectData.State.Invalid
+    constructor(private rest: RestProjectsService, private user: SessionService) {
+        if (user.authenticated) {
+            rest.getActiveProject().then((project) => {
+                this.addProject(project, true);
+            }, () => {
+                this.newProject(true);
+            });
         } else {
-            return ProjectData.State.Empty
+            this.newProject(true);
         }
     }
 
-    get nodeCount(): number {
-        return this.nodeMap.size;
+    newProject(current?: boolean) {
+        const defaultName = 'Untitled project'
+
+        let count = 0;
+        this.projectList.forEach(prj => {
+            if (prj.title.startsWith(defaultName)) {
+                count++;
+            }
+        });
+
+        this.addProject(new ProjectData(
+            count ? `${defaultName}  (${count})` : defaultName
+        ), current);
     }
 
-    get edgeCount(): number {
-        return this.edges.length;
-    }
-
-    constructor(title:string) {
-        this.title = title;
-    }
-}
-
-export namespace ProjectData {
-    export enum State
-    {
-        Empty,
-        PointCloud,
-        Full,
-        Invalid,
-        Ready
-    }
-
-    export class Node {
-        x = 0;
-        y = 0;
-        personalization: number;
-
-        otherValues: Map<string, any>
-
-        static valueNames: string[];
-
-        constructor(public id: string, public name: string, pers?: number) {
-            this.personalization = pers || 0;
-        }
-    }
-
-    export class Edge {
-        weight: number
-
-        constructor(public source: Node, public target: Node, weight?: number) {
-            this.weight = weight || 0;
+    addProject(projectData: ProjectData, current?: boolean) {
+        this.projectList.push(projectData);
+        if (current) {
+            this.current = projectData;
         }
     }
 }

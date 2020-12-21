@@ -1,17 +1,12 @@
 import {Component, Input} from '@angular/core';
-import {ProjectData, ProjectManagerService} from "../../services/project-manager.service";
+import {ProjectManagerService} from "../../services/project-manager.service";
+import {ProjectData} from "../../models/project-models";
+import {SessionService} from "../../services/session.service";
 
 @Component({
     templateUrl: './project-manager.component.html'
 })
 export class ProjectManagerComponent {
-
-    constructor(private mgr: ProjectManagerService) {
-        if (!this.currentProject) {
-            mgr.addProject(this.newProject())
-            this.currentProject = this.projects[0];
-        }
-    }
 
     get projects() : ProjectData[] {
         return this.mgr.projectList;
@@ -25,20 +20,27 @@ export class ProjectManagerComponent {
         this.mgr.current = project;
     }
 
+    constructor(private mgr: ProjectManagerService, private user: SessionService) {
+    }
+
     newProject() {
-        const defaultName = 'Untitled project'
+        this.mgr.newProject();
+    }
 
-        let count = 0;
-        this.projects.forEach(prj => {
-            if (prj.title.startsWith(defaultName)) {
-                count++;
+    saveProject() {
+
+    }
+
+    loadProject() {
+
+    }
+
+    closeProject(project: ProjectData) {
+        if (this.projects.length > 0) {
+            this.projects.splice(this.projects.indexOf(project), 1);
+            if (this.currentProject == project) {
+                this.currentProject = this.projects[0];
             }
-        });
-
-        this.currentProject = new ProjectData(
-            count ? `${defaultName}  (${count})` : defaultName
-        );
-
-        return this.currentProject;
+        }
     }
 }

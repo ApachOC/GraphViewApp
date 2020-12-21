@@ -26,6 +26,8 @@ import {LibraryAdministrationComponent} from "./components/administration/libs-a
 import {AuthGuardService} from "./services/auth-guard.service";
 import {LibraryDetailsModalComponent} from "./components/modals/library-details-modal.component";
 import {RestLibsService} from "./services/rest-libs.service";
+import {ProjectData} from "./models/project-models";
+import {RestProjectsService} from "./services/rest-projects.service";
 
 const routes: Routes = [
     { path: "projects", component: ProjectManagerComponent },
@@ -72,6 +74,7 @@ const routes: Routes = [
       RestUsersService,
       AuthGuardService,
       RestLibsService,
+      RestProjectsService,
       { provide: HTTP_INTERCEPTORS, useClass: XhrInterceptor, multi: true }],
   bootstrap: [ AppRootComponent ]
 })

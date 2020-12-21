@@ -1,8 +1,8 @@
 import {Component, Input, TemplateRef} from '@angular/core';
 import {NgxDropzoneChangeEvent} from "ngx-dropzone";
 import '@angular/common';
-import {NgbAlert, NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {ProjectData} from "../../services/project-manager.service";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {ProjectData} from "../../models/project-models";
 
 
 @Component({
