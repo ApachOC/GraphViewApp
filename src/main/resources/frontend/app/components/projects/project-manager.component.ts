@@ -20,7 +20,7 @@ export class ProjectManagerComponent {
         this.mgr.current = project;
     }
 
-    constructor(private mgr: ProjectManagerService, private user: SessionService) {
+    constructor(private mgr: ProjectManagerService, public user: SessionService) {
     }
 
     newProject() {
