@@ -3,15 +3,23 @@ export class ProjectData {
 
     title: string;
 
-    nodeMap = new Map<string, ProjectData.Node>();
+    nodeMap: Record<string, ProjectData.Node> = {};
+
+    extraValueNames: string[];
+
+    ready: boolean;
 
     get nodes(): ProjectData.Node[] {
-        return Array.from(this.nodeMap.values())
+        const nodes = [];
+        for (let key in this.nodeMap) {
+            if (this.nodeMap.hasOwnProperty(key)) {
+                nodes.push(this.nodeMap[key]);
+            }
+        }
+        return nodes;
     }
 
     edges: ProjectData.Edge[] = [];
-
-    ready: boolean = false;
 
     get state(): ProjectData.State {
         if (this.nodeCount > 0) {
@@ -28,15 +36,14 @@ export class ProjectData {
     }
 
     get nodeCount(): number {
-        return this.nodeMap.size;
+        return this.nodes.length;
     }
 
     get edgeCount(): number {
         return this.edges.length;
     }
 
-    constructor(title:string) {
-        this.title = title;
+    constructor() {
     }
 }
 
@@ -55,9 +62,7 @@ export namespace ProjectData {
         y = 0;
         personalization: number;
 
-        otherValues: Map<string, any>
-
-        static valueNames: string[];
+        extraValues: Map<string, any>
 
         constructor(public id: string, public name: string, pers?: number) {
             this.personalization = pers || 0;
@@ -71,4 +76,9 @@ export namespace ProjectData {
             this.weight = weight || 0;
         }
     }
+}
+
+export class ProjectRecord {
+    id: string;
+    name: string
 }

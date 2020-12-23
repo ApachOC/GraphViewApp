@@ -28,6 +28,7 @@ import {LibraryDetailsModalComponent} from "./components/modals/library-details-
 import {RestLibsService} from "./services/rest-libs.service";
 import {ProjectData} from "./models/project-models";
 import {RestProjectsService} from "./services/rest-projects.service";
+import {ProjectSelectionModalComponent} from "./components/modals/project-selection-modal.component";
 
 const routes: Routes = [
     { path: "projects", component: ProjectManagerComponent },
@@ -53,7 +54,8 @@ const routes: Routes = [
       UserDetailsModalComponent,
       UserAdministrationComponent,
       LibraryAdministrationComponent,
-      LibraryDetailsModalComponent
+      LibraryDetailsModalComponent,
+      ProjectSelectionModalComponent
   ],
     imports: [
         BrowserModule,

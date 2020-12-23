@@ -32,9 +32,9 @@ export class ProjectManagerService {
             }
         });
 
-        this.addProject(new ProjectData(
-            count ? `${defaultName}  (${count})` : defaultName
-        ), current);
+        const newProj = new ProjectData();
+        newProj.title = count ? `${defaultName}  (${count})` : defaultName;
+        this.addProject(newProj, current);
     }
 
     addProject(projectData: ProjectData, current?: boolean) {
@@ -42,5 +42,17 @@ export class ProjectManagerService {
         if (current) {
             this.current = projectData;
         }
+    }
+
+    loadProject(id: string) {
+        this.rest.loadProjectData(id).then((project) => {
+            this.projectList.push(project);
+            this.current = project;
+            project.ready = true;
+        });
+    }
+
+    saveProject(currentProject: ProjectData) {
+        this.rest.saveProjectData(currentProject);
     }
 }

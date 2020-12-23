@@ -1,7 +1,9 @@
-import {Component, Input} from '@angular/core';
+import {Component} from '@angular/core';
 import {ProjectManagerService} from "../../services/project-manager.service";
 import {ProjectData} from "../../models/project-models";
 import {SessionService} from "../../services/session.service";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {ProjectSelectionModalComponent} from "../modals/project-selection-modal.component";
 
 @Component({
     templateUrl: './project-manager.component.html'
@@ -20,19 +22,21 @@ export class ProjectManagerComponent {
         this.mgr.current = project;
     }
 
-    constructor(private mgr: ProjectManagerService, public user: SessionService) {
-    }
+    constructor(private mgr: ProjectManagerService, public user: SessionService, private modals: NgbModal) { }
 
     newProject() {
         this.mgr.newProject();
     }
 
     saveProject() {
-
+        this.mgr.saveProject(this.currentProject);
     }
 
     loadProject() {
-
+        this.modals.open(ProjectSelectionModalComponent).result
+            .then((id) => {
+                this.mgr.loadProject(id);
+            });
     }
 
     closeProject(project: ProjectData) {
