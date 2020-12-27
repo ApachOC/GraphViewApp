@@ -4,7 +4,6 @@ import '@angular/common';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ProjectData} from "../../models/project-models";
 
-
 @Component({
     selector: 'project-creator',
     templateUrl: './project-creator.component.html'
@@ -75,6 +74,7 @@ export class ProjectCreatorComponent{
                 prevTargets.push(to.id);
             }
         }
+
         this.project.ready = true;
     }
 
