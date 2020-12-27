@@ -9,16 +9,6 @@ export class ProjectData {
 
     ready: boolean;
 
-    get nodes(): ProjectData.Node[] {
-        const nodes = [];
-        for (let key in this.nodeMap) {
-            if (this.nodeMap.hasOwnProperty(key)) {
-                nodes.push(this.nodeMap[key]);
-            }
-        }
-        return nodes;
-    }
-
     edges: ProjectData.Edge[] = [];
 
     get state(): ProjectData.State {
@@ -36,7 +26,7 @@ export class ProjectData {
     }
 
     get nodeCount(): number {
-        return this.nodes.length;
+        return Object.keys(this.nodeMap).length
     }
 
     get edgeCount(): number {
@@ -62,7 +52,7 @@ export namespace ProjectData {
         y = 0;
         personalization: number;
 
-        extraValues: Map<string, any>
+        extraValues: Record<string, any>;
 
         constructor(public id: string, public name: string, pers?: number) {
             this.personalization = pers || 0;
@@ -72,7 +62,7 @@ export namespace ProjectData {
     export class Edge {
         weight: number
 
-        constructor(public source: Node, public target: Node, weight?: number) {
+        constructor(public sourceId: string, public targetId: string, weight?: number) {
             this.weight = weight || 0;
         }
     }

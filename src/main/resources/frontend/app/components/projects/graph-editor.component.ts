@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnInit, ViewChild} from "@angular/core";
+import {AfterViewInit, Component, Input, ViewChild} from "@angular/core";
 import * as Chart from 'chart.js';
 import 'chartjs-chart-graph';
 import 'chartjs-plugin-datalabels';
@@ -6,14 +6,23 @@ import 'chartjs-plugin-dragdata';
 import {ProjectData} from "../../models/project-models";
 
 declare module 'chart.js' {
+
     interface ChartOptions {
         dragData: boolean,
         dragX: boolean
         simulation: any
     }
+
     interface ChartDataSets {
-        edges: any
+        edges: ChartEdge[]
     }
+}
+
+class ChartEdge {
+    constructor(
+        public source: ProjectData.Node,
+        public target: ProjectData.Node
+    ) {}
 }
 
 @Component({
@@ -23,17 +32,20 @@ declare module 'chart.js' {
 export class GraphEditorComponent implements AfterViewInit {
     private chart;
 
+    private nodes: ProjectData.Node[];
+
+    private edges: ChartEdge[];
+
+    private labels: string[];
+
     @Input() public project: ProjectData;
 
     @ViewChild('chartEditorCanvas') canvas;
 
-    private get labels(): string[] {
-        return this.project.nodes.map((node) => {
-           return `Name: ${node.name}`;
-        });
-    }
-
     ngAfterViewInit(): void {
+        this.initializeNodes();
+        this.initializeEdges();
+        this.initializeLabels();
         const ctx = this.canvas.nativeElement.getContext('2d');
         this.chart = new Chart(ctx, {
             type: 'forceDirectedGraph',
@@ -43,8 +55,8 @@ export class GraphEditorComponent implements AfterViewInit {
                     {
                         pointBackgroundColor: 'yellow',
                         pointRadius: 5,
-                        data: this.project.nodes,
-                        edges: this.project.edges,
+                        data: this.nodes,
+                        edges: this.edges,
                     },
                 ],
             },
@@ -66,10 +78,36 @@ export class GraphEditorComponent implements AfterViewInit {
                 },
                 plugins: {
                     datalabels: {
-                        formatter: (node) => node.id
+                        formatter: (node) => node.index
                     }
                 },
             }
+        });
+    }
+
+    private initializeNodes() {
+        this.nodes = [];
+        for (let key in this.project.nodeMap) {
+            if (this.project.nodeMap.hasOwnProperty(key)) {
+                this.nodes.push(this.project.nodeMap[key]);
+            }
+        }
+    }
+
+    private initializeEdges() {
+        this.edges = [];
+        this.project.edges.forEach((edge) =>  {
+            const edgeObj = new ChartEdge(
+                this.project.nodeMap[edge.sourceId],
+                this.project.nodeMap[edge.targetId]
+            );
+            this.edges.push(edgeObj);
+        });
+    }
+
+    private initializeLabels() {
+        this.labels = this.nodes.map((node) => {
+            return `Name: ${node.name}`;
         });
     }
 }

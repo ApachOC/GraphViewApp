@@ -23,6 +23,8 @@ public class ProjectData {
 
         public float y = 0;
 
+        public String name;
+
         public int personalization;
 
         public Map <String, String> extraValues;
@@ -30,9 +32,9 @@ public class ProjectData {
 
     public static class Edge {
 
-        public Node source;
+        public String sourceId;
 
-        public Node target;
+        public String targetId;
 
         public float weight;
 
