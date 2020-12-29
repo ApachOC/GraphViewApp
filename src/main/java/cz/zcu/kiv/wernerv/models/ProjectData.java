@@ -14,7 +14,7 @@ public class ProjectData {
 
     public String title;
 
-    public Map<String, Node> nodeMap;
+    public List<Node> nodeMap;
 
     public List<Edge> edges;
 
@@ -22,6 +22,8 @@ public class ProjectData {
         public float x = 0;
 
         public float y = 0;
+
+        public String id;
 
         public String name;
 

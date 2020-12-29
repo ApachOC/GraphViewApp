@@ -3,20 +3,17 @@
         <div class="graph-editor-viewer">
             <div class="graph-editor-toolbars">
                 <div class="btn-group-vertical">
-                    <button class="btn btn-outline-primary" ngbTooltip="Select and manipulate nodes">
+                    <button class="btn btn-outline-primary" [class.active]="currentTool == 'SELECT'"
+                            (click)="currentTool = 'SELECT'" ngbTooltip="Select and manipulate nodes">
                         <i class="fa fa-lg fa-hand-pointer"></i>
                     </button>
-                    <button class="btn btn-outline-primary" ngbTooltip="Create new nodes">
-                        <i class="fa fa-lg fa-plus-square"></i>
-                    </button>
-                    <button class="btn btn-outline-primary" ngbTooltip="Remove nodes">
-                        <i class="fa fa-lg fa-minus-square"></i>
-                    </button>
-                    <button class="btn btn-outline-primary" ngbTooltip="Create edges">
+                    <button class="btn btn-outline-primary" [class.active]="currentTool == 'ADD'"
+                            (click)="currentTool = 'ADD'" ngbTooltip="Create nodes & edges">
                         <i class="fa fa-lg fa-project-diagram"></i>
                         <i class="fa fa-plus" style="position:absolute;top:17px;right:10px;font-size:0.5em"></i>
                     </button>
-                    <button class="btn btn-outline-primary" ngbTooltip="Remove edges">
+                    <button class="btn btn-outline-primary" [class.active]="currentTool == 'REMOVE'"
+                            (click)="currentTool = 'REMOVE'" ngbTooltip="Remove nodes & edges">
                         <i class="fa fa-lg fa-project-diagram"></i>
                         <i class="fa fa-minus" style="position:absolute;top:17px;right:10px;font-size:0.5em"></i>
                     </button>
@@ -38,9 +35,7 @@
                     </button>
                 </div>
             </div>
-        <div id="graph-editor-canvas" class="graph-editor-viewer-canvas">
-            <!--<canvas #chartEditorCanvas></canvas>-->
-        </div>
+        <editor-viewport-d3 [nodes]="nodes" [edges]="edges" [tool]="currentTool"></editor-viewport-d3>
     </div>
 </div>
 </div>

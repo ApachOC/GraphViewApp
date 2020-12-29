@@ -29,9 +29,11 @@ export class SessionService extends RestBase {
 
     constructor(private mgmt: RestUsersService, protected http: HttpClient) {
         super(http);
-        mgmt.getUser().then((user) => {
-            this.currentUser = user;
-        });}
+        mgmt.getUser().then(
+            (user) => this.currentUser = user,
+            () => this.currentUser = null
+        )
+    }
 
     login(credentials) {
         const formData = new FormData();

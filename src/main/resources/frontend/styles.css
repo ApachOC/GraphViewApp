@@ -71,3 +71,7 @@
     background: cadetblue;
     color: white;
 }
+
+.graph-node.selected {
+    stroke-opacity: 1;
+}

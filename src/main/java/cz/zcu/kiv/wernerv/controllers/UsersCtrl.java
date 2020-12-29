@@ -2,9 +2,12 @@ package cz.zcu.kiv.wernerv.controllers;
 
 import cz.zcu.kiv.wernerv.models.UserModel;
 import cz.zcu.kiv.wernerv.repos.MongoUserRepository;
+import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.List;
@@ -50,7 +53,10 @@ public class UsersCtrl {
     }
 
     @GetMapping("/user")
-    public UserModel currentUser(Principal user) {
+    public UserModel currentUser(Principal user) throws ChangeSetPersister.NotFoundException {
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
         return repo.findByUsername(user.getName());
     }
 }

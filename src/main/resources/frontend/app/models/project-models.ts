@@ -3,7 +3,7 @@ export class ProjectData {
 
     title: string;
 
-    nodeMap: Record<string, ProjectData.Node> = {};
+    nodes: ProjectData.Node[] = [];
 
     extraValueNames: string[];
 
@@ -26,7 +26,7 @@ export class ProjectData {
     }
 
     get nodeCount(): number {
-        return Object.keys(this.nodeMap).length
+        return this.nodes.length
     }
 
     get edgeCount(): number {

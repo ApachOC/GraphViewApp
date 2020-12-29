@@ -12,7 +12,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {SortablejsModule} from "ngx-sortablejs";
 import {FormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
-import {GraphEditorComponent} from "./components/projects/graph-editor.component";
+import {EditorComponent} from "./components/projects/editor.component";
 import {SessionService} from "./services/session.service";
 import {XhrInterceptor} from "./other/interceptors";
 import {UserDetailsModalComponent} from "./components/modals/user-details-modal.component";
@@ -29,6 +29,7 @@ import {RestLibsService} from "./services/rest-libs.service";
 import {ProjectData} from "./models/project-models";
 import {RestProjectsService} from "./services/rest-projects.service";
 import {ProjectSelectionModalComponent} from "./components/modals/project-selection-modal.component";
+import {EditorViewportD3Component} from "./components/projects/editor-viewport-d3.component";
 
 const routes: Routes = [
     { path: "projects", component: ProjectManagerComponent },
@@ -42,21 +43,22 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-      AppRootComponent,
-      LoginModalComponent,
-      ProjectCreatorComponent,
-      ProjectManagerComponent,
-      GraphEditorComponent,
-      UserDetailsModalComponent,
-      AdministrationComponent,
-      ConfirmModalComponent,
-      UserDetailsModalComponent,
-      UserAdministrationComponent,
-      LibraryAdministrationComponent,
-      LibraryDetailsModalComponent,
-      ProjectSelectionModalComponent
-  ],
+    declarations: [
+        AppRootComponent,
+        LoginModalComponent,
+        ProjectCreatorComponent,
+        ProjectManagerComponent,
+        EditorComponent,
+        UserDetailsModalComponent,
+        AdministrationComponent,
+        ConfirmModalComponent,
+        UserDetailsModalComponent,
+        UserAdministrationComponent,
+        LibraryAdministrationComponent,
+        LibraryDetailsModalComponent,
+        ProjectSelectionModalComponent,
+        EditorViewportD3Component
+    ],
     imports: [
         BrowserModule,
         FormsModule,

@@ -52,22 +52,18 @@ export class ProjectCreatorComponent{
     public generateGraph(count: number, maxEdges: number): void {
         for (let i = 0; i < count; i++) {
             const node = new ProjectData.Node('' + i, 'Node ' + i);
-            this.project.nodeMap[node.id] = node;
+            this.project.nodes.push(node);
         }
 
         for (let i = 0; i < count; i++) {
             const randMax = Math.floor(Math.random() * Math.random() * Math.floor(maxEdges)) + 1;
             const prevTargets = [];
             for (let j = 0; j < randMax; j++) {
-                const from = this.project.nodeMap[i.toString()];
-                let to = this.project.nodeMap[
-                    Math.floor(Math.random() * Math.floor(count)).toString()
-                    ];
+                const from = this.project.nodes[i];
+                let to = this.project.nodes[Math.floor(Math.random() * Math.floor(count))];
 
                 while (from === to || prevTargets.includes(to)) {
-                    to = this.project.nodeMap[
-                        Math.floor(Math.random() * Math.floor(count)).toString()
-                        ];
+                    to = this.project.nodes[Math.floor(Math.random() * Math.floor(count))];
                 }
                 const edge = new ProjectData.Edge(from.id, to.id);
                 this.project.edges.push(edge);
@@ -122,7 +118,7 @@ export class ProjectCreatorComponent{
                 const line = lines[i];
                 const node = new ProjectData.Node(line[m.id], line[m.name],
                     m.importPers ? parseInt(line[m.personalization]) : null);
-                this.project.nodeMap[node.id] = node;
+                this.project.nodes.push(node);
                 //todo validate id, import other parameters
             }
         }
@@ -143,9 +139,8 @@ export class ProjectCreatorComponent{
             for (let i = m.firstLineHeader ? 1 : 0;
                  i < lines.length; i++) {
                 const line = lines[i];
-                const edge = new ProjectData.Edge(this.project.nodeMap[line[m.from]].id,
-                    this.project.nodeMap[line[m.to]].id, m.importWeights ?
-                        parseInt(line[m.weight]) : null);
+                const edge = new ProjectData.Edge(line[m.from], line[m.to],
+                    m.importWeights ? parseInt(line[m.weight]) : null);
                 this.project.edges.push(edge);
             }
         }
