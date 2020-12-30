@@ -27,7 +27,7 @@ export class ChartNode {
     selector: 'graph-editor',
     templateUrl: './editor.component.html'
 })
-export class EditorComponent implements OnInit, DoCheck {
+export class EditorComponent implements OnInit {
 
     private nodeMap: Record<string, ChartNode> = {};
 
@@ -48,8 +48,42 @@ export class EditorComponent implements OnInit, DoCheck {
         this.initializeEdges();
     }
 
-    ngDoCheck() {
-        //todo keep projectData and chart data synced
+    public removeNode(node: ChartNode) {
+        // delete from chart data
+        this.nodes.splice(this.nodes.indexOf(node), 1);
+        let found: number;
+        while ((found = this.edges.findIndex((edge) => edge.source == node || edge.target == node)) >= 0) {
+            this.edges.splice(found, 1);
+        }
+        const id = node.data.id;
+        delete this.nodeMap[id];
+
+        // delete from project data
+        found = this.project.nodes.findIndex((node) => node.id == id );
+        this.project.nodes.splice(found, 1);
+        while ((found = this.project.edges.findIndex((edge) => edge.sourceId == id || edge.targetId == id)) >= 0) {
+            this.project.edges.splice(found, 1);
+        }
+    }
+
+    public addNode(pos: {x: number, y: number}) {
+        // add to project data
+        const id = '' + this.nodes.length;
+        const data = new ProjectData.Node(id, "Node: " + id);
+        data.x = pos.x;
+        data.y = pos.y;
+        this.project.nodes.push(data);
+
+        // add to chart data
+        const chartNode = new ChartNode(data);
+        this.nodeMap[id] = chartNode;
+        this.nodes.push(chartNode);
+    }
+
+    public addEdge(val: {source: ChartNode, target: ChartNode}) {
+        const projectEdge = new ProjectData.Edge(val.source.data.id, val.target.data.id);
+        this.project.edges.push(projectEdge);
+        this.edges.push(new ChartEdge(val.source, val.target));
     }
 
     /**

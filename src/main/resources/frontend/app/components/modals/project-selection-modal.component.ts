@@ -13,11 +13,16 @@ export class ProjectSelectionModalComponent implements OnInit{
 
     projects: ProjectRecord[] = [];
 
+    @Input()
+    exclude: string[] = [];
+
     constructor(public modal: NgbActiveModal, private rest: RestProjectsService) { }
 
     ngOnInit(): void {
         this.rest.listProjects().then((list) => {
-            this.projects = list;
+            this.projects = list.filter((record) => {
+                return !(this.exclude.includes(record.id));
+            });
         });
     }
 

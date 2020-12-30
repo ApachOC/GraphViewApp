@@ -35,7 +35,9 @@
                     </button>
                 </div>
             </div>
-        <editor-viewport-d3 [nodes]="nodes" [edges]="edges" [tool]="currentTool"></editor-viewport-d3>
+        <editor-viewport-d3 [nodes]="nodes" [edges]="edges" [tool]="currentTool" [id]="project.id"
+                            (addNode)="addNode($event)" (removeNode)="removeNode($event)"
+                            (addEdge)="addEdge($event)"></editor-viewport-d3>
     </div>
 </div>
 </div>

@@ -33,7 +33,9 @@ export class ProjectManagerComponent {
     }
 
     loadProject() {
-        this.modals.open(ProjectSelectionModalComponent).result
+        const modal = this.modals.open(ProjectSelectionModalComponent);
+        modal.componentInstance.exclude = this.projects.map<string>((project) => project.id);
+        modal.result
             .then((id) => {
                 this.mgr.loadProject(id);
             });

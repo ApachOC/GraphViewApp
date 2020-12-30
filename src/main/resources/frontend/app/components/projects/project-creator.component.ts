@@ -1,14 +1,15 @@
-import {Component, Input, TemplateRef} from '@angular/core';
+import {Component, Input, OnInit, TemplateRef} from '@angular/core';
 import {NgxDropzoneChangeEvent} from "ngx-dropzone";
 import '@angular/common';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ProjectData} from "../../models/project-models";
+import {RestProjectsService} from "../../services/rest-projects.service";
 
 @Component({
     selector: 'project-creator',
     templateUrl: './project-creator.component.html'
 })
-export class ProjectCreatorComponent{
+export class ProjectCreatorComponent implements OnInit {
 
     @Input() project: ProjectData
 
@@ -36,7 +37,15 @@ export class ProjectCreatorComponent{
     showNodeAlert: boolean = false;
     showEdgeAlert: boolean = false;
 
-    constructor(private modalService: NgbModal) { }
+    private existingNames: string[] = [];
+
+    constructor(private modalService: NgbModal, private rest: RestProjectsService) { }
+
+    ngOnInit() {
+        this.rest.listProjects().then((records) => {
+            this.existingNames = records.map((record) => record.name);
+        });
+    }
 
     public onAddFile(event: NgxDropzoneChangeEvent) {
         if (event.addedFiles.length) {
@@ -148,7 +157,12 @@ export class ProjectCreatorComponent{
     }
 
     readyProject() {
-        this.project.ready = true;
+        if (this.existingNames.includes(this.project.title)) {
+            this.showEdgeAlert = true;
+            // todo create alert service
+        } else {
+            this.project.ready = true;
+        }
     }
 
     showGenerateModal(generateModal: TemplateRef<any>) {

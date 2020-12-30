@@ -1,5 +1,4 @@
-import {AfterViewInit, Component, DoCheck, ElementRef, Input, Output, ViewChild} from "@angular/core";
-import {ProjectData} from "../../models/project-models";
+import {AfterViewInit, Component, DoCheck, Input, Output, EventEmitter} from "@angular/core";
 import {forceCenter, forceLink, forceManyBody, forceSimulation, Simulation} from 'd3-force';
 import * as d3 from 'd3';
 import {zoomTransform} from 'd3-zoom';
@@ -8,13 +7,13 @@ import {ChartEdge, ChartNode} from "./editor.component";
 @Component({
     selector: 'editor-viewport-d3',
     template: `<div class="graph-editor-viewer-canvas">
-        <svg id="graph-editor-canvas">
+        <svg id="canvas-{{id}}">
             <defs>
-                <filter id="selectFilter" width="125%" height="125%">
+                <filter id="select-filter-{{id}}" width="125%" height="125%">
                     <feGaussianBlur result="blurOut" in="offOut" stdDeviation="0.8" />
                     <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
                 </filter>
-                <marker id= "edgeArrow" viewBox="0 -5 10 10" refX="20" orient="auto" markerWidth="10" markerHeight="10">
+                <marker id= "arrow-{{id}}" viewBox="0 -5 10 10" refX="20" orient="auto" markerWidth="10" markerHeight="10">
                     <path d="M 0,-5 L 10,0 L 0,5"></path>
                 </marker>
             </defs>
@@ -24,6 +23,9 @@ import {ChartEdge, ChartNode} from "./editor.component";
 export class EditorViewportD3Component implements AfterViewInit, DoCheck {
 
     @Input()
+    public id: string;
+
+    @Input()
     public nodes: ChartNode[];
 
     @Input()
@@ -31,6 +33,15 @@ export class EditorViewportD3Component implements AfterViewInit, DoCheck {
 
     @Input()
     public tool = "SELECT";
+
+    @Output()
+    public addNode =new EventEmitter<{x: number, y: number}>();
+
+    @Output()
+    public addEdge = new EventEmitter<{source: ChartNode, target: ChartNode}>();
+
+    @Output()
+    public removeNode = new EventEmitter<ChartNode>();
 
     public sim: Simulation<ChartNode, undefined>;
 
@@ -80,11 +91,7 @@ export class EditorViewportD3Component implements AfterViewInit, DoCheck {
             this.selection = node;
         }
         if (this.tool == "REMOVE") {
-            this.nodes.splice(this.nodes.indexOf(node), 1);
-            let found: number;
-            while ((found = this.edges.findIndex((edge) => edge.source == node || edge.target == node)) >= 0) {
-                this.edges.splice(found, 1);
-            }
+            this.removeNode.emit(node);
         }
         event.stopPropagation();
     }
@@ -97,11 +104,10 @@ export class EditorViewportD3Component implements AfterViewInit, DoCheck {
      */
     private onClickCanvas(event: MouseEvent) {
         if (this.tool == "ADD") {
-            const id = '' + this.nodes.length;
-            const node = new ChartNode(new ProjectData.Node(id, id));
-            node.x = this.transform.invertX(event.offsetX);
-            node.y = this.transform.invertY(event.offsetY);
-            this.nodes.push(node);
+            this.addNode.emit({
+                x: this.transform.invertX(event.offsetX),
+                y: this.transform.invertY(event.offsetY)
+            });
             this.updateNodes();
         }
     }
@@ -141,11 +147,14 @@ export class EditorViewportD3Component implements AfterViewInit, DoCheck {
                 });
                 const edge = <ChartEdge>this.selection;
                 if (closest && closest != event.subject && !existing) {
-                    edge.target = closest;
+                    this.addEdge.emit({
+                        source: <ChartNode> edge.source,
+                        target: closest
+                    });
                 } else {
-                    this.edges.splice(this.edges.indexOf(edge), 1);
                     this.selection = null;
                 }
+                this.edges.splice(this.edges.indexOf(edge), 1);
                 this.updateEdges();
             }
         }
@@ -158,7 +167,7 @@ export class EditorViewportD3Component implements AfterViewInit, DoCheck {
      */
     private initializeD3() {
         this.canvas = <d3.Selection<SVGSVGElement, unknown, HTMLElement, unknown>>
-            d3.select("#graph-editor-canvas")
+            d3.select("#canvas-" + this.id)
             .attr("width", this.width)
             .attr("height", this.height)
             .call(d3.zoom()
@@ -234,7 +243,7 @@ export class EditorViewportD3Component implements AfterViewInit, DoCheck {
         nodes
             .filter((node) => node == this.selection)
             .attr("class", "graph-node selected")
-            .attr("filter", "url(#selectFilter)");
+            .attr("filter", `url(#select-filter-${this.id})`);
     }
 
 
@@ -256,7 +265,7 @@ export class EditorViewportD3Component implements AfterViewInit, DoCheck {
         edges
             .enter()
             .append("line")
-            .attr('marker-end','url(#edgeArrow)')
+            .attr('marker-end',`url(#arrow-${this.id})`)
             .attr("class", "graph-edge");
 
         // update values

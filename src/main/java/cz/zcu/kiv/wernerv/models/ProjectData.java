@@ -14,18 +14,19 @@ public class ProjectData {
 
     public String title;
 
-    public List<Node> nodeMap;
+    public List<Node> nodes;
 
     public List<Edge> edges;
 
     public static class Node {
-        public float x = 0;
-
-        public float y = 0;
 
         public String id;
 
         public String name;
+
+        public float x = 0;
+
+        public float y = 0;
 
         public int personalization;
 
