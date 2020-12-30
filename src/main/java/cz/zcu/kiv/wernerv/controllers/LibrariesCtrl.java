@@ -48,9 +48,9 @@ public class LibrariesCtrl {
         libraryStorage.delete(id);
     }
 
-    @PostMapping("/libs/run")
-    public Map<String, Float> run(@RequestBody LibraryCall callData ) throws IOException, InterruptedException {
-        String id = libraryStorage.listAll().get(0).id;
+    @PostMapping("/libs/{id}/run")
+    public Map<String, Float> run(@PathVariable String id,
+                                  @RequestBody LibraryCall callData ) throws IOException, InterruptedException {
         return runService.run(id, callData.args, callData.project);
     }
 }

@@ -1,0 +1,22 @@
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Run library function</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+        <div class="modal-body">
+            <div class="form-group" *ngIf="libraryList.length > 0 else noLibs">
+                <label for="primarySelect">Select library:</label>
+                <select class="form-control" id="primarySelect" [(ngModel)]="libraryId">
+                    <option *ngFor="let library of libraryList" [value]="library.id"
+                            [ngbTooltip]="library.description">{{library.name}}</option>
+                </select>
+            </div>
+            <ng-template #noLibs>
+                <h6>No external libraries were found</h6>
+            </ng-template>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" (click)="submit()"
+                    [disabled]="!libraryId">Submit</button>
+        </div>

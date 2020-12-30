@@ -26,10 +26,10 @@ import {LibraryAdministrationComponent} from "./components/administration/libs-a
 import {AuthGuardService} from "./services/auth-guard.service";
 import {LibraryDetailsModalComponent} from "./components/modals/library-details-modal.component";
 import {RestLibsService} from "./services/rest-libs.service";
-import {ProjectData} from "./models/project-models";
 import {RestProjectsService} from "./services/rest-projects.service";
 import {ProjectSelectionModalComponent} from "./components/modals/project-selection-modal.component";
 import {EditorViewportD3Component} from "./components/projects/editor-viewport-d3.component";
+import {LibrarySelectionModalComponent} from "./components/modals/library-selection-modal.component";
 
 const routes: Routes = [
     { path: "projects", component: ProjectManagerComponent },
@@ -57,7 +57,8 @@ const routes: Routes = [
         LibraryAdministrationComponent,
         LibraryDetailsModalComponent,
         ProjectSelectionModalComponent,
-        EditorViewportD3Component
+        EditorViewportD3Component,
+        LibrarySelectionModalComponent
     ],
     imports: [
         BrowserModule,

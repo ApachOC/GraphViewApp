@@ -1,6 +1,8 @@
 import {DoCheck, Component, ElementRef, Input, OnInit, ViewChild} from "@angular/core";
 import {ProjectData} from "../../models/project-models";
 import {RestLibsService} from "../../services/rest-libs.service";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {LibrarySelectionModalComponent} from "../modals/library-selection-modal.component";
 
 export class ChartEdge {
     constructor(
@@ -44,7 +46,7 @@ export class EditorComponent implements OnInit {
 
     @ViewChild('chartEditorCanvas') canvas: ElementRef;
 
-    constructor(private libRest: RestLibsService) {  }
+    constructor(private modalService: NgbModal) {  }
 
 
     ngOnInit(): void {
@@ -91,10 +93,16 @@ export class EditorComponent implements OnInit {
     }
 
     public runLibrary() {
-        this.libRest.runLibrary(this.project, "", { }).then((result) => {
-            for (let id in result) {
-                this.nodeMap[id].data.personalization = result[id];
-            }
+        const modalRef = this.modalService.open(LibrarySelectionModalComponent);
+        modalRef.componentInstance.project = this.project;
+        modalRef.result.then((result: Record<string, number>) => {
+                if (!!result) {
+                    for (let id in result) {
+                        if (result.hasOwnProperty(id)) {
+                            this.nodeMap[id].data.personalization = result[id];
+                        }
+                    }
+                }
         });
     }
 
