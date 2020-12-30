@@ -1,5 +1,6 @@
 import {DoCheck, Component, ElementRef, Input, OnInit, ViewChild} from "@angular/core";
 import {ProjectData} from "../../models/project-models";
+import {RestLibsService} from "../../services/rest-libs.service";
 
 export class ChartEdge {
     constructor(
@@ -43,6 +44,9 @@ export class EditorComponent implements OnInit {
 
     @ViewChild('chartEditorCanvas') canvas: ElementRef;
 
+    constructor(private libRest: RestLibsService) {  }
+
+
     ngOnInit(): void {
         this.initializeNodes();
         this.initializeEdges();
@@ -84,6 +88,14 @@ export class EditorComponent implements OnInit {
         const projectEdge = new ProjectData.Edge(val.source.data.id, val.target.data.id);
         this.project.edges.push(projectEdge);
         this.edges.push(new ChartEdge(val.source, val.target));
+    }
+
+    public runLibrary() {
+        this.libRest.runLibrary(this.project, "", { }).then((result) => {
+            for (let id in result) {
+                this.nodeMap[id].data.personalization = result[id];
+            }
+        });
     }
 
     /**

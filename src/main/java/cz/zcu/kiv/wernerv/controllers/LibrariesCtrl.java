@@ -1,8 +1,8 @@
 package cz.zcu.kiv.wernerv.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.zcu.kiv.wernerv.models.GraphData;
 import cz.zcu.kiv.wernerv.models.LibraryModel;
+import cz.zcu.kiv.wernerv.models.ProjectData;
 import cz.zcu.kiv.wernerv.repos.LibraryRepository;
 import cz.zcu.kiv.wernerv.services.LibraryRunService;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +15,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 public class LibrariesCtrl {
+
+    private static class LibraryCall {
+        public ProjectData project;
+        public Map<String, String> args;
+    }
 
     private final LibraryRepository libraryStorage;
     private final LibraryRunService runService;
@@ -43,8 +48,9 @@ public class LibrariesCtrl {
         libraryStorage.delete(id);
     }
 
-    @GetMapping("/libs/{id}")
-    public void run(@PathVariable String id, List<Map<String, String>> params, GraphData data) throws IOException, InterruptedException {
-        runService.run(id, params, data);
+    @PostMapping("/libs/run")
+    public Map<String, Float> run(@RequestBody LibraryCall callData ) throws IOException, InterruptedException {
+        String id = libraryStorage.listAll().get(0).id;
+        return runService.run(id, callData.args, callData.project);
     }
 }

@@ -28,7 +28,7 @@ public class ProjectData {
 
         public float y = 0;
 
-        public int personalization;
+        public float personalization;
 
         public Map <String, String> extraValues;
     }

@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {RestBase} from "./rest-base";
 import {environment} from "../../environments/environment";
-import {HttpHeaders} from "@angular/common/http";
+import {ProjectData} from "../models/project-models";
 
 @Injectable({
     providedIn: 'root',
@@ -27,6 +27,13 @@ export class RestLibsService extends RestBase {
 
     deleteLibrary(lib: LibraryObject) {
         return this.http.delete(`${environment.apiUrl}/libs/${lib.id}`).toPromise();
+    }
+
+    runLibrary(project: ProjectData, libId: string, args: Record<string, string>) {
+        return this.http.post<Record<string, number>>(`${environment.apiUrl}/libs/run`, {
+            project: project,
+            args: args
+        }).toPromise();
     }
 }
 

@@ -55,7 +55,7 @@ export namespace ProjectData {
         extraValues: Record<string, any>;
 
         constructor(public id: string, public name: string, pers?: number) {
-            this.personalization = pers || 0;
+            this.personalization = pers || 1.0;
         }
     }
 
@@ -63,7 +63,7 @@ export namespace ProjectData {
         weight: number
 
         constructor(public sourceId: string, public targetId: string, weight?: number) {
-            this.weight = weight || 0;
+            this.weight = weight || 1.0;
         }
     }
 }
