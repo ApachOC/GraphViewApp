@@ -21,13 +21,16 @@ public class LibraryRunService {
     }
 
     /*
-    TODO this is stupid and works for single library only, some better API option must be discussed.
+    TODO this is stupid and works for example library only, some better library API option must be discussed.
      */
     public Map<String, Float> run(String id, Map<String, String> args, ProjectData data) throws IOException, InterruptedException {
-        Path edgeFilePath = createTmpEdgeFile(data);
+        // create temporary files
+        Path edgeFileInPath = createTmpEdgeFile(data);
         Path nodeFileInPath = createTmpNodeFile(data);
         Path tmpFileOutPath = Files.createTempFile("out-data-", ".nodes");
         String jarFilePath = pathRepo.findById(id).get().getPath();
+
+        // create default argument list
         List<String> libArgList = new ArrayList<>();
         libArgList.add("java");
         libArgList.add("-jar");
@@ -35,8 +38,16 @@ public class LibraryRunService {
         libArgList.add("-inputDir:'" + nodeFileInPath.getParent().toAbsolutePath() + "/'");
         libArgList.add("-outputDir:'" + nodeFileInPath.getParent().toAbsolutePath() + "/'");
         libArgList.add("-fileNodes:'" + nodeFileInPath.getFileName() + "'");
-        libArgList.add("-fileEdges:'" + edgeFilePath.getFileName() + "'");
+        libArgList.add("-fileEdges:'" + edgeFileInPath.getFileName() + "'");
         libArgList.add("-filePageRank:'" + tmpFileOutPath.getFileName() + "'");
+
+        // add user defined arguments
+        for (String arg : args.keySet()) {
+            libArgList.add(arg);
+            libArgList.add(args.get(arg));
+        }
+
+        // run the library
         String[] libArgs = new String[libArgList.size()];
         libArgList.toArray(libArgs);
         Process proc = Runtime.getRuntime().exec(libArgs);
@@ -46,6 +57,12 @@ public class LibraryRunService {
                     .lines().collect(Collectors.joining("\n"));
             String std = new BufferedReader(new InputStreamReader(proc.getInputStream()))
                     .lines().collect(Collectors.joining("\n"));
+
+            // clean up
+            Files.deleteIfExists(edgeFileInPath);
+            Files.deleteIfExists(tmpFileOutPath);
+            Files.deleteIfExists(nodeFileInPath);
+
             throw new JarException(err);
         } else {
             Map<String, Float> values = new HashMap<>();
@@ -60,6 +77,11 @@ public class LibraryRunService {
                     // ignore
                 }
             });
+
+            // clean up
+            Files.deleteIfExists(edgeFileInPath);
+            Files.deleteIfExists(tmpFileOutPath);
+            Files.deleteIfExists(nodeFileInPath);
 
             if (values.values().size() > 0) {
                 return values;

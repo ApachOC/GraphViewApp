@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, Optional} from '@angular/core';
 
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {RestProjectsService} from "../../services/rest-projects.service";
@@ -13,6 +13,12 @@ export class LibrarySelectionModalComponent implements OnInit{
     libraryId: string;
 
     libraryList: LibraryObject[] = [];
+
+    parameters: Record<string, string> = {};
+
+    get library() {
+        return this.libraryList.find((lib) => lib.id = this.libraryId);
+    }
 
     @Input()
     public project: ProjectData;
@@ -29,7 +35,18 @@ export class LibrarySelectionModalComponent implements OnInit{
         if (!this.libraryId) {
             return;
         }
-        this.rest.runLibrary(this.project, this.libraryId, { }).then((result) => {
+
+        // filter out invalid parameters
+        Object.keys(this.parameters)
+            .filter(key =>
+                this.parameters[key] == null ||
+                this.parameters[key].length == 0 ||
+                this.library.parameters.findIndex((par) => par.option == key) < 0
+            )
+            .forEach(key => delete this.parameters[key]);
+
+        // run the selected library
+        this.rest.runLibrary(this.project, this.libraryId, this.parameters).then((result) => {
             this.modal.close(result);
         });
     }

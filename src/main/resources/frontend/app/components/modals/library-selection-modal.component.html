@@ -8,13 +8,20 @@
             <div class="form-group" *ngIf="libraryList.length > 0 else noLibs">
                 <label for="primarySelect">Select library:</label>
                 <select class="form-control" id="primarySelect" [(ngModel)]="libraryId">
-                    <option *ngFor="let library of libraryList" [value]="library.id"
-                            [ngbTooltip]="library.description">{{library.name}}</option>
+                    <option *ngFor="let library of libraryList" [value]="library.id">{{library.name}}</option>
                 </select>
             </div>
             <ng-template #noLibs>
                 <h6>No external libraries were found</h6>
             </ng-template>
+            <div *ngIf="libraryId != null">
+                <hr/>
+                <label><strong>Parameters:</strong></label>
+                <div class="form-group" *ngFor="let param of library.parameters; let i = index">
+                    <label for="param-{{i}}">{{param.name}}:</label>
+                    <input class="form-control" type="text" [(ngModel)]="parameters[param.option]" id="param-{{i}}">
+                </div>
+            </div>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-primary" (click)="submit()"
