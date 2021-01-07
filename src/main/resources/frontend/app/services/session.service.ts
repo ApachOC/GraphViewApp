@@ -1,9 +1,8 @@
-import {Injectable, OnInit} from '@angular/core';
-import {HttpClient, HttpHeaders, HttpResponse} from "@angular/common/http";
+import {Injectable} from '@angular/core';
+import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
-import {RestBase} from "./rest-base";
 import {RestUsersService} from "./rest-users.service";
-import {Alert, AlertService} from "./alert.service";
+import {Router} from '@angular/router';
 
 @Injectable({
     providedIn: 'root',
@@ -28,8 +27,10 @@ export class SessionService {
 
     private currentUser: UserObject;
 
-    constructor(private mgmt: RestUsersService, protected http: HttpClient) {
-        //mgmt.getUser().then((user) => this.currentUser = user)
+    constructor(private mgmt: RestUsersService,
+                private http: HttpClient,
+                private router: Router) {
+        mgmt.getUser().then((user) => this.currentUser = user)
     }
 
     login(credentials) {
@@ -51,6 +52,7 @@ export class SessionService {
         }, (error) => {
             this.currentUser = null;
         });
+        this.router.navigateByUrl("/");
     }
 
     register(user: UserObject) {

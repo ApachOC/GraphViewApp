@@ -5,6 +5,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ProjectData} from "../../models/project-models";
 import {RestProjectsService} from "../../services/rest-projects.service";
 import {SessionService} from "../../services/session.service";
+import {Alert, AlertService} from "../../services/alert.service";
 
 @Component({
     selector: 'project-creator',
@@ -35,14 +36,13 @@ export class ProjectCreatorComponent implements OnInit {
         from: 0, to: 1, weight: 2,
         values: ['1', '2', '3']
     }
-    showNodeAlert: boolean = false;
-    showEdgeAlert: boolean = false;
 
     private existingNames: string[] = [];
 
     constructor(private modalService: NgbModal,
                 private rest: RestProjectsService,
-                private user: SessionService) { }
+                private user: SessionService,
+                private alerts: AlertService) { }
 
     ngOnInit() {
         if (this.user.authenticated) {
@@ -118,60 +118,37 @@ export class ProjectCreatorComponent implements OnInit {
 
     private async loadNodes(lines: string[][]) {
         const m = this.nodeImportOptions;
-        // wait for user to confirm the mapping
-        const result = await new Promise<boolean>((resolve, reject) => {
-            m.finish = () => resolve(true);
-            m.cancel = () => resolve(false);
-            m.show = true; m.values = lines[0]
-        }).finally(() => m.show = false);
-        if (!result) {
-            // cancel
-        } else {
-            for (let i = m.firstLineHeader ? 1 : 0;
-                 i < lines.length; i++) {
+        for (let i = m.firstLineHeader ? 1 : 0; i < lines.length; i++) {
                 const line = lines[i];
                 const node = new ProjectData.Node(line[m.id], line[m.name],
                     m.importPers ? parseInt(line[m.personalization]) : null);
                 this.project.nodes.push(node);
-                //todo validate id, import other parameters
-            }
         }
-        this.showNodeAlert = true;
+        this.alerts.pushAlert("success", "Nodes were imported successfully!");
     }
 
     private async loadEdges(lines: string[][]) {
         const m = this.edgeImportOptions;
-        // wait for user to confirm the mapping
-        const result = await new Promise<boolean>((resolve, reject) => {
-            m.finish = () => resolve(true);
-            m.cancel = () => resolve(false);
-            m.show = true; m.values = lines[0]
-        }).finally(() => m.show = false);
-        if (!result) {
-            // cancel
-        } else {
-            for (let i = m.firstLineHeader ? 1 : 0;
-                 i < lines.length; i++) {
+        for (let i = m.firstLineHeader ? 1 : 0; i < lines.length; i++) {
                 const line = lines[i];
                 const edge = new ProjectData.Edge(line[m.from], line[m.to],
                     m.importWeights ? parseInt(line[m.weight]) : null);
                 this.project.edges.push(edge);
-            }
         }
-        this.showEdgeAlert = true;
+        this.alerts.pushAlert("success", "Edges were imported successfully!");
     }
 
     readyProject() {
         if (this.existingNames.includes(this.project.title)) {
-            this.showEdgeAlert = true;
-            // todo create alert service
+            this.alerts.pushAlert("danger",
+                `Project with name '${this.project.title}' already exists!`);
         } else {
             this.project.ready = true;
         }
     }
 
     showGenerateModal(generateModal: TemplateRef<any>) {
-        const resull = this.modalService.open(generateModal,
+        this.modalService.open(generateModal,
             {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
             this.generateGraph(result.nodeCount, result.edgeCount);
         });

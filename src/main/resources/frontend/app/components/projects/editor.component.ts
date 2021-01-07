@@ -32,6 +32,8 @@ export class ChartNode {
 })
 export class EditorComponent implements OnInit {
 
+    private static count = 0;
+
     private nodeMap: Record<string, ChartNode> = {};
 
     public nodes: ChartNode[] = [];
@@ -42,12 +44,11 @@ export class EditorComponent implements OnInit {
 
     public currentTool: string = "SELECT";
 
+    public editorId = EditorComponent.count++;
+
     @Input() public project: ProjectData;
 
-    @ViewChild('chartEditorCanvas') canvas: ElementRef;
-
     constructor(private modalService: NgbModal) {  }
-
 
     ngOnInit(): void {
         this.initializeNodes();

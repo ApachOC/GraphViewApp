@@ -2,6 +2,7 @@ import {Injectable} from "@angular/core";
 import {ProjectData} from "../models/project-models";
 import {SessionService} from "./session.service";
 import {RestProjectsService} from "./rest-projects.service";
+import {AlertService} from "./alert.service";
 
 @Injectable({
     providedIn: 'root',
@@ -10,7 +11,9 @@ export class ProjectManagerService {
     projectList: ProjectData[] = [];
     current: ProjectData;
 
-    constructor(private rest: RestProjectsService, private user: SessionService) {
+    constructor(private rest: RestProjectsService,
+                private user: SessionService,
+                private alerts: AlertService) {
         if (user.authenticated) {
             rest.getActiveProject().then((project) => {
                 this.addProject(project, true);
@@ -53,6 +56,8 @@ export class ProjectManagerService {
     }
 
     saveProject(currentProject: ProjectData) {
-        this.rest.saveProjectData(currentProject);
+        this.rest.saveProjectData(currentProject).then(() => {
+            this.alerts.pushAlert("info", "Project was saved successfully.")
+        });
     }
 }

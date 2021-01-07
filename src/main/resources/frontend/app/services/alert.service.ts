@@ -17,7 +17,8 @@ export class AlertService {
         };
     }
 
-    public pushAlert(alert: Alert) {
+    public pushAlert(type: string, message: string) {
+        const alert = new Alert(type, message);
         this._subscribers.forEach((o) => o.next(alert));
     }
 }

@@ -4,6 +4,7 @@ import * as d3 from 'd3';
 import {zoomTransform} from 'd3-zoom';
 import {ChartEdge, ChartNode} from "./editor.component";
 import {interval} from "rxjs";
+import {AlertService} from "../../services/alert.service";
 
 @Component({
     selector: 'editor-viewport-d3',
@@ -77,10 +78,13 @@ export class EditorViewportD3Component implements AfterViewInit {
 
     public hoverData: any = {}; //{ name: string, x: number, y: number, p: number, show: number }
 
+    constructor(private alerts: AlertService) {
+    }
+
     ngAfterViewInit(): void {
         this.initializeD3();
 
-        // hacky-ish but for some reason Angular doCheck does not trigger after d3 events
+        // hacky-ish but for some unknown reason Angular digest triggers before d3 events
         interval(1/60).subscribe(() => {
             this.updateNodes();
             this.updateEdges();
@@ -221,11 +225,15 @@ export class EditorViewportD3Component implements AfterViewInit {
         this.nodeRoot = this.root.append("g");
 
         this.sim = forceSimulation(this.nodes)
+            .stop()
             .force('link', forceLink(this.edges))
             .force('center', forceCenter(this.width/2, this.height/2))
             .force('charge', forceManyBody())
             .alphaMin(0.01)
-            .on('end', () => this.dirtyNodes = this.dirtyNodes.concat(this.nodes));
+            .on('end', () => {
+                this.dirtyNodes = this.dirtyNodes.concat(this.nodes)
+                this.alerts.pushAlert("info", "Graph layout was recalculated.")
+            });
 
         this.ready = true;
     }

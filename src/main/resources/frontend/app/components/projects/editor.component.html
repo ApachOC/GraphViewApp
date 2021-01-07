@@ -23,18 +23,21 @@
                     </button>
                 </div>
                 <div class="btn-group-vertical">
+                    <!--
                     <button class="btn btn-outline-success" ngbTooltip="Fit to screen">
                         <i class="fa fa-lg fa-compress"></i>
                     </button>
                     <button class="btn btn-outline-success" ngbTooltip="Find specific node">
                         <i class="fa fa-lg fa-search"></i>
                     </button>
-                    <button class="btn btn-outline-success" ngbTooltip="Recalculate layout">
+                    -->
+                    <button class="btn btn-outline-success" ngbTooltip="Recalculate layout"
+                            (click)="viewport.sim.restart()">
                         <i class="fa fa-lg fa-sync-alt"></i>
                     </button>
                 </div>
             </div>
-        <editor-viewport-d3 [nodes]="nodes" [edges]="edges" [tool]="currentTool" [id]="project.id"
+        <editor-viewport-d3 [nodes]="nodes" [edges]="edges" [tool]="currentTool" [id]="editorId"
                             (addNode)="addNode($event)" (removeNode)="removeNode($event)"
-                            (addEdge)="addEdge($event)"></editor-viewport-d3>
+                            (addEdge)="addEdge($event)" #viewport></editor-viewport-d3>
     </div>

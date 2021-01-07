@@ -1,13 +1,6 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <ngb-alert *ngIf="showNodeAlert" type="success" (close)="showNodeAlert = false">
-                Nodes imported successfully.
-            </ngb-alert>
-            <ngb-alert *ngIf="showEdgeAlert" type="success" (close)="showEdgeAlert = false">
-                Edges imported successfully.
-            </ngb-alert>
-
             <div class="card" [hidden]="project.nodeCount && project.edgeCount">
                 <div class="card-header" i18n>
                     <h5 class="d-inline-block">Import graph data from file</h5>

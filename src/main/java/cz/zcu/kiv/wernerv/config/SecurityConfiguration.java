@@ -69,19 +69,19 @@ public class SecurityConfiguration {
                     // Current user retrieval from session cookie
                     .antMatchers(HttpMethod.GET, "/api/user").permitAll()
                     // User administration for admin only
-                    .antMatchers(HttpMethod.GET, "/api/users/**").hasRole("admin")
-                    .antMatchers(HttpMethod.PUT, "/api/users/**").hasRole("admin")
-                    .antMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("admin")
+                    .antMatchers(HttpMethod.GET, "/api/users/**").hasAuthority("admin")
+                    .antMatchers(HttpMethod.PUT, "/api/users/**").hasAuthority("admin")
+                    .antMatchers(HttpMethod.DELETE, "/api/users/**").hasAuthority("admin")
                     // Anyone can list and run available libs
                     .antMatchers(HttpMethod.GET, "/api/libs").permitAll()
                     .antMatchers(HttpMethod.GET, "/api/libs/*/run").permitAll()
                     // Only admin can manage the libs
-                    .antMatchers(HttpMethod.POST, "/api/libs").hasRole("admin")
-                    .antMatchers(HttpMethod.DELETE, "/api/libs").hasRole("admin")
+                    .antMatchers(HttpMethod.POST, "/api/libs").hasAuthority("admin")
+                    .antMatchers(HttpMethod.DELETE, "/api/libs").hasAuthority("admin")
                     // Only authorized users can manipulate projects
-                    .antMatchers(HttpMethod.GET, "/api/projects").hasRole("user")
-                    .antMatchers(HttpMethod.GET, "/api/projects/**").hasRole("user")
-                    .antMatchers(HttpMethod.POST, "/api/projects/**").hasRole("user")
+                    .antMatchers(HttpMethod.GET, "/api/projects").hasAuthority("user")
+                    .antMatchers(HttpMethod.POST, "/api/projects").hasAuthority("user")
+                    .antMatchers(HttpMethod.GET, "/api/projects/**").hasAuthority("user")
                     // Allow all OPTION request
                     .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     // Deny everything else
@@ -94,7 +94,7 @@ public class SecurityConfiguration {
                     .failureHandler(new SimpleUrlAuthenticationFailureHandler())
                     .and().logout().logoutUrl("/api/logout")
                     .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
-                    //todo how to enable CSRF protection across domains
+                    //todo now to enable CSRF protection across domains
                     .and().cors().and().csrf().disable();
         }
 

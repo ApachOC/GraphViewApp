@@ -53,7 +53,7 @@ export class AlertHostComponent implements OnInit, OnDestroy {
     selector: "alert",
     template: "<ngb-alert [type]=\"type\" [dismissible]=\"true\" (close)=\"close()\">{{message}}</ngb-alert>",
 })
-export class AlertComponent {
+export class AlertComponent implements OnInit{
 
     @Input()
     public type: string;
@@ -63,4 +63,8 @@ export class AlertComponent {
 
     @Output()
     public close: () => void;
+
+    ngOnInit(): void {
+        setTimeout(() => this.close(), 5000);
+    }
 }
