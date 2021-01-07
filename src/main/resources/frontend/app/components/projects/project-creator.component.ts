@@ -4,6 +4,7 @@ import '@angular/common';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ProjectData} from "../../models/project-models";
 import {RestProjectsService} from "../../services/rest-projects.service";
+import {SessionService} from "../../services/session.service";
 
 @Component({
     selector: 'project-creator',
@@ -39,12 +40,16 @@ export class ProjectCreatorComponent implements OnInit {
 
     private existingNames: string[] = [];
 
-    constructor(private modalService: NgbModal, private rest: RestProjectsService) { }
+    constructor(private modalService: NgbModal,
+                private rest: RestProjectsService,
+                private user: SessionService) { }
 
     ngOnInit() {
-        this.rest.listProjects().then((records) => {
-            this.existingNames = records.map((record) => record.name);
-        });
+        if (this.user.authenticated) {
+            this.rest.listProjects().then((records) => {
+                this.existingNames = records.map((record) => record.name);
+            });
+        }
     }
 
     public onAddFile(event: NgxDropzoneChangeEvent) {

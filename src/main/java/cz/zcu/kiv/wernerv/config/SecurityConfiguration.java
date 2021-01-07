@@ -60,7 +60,33 @@ public class SecurityConfiguration {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.anonymous().and().authorizeRequests()
+                    // Allow access to the site
                     .antMatchers("/", "/*").permitAll()
+                    // Allow login for everyone
+                    .antMatchers(HttpMethod.POST, "/api/login").permitAll()
+                    // Registration too
+                    .antMatchers(HttpMethod.POST, "/api/users").permitAll()
+                    // Current user retrieval from session cookie
+                    .antMatchers(HttpMethod.GET, "/api/user").permitAll()
+                    // User administration for admin only
+                    .antMatchers(HttpMethod.GET, "/api/users/**").hasRole("admin")
+                    .antMatchers(HttpMethod.PUT, "/api/users/**").hasRole("admin")
+                    .antMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("admin")
+                    // Anyone can list and run available libs
+                    .antMatchers(HttpMethod.GET, "/api/libs").permitAll()
+                    .antMatchers(HttpMethod.GET, "/api/libs/*/run").permitAll()
+                    // Only admin can manage the libs
+                    .antMatchers(HttpMethod.POST, "/api/libs").hasRole("admin")
+                    .antMatchers(HttpMethod.DELETE, "/api/libs").hasRole("admin")
+                    // Only authorized users can manipulate projects
+                    .antMatchers(HttpMethod.GET, "/api/projects").hasRole("user")
+                    .antMatchers(HttpMethod.GET, "/api/projects/**").hasRole("user")
+                    .antMatchers(HttpMethod.POST, "/api/projects/**").hasRole("user")
+                    // Allow all OPTION request
+                    .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    // Deny everything else
+                    .anyRequest().denyAll()
+                    // Setup login and authentication
                     .and().exceptionHandling().authenticationEntryPoint(authEntryPoint())
                     .and().formLogin()
                     .loginProcessingUrl("/api/login")
@@ -68,7 +94,8 @@ public class SecurityConfiguration {
                     .failureHandler(new SimpleUrlAuthenticationFailureHandler())
                     .and().logout().logoutUrl("/api/logout")
                     .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
-                    .and().cors().and().csrf().disable(); //todo how to enable CSRF protection across domains
+                    //todo how to enable CSRF protection across domains
+                    .and().cors().and().csrf().disable();
         }
 
         @Override
@@ -88,29 +115,6 @@ public class SecurityConfiguration {
                 response.setContentType("application/json");
                 response.getWriter().flush();
             }
-        }
-    }
-
-    @Configuration
-    @Profile({"test", "default"})
-    @Order(1)
-    public static class TestCorsConfigurer extends WebSecurityConfigurerAdapter {
-
-
-    }
-
-    @Configuration
-    @Order(2)
-    public static class ApiSecurityConfigurer extends WebSecurityConfigurerAdapter {
-
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http.authorizeRequests()
-                    .antMatchers(HttpMethod.POST, "/api/login").permitAll()
-                    .antMatchers(HttpMethod.POST, "/api/users").permitAll()
-                    .antMatchers(HttpMethod.GET, "/api/libs").permitAll()
-                    .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .anyRequest().permitAll();
         }
     }
 }

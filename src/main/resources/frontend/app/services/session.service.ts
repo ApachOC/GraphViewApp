@@ -8,7 +8,7 @@ import {Alert, AlertService} from "./alert.service";
 @Injectable({
     providedIn: 'root',
 })
-export class SessionService extends RestBase {
+export class SessionService {
 
     get authenticated(): boolean {
         return this.currentUser != null;
@@ -29,8 +29,7 @@ export class SessionService extends RestBase {
     private currentUser: UserObject;
 
     constructor(private mgmt: RestUsersService, protected http: HttpClient) {
-        super(http);
-        mgmt.getUser().then((user) => this.currentUser = user)
+        //mgmt.getUser().then((user) => this.currentUser = user)
     }
 
     login(credentials) {

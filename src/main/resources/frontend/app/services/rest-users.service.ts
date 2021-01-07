@@ -26,7 +26,7 @@ export class RestUsersService extends RestBase {
 
     getUser(): Promise<UserObject> {
         return this.http.get<UserObject>(`${environment.apiUrl}/user`).toPromise()
-            .catch((e) => { return null });
+            .catch(() => { return null });
     }
 }
 
