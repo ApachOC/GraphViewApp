@@ -30,6 +30,8 @@ import {RestProjectsService} from "./services/rest-projects.service";
 import {ProjectSelectionModalComponent} from "./components/modals/project-selection-modal.component";
 import {EditorViewportD3Component} from "./components/projects/editor-viewport-d3.component";
 import {LibrarySelectionModalComponent} from "./components/modals/library-selection-modal.component";
+import {AlertComponent, AlertHostComponent} from "./components/modals/alert-host.component";
+import {AlertService} from "./services/alert.service";
 
 const routes: Routes = [
     { path: "projects", component: ProjectManagerComponent },
@@ -58,7 +60,9 @@ const routes: Routes = [
         LibraryDetailsModalComponent,
         ProjectSelectionModalComponent,
         EditorViewportD3Component,
-        LibrarySelectionModalComponent
+        LibrarySelectionModalComponent,
+        AlertHostComponent,
+        AlertComponent
     ],
     imports: [
         BrowserModule,
@@ -80,6 +84,7 @@ const routes: Routes = [
       AuthGuardService,
       RestLibsService,
       RestProjectsService,
+      AlertService,
       { provide: HTTP_INTERCEPTORS, useClass: XhrInterceptor, multi: true }],
   bootstrap: [ AppRootComponent ]
 })

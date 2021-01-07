@@ -86,3 +86,21 @@
     background: #fafafa;
     opacity: 0;
 }
+
+.alert-overlay {
+    position: fixed;
+    width: 20%;
+    height: 100%;
+    right: 1rem;
+    bottom: 0;
+    z-index: 1000;
+    pointer-events: none;
+    user-select: none;
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.alert-overlay alert {
+    pointer-events: visible;
+    user-select: auto;
+}
