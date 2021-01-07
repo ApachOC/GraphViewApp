@@ -1,9 +1,9 @@
 import {Component, Input, OnInit, Optional} from '@angular/core';
 
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {RestProjectsService} from "../../services/rest-projects.service";
-import {ProjectData, ProjectRecord} from "../../models/project-models";
-import {LibraryObject, RestLibsService} from "../../services/rest-libs.service";
+import {RestProjectsService} from "../../../services/rest-projects.service";
+import {ProjectData, ProjectRecord} from "../../../models/project-models";
+import {LibraryObject, RestLibsService} from "../../../services/rest-libs.service";
 
 @Component({
     templateUrl: './library-selection-modal.component.html'

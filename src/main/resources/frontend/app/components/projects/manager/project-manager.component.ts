@@ -1,9 +1,9 @@
 import {Component} from '@angular/core';
-import {ProjectManagerService} from "../../services/project-manager.service";
-import {ProjectData} from "../../models/project-models";
-import {SessionService} from "../../services/session.service";
+import {ProjectManagerService} from "../../../services/project-manager.service";
+import {ProjectData} from "../../../models/project-models";
+import {SessionService} from "../../../services/session.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {ProjectSelectionModalComponent} from "../modals/project-selection-modal.component";
+import {ProjectSelectionModalComponent} from "./project-selection-modal.component";
 
 @Component({
     templateUrl: './project-manager.component.html'

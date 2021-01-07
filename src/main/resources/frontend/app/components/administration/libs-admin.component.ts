@@ -1,8 +1,8 @@
 import {Component, OnInit} from "@angular/core";
 import {LibraryObject, RestLibsService} from "../../services/rest-libs.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {LibraryDetailsModalComponent} from "../modals/library-details-modal.component";
-import {ConfirmModalComponent} from "../modals/confirm-modal.component";
+import {LibraryDetailsModalComponent} from "./modals/library-details-modal.component";
+import {ConfirmModalComponent} from "./modals/confirm-modal.component";
 
 @Component({
     templateUrl: './libs-admin.component.html'

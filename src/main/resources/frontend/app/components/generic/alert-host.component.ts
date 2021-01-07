@@ -34,7 +34,7 @@ export class AlertHostComponent implements OnInit, OnDestroy {
     }
 
     private displayAlert(alert: Alert) {
-        const timestamp = new Date().toDateString();
+        const timestamp = new Date().toISOString();
         const componentFactory = this.componentFactoryResolver.resolveComponentFactory(AlertComponent);
         const alertRef = this.viewRef.createComponent(componentFactory);
         alertRef.instance.type = alert.type;

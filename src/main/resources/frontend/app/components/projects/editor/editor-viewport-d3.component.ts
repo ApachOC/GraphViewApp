@@ -4,7 +4,7 @@ import * as d3 from 'd3';
 import {zoomTransform} from 'd3-zoom';
 import {ChartEdge, ChartNode} from "./editor.component";
 import {interval} from "rxjs";
-import {AlertService} from "../../services/alert.service";
+import {AlertService} from "../../../services/alert.service";
 
 @Component({
     selector: 'editor-viewport-d3',

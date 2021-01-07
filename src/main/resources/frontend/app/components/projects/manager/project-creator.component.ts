@@ -2,10 +2,10 @@ import {Component, Input, OnInit, TemplateRef} from '@angular/core';
 import {NgxDropzoneChangeEvent} from "ngx-dropzone";
 import '@angular/common';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {ProjectData} from "../../models/project-models";
-import {RestProjectsService} from "../../services/rest-projects.service";
-import {SessionService} from "../../services/session.service";
-import {Alert, AlertService} from "../../services/alert.service";
+import {ProjectData} from "../../../models/project-models";
+import {RestProjectsService} from "../../../services/rest-projects.service";
+import {SessionService} from "../../../services/session.service";
+import {Alert, AlertService} from "../../../services/alert.service";
 
 @Component({
     selector: 'project-creator',
@@ -17,27 +17,26 @@ export class ProjectCreatorComponent implements OnInit {
 
     acceptFiles = 'application/csv,text/csv';
     nodeImportOptions = {
-        show: false, importPers: true,
+        show: false,
+        importPers: true,
         firstLineHeader: true,
-
-        finish: () => {},
-        cancel: () => {},
 
         id: 0, name: 1, personalization: 2,
         values: ['1', '2', '3']
     }
     edgeImportOptions = {
-        show: false, importWeights: true,
-        firstLineHeader: true, generateLayout: true,
-
-        finish: () => {},
-        cancel: () => {},
+        show: false,
+        importWeights: true,
+        firstLineHeader: true,
+        generateLayout: true,
 
         from: 0, to: 1, weight: 2,
         values: ['1', '2', '3']
     }
 
     private existingNames: string[] = [];
+
+    private csvLines: string[][];
 
     constructor(private modalService: NgbModal,
                 private rest: RestProjectsService,
@@ -52,14 +51,9 @@ export class ProjectCreatorComponent implements OnInit {
         }
     }
 
-    public onAddFile(event: NgxDropzoneChangeEvent) {
+    public async onAddFile(event: NgxDropzoneChangeEvent) {
         if (event.addedFiles.length) {
-            this.loadFile(event.addedFiles[0]).finally(
-                () => {
-                    while (event.addedFiles.length) {
-                        event.addedFiles.pop();
-                    }
-                });
+            this.csvLines = await this.loadFile(event.addedFiles.pop());
         }
     }
 
@@ -88,16 +82,19 @@ export class ProjectCreatorComponent implements OnInit {
         this.project.ready = true;
     }
 
-    private async loadFile(file: File) {
+    private async loadFile(file: File): Promise<string[][]> {
         switch (file.type) {
             case 'text/csv':
             case 'application/csv':
                 const lines = await this.parseCSV(file);
                 if (this.project.state === ProjectData.State.Empty) {
-                    await this.loadNodes(lines);
+                    this.nodeImportOptions.show = true;
                 } else {
-                    await this.loadEdges(lines);
+                    this.edgeImportOptions.show = true;
                 }
+                return lines;
+            default:
+                return [[]];
         }
     }
 
@@ -116,8 +113,10 @@ export class ProjectCreatorComponent implements OnInit {
         return output;
     }
 
-    private async loadNodes(lines: string[][]) {
+    public loadNodes() {
         const m = this.nodeImportOptions;
+        const lines = this.csvLines;
+        m.show = false;
         for (let i = m.firstLineHeader ? 1 : 0; i < lines.length; i++) {
                 const line = lines[i];
                 const node = new ProjectData.Node(line[m.id], line[m.name],
@@ -127,8 +126,10 @@ export class ProjectCreatorComponent implements OnInit {
         this.alerts.pushAlert("success", "Nodes were imported successfully!");
     }
 
-    private async loadEdges(lines: string[][]) {
+    public loadEdges() {
         const m = this.edgeImportOptions;
+        const lines = this.csvLines;
+        m.show = false;
         for (let i = m.firstLineHeader ? 1 : 0; i < lines.length; i++) {
                 const line = lines[i];
                 const edge = new ProjectData.Edge(line[m.from], line[m.to],

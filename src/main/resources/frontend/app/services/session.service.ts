@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {RestUsersService} from "./rest-users.service";
 import {Router} from '@angular/router';
+import {UserModel} from "../models/user-model";
 
 @Injectable({
     providedIn: 'root',
@@ -21,11 +22,11 @@ export class SessionService {
         return this.currentUser && this.currentUser.roles.includes('admin');
     }
 
-    get user(): UserObject {
+    get user(): UserModel {
         return this.currentUser;
     }
 
-    private currentUser: UserObject;
+    private currentUser: UserModel;
 
     constructor(private mgmt: RestUsersService,
                 private http: HttpClient,
@@ -37,7 +38,7 @@ export class SessionService {
         const formData = new FormData();
         formData.append("username", credentials.username);
         formData.append("password", credentials.password);
-        const request = this.http.post<UserObject>(`${environment.apiUrl}/login`, formData).toPromise();
+        const request = this.http.post<UserModel>(`${environment.apiUrl}/login`, formData).toPromise();
         request.then((userObj) => {
             this.currentUser = userObj;
         }, () => {
@@ -49,35 +50,18 @@ export class SessionService {
     logout() {
         this.http.post(`${environment.apiUrl}/logout`, {}).subscribe(() => {
             this.currentUser = null;
+            this.router.navigateByUrl("/");
         }, (error) => {
             this.currentUser = null;
+            this.router.navigateByUrl("/");
         });
-        this.router.navigateByUrl("/");
     }
 
-    register(user: UserObject) {
+    register(user: UserModel) {
         return this.mgmt.addUser(user);
     }
 
     save() {
         return this.mgmt.updateUser(this.currentUser);
     }
-}
-
-export class UserObject {
-
-    username: String;
-
-    password: String;
-
-    email: String;
-
-    displayName: String;
-
-    roles: String[] = [];
-
-    get authenticated(): boolean {
-        return this.roles.length > 0;
-    }
-
 }

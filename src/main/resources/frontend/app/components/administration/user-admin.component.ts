@@ -1,16 +1,16 @@
 import {Component, OnInit} from "@angular/core";
-import {UserObject} from "../../services/session.service";
 import {RestUsersService} from "../../services/rest-users.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {ConfirmModalComponent} from "../modals/confirm-modal.component";
-import {UserDetailsModalComponent} from "../modals/user-details-modal.component";
+import {ConfirmModalComponent} from "./modals/confirm-modal.component";
+import {UserDetailsModalComponent} from "../generic/user-details-modal.component";
+import {UserModel} from "../../models/user-model";
 
 @Component({
     templateUrl: './user-admin.component.html'
 })
 export class UserAdministrationComponent implements OnInit {
 
-    users: UserObject[] = [];
+    users: UserModel[] = [];
 
     constructor(private rest: RestUsersService, private modalService: NgbModal) { }
 
@@ -31,7 +31,7 @@ export class UserAdministrationComponent implements OnInit {
         });
     }
 
-    deleteUser(user: UserObject) {
+    deleteUser(user: UserModel) {
         let modal = this.modalService.open(ConfirmModalComponent);
         modal.componentInstance.title = "Confirm deletion";
         modal.componentInstance.message = "Warning!\nThis action is irreversible!\n";
@@ -43,7 +43,7 @@ export class UserAdministrationComponent implements OnInit {
         });
     }
 
-    editUser(user: UserObject) {
+    editUser(user: UserModel) {
         let modal = this.modalService.open(UserDetailsModalComponent);
         modal.componentInstance.update = true;
         modal.componentInstance.userObj = { ...user };

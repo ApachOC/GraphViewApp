@@ -51,8 +51,8 @@
                                         value="{{i}}">{{nodeImportOptions.firstLineHeader ? name : i}}</option>
                             </select>
                         </div>
-                        <button class="btn btn-primary" (click)="nodeImportOptions.finish()">Import nodes</button>
-                        <button class="btn btn-danger float-right" (click)="nodeImportOptions.cancel()">Cancel import</button>
+                        <button class="btn btn-danger " (click)="nodeImportOptions.show = false">Cancel import</button>
+                        <button class="btn btn-primary float-right" (click)="loadNodes()">Import nodes</button>
                     </div>
                     <div *ngIf="edgeImportOptions.show">
                         <h5>Edge import options</h5>
@@ -95,8 +95,8 @@
                             </select>
                         </div>
 
-                        <button class="btn btn-primary" (click)="edgeImportOptions.finish()">Import edges</button>
-                        <button class="btn btn-danger float-right" (click)="edgeImportOptions.cancel()">Cancel import</button>
+                        <button class="btn btn-danger" (click)="edgeImportOptions.show = false">Cancel import</button>
+                        <button class="btn btn-primary float-right" (click)="loadEdges()">Import edges</button>
                     </div>
                 </div>
             </div>

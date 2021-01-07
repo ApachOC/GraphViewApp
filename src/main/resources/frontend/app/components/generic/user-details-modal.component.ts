@@ -1,7 +1,8 @@
 import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 
-import {UserObject, SessionService} from "../../services/session.service";
+import {SessionService} from "../../services/session.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {UserModel} from "../../models/user-model";
 
 @Component({
     templateUrl: './user-details-modal.component.html'
@@ -9,7 +10,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 export class UserDetailsModalComponent {
 
     @Input()
-    userObj = new UserObject();
+    userObj = new UserModel();
 
     @Input()
     update = false;

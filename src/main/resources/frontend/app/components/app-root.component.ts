@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import {LoginModalComponent} from "./modals/login-modal.component";
+import {LoginModalComponent} from "./generic/login-modal.component";
 import {SessionService} from "../services/session.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {UserDetailsModalComponent} from "./modals/user-details-modal.component";
+import {UserDetailsModalComponent} from "./generic/user-details-modal.component";
 
 @Component({
   selector: 'app-root',

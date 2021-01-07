@@ -1,8 +1,8 @@
 import {DoCheck, Component, ElementRef, Input, OnInit, ViewChild} from "@angular/core";
-import {ProjectData} from "../../models/project-models";
-import {RestLibsService} from "../../services/rest-libs.service";
+import {ProjectData} from "../../../models/project-models";
+import {RestLibsService} from "../../../services/rest-libs.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {LibrarySelectionModalComponent} from "../modals/library-selection-modal.component";
+import {LibrarySelectionModalComponent} from "./library-selection-modal.component";
 
 export class ChartEdge {
     constructor(

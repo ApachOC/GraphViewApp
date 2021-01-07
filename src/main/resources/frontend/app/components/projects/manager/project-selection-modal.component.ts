@@ -1,8 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {RestProjectsService} from "../../services/rest-projects.service";
-import {ProjectRecord} from "../../models/project-models";
+import {RestProjectsService} from "../../../services/rest-projects.service";
+import {ProjectRecord} from "../../../models/project-models";
 
 @Component({
     templateUrl: './project-selection-modal.component.html'
