@@ -150,7 +150,6 @@
             </dependencies>
             <properties>
                 <spring.profiles.active>prod</spring.profiles.active>
-                <storage.libs>/data/libs/</storage.libs>
             </properties>
         </profile>
     </profiles>

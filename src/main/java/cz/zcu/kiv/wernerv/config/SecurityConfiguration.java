@@ -77,7 +77,7 @@ public class SecurityConfiguration {
                     .antMatchers(HttpMethod.POST, "/api/libs/*/run").permitAll()
                     // Only admin can manage the libs
                     .antMatchers(HttpMethod.POST, "/api/libs").hasAuthority("admin")
-                    .antMatchers(HttpMethod.DELETE, "/api/libs").hasAuthority("admin")
+                    .antMatchers(HttpMethod.DELETE, "/api/libs/*").hasAuthority("admin")
                     // Only authorized users can manipulate projects
                     .antMatchers(HttpMethod.GET, "/api/projects").hasAuthority("user")
                     .antMatchers(HttpMethod.POST, "/api/projects").hasAuthority("user")
