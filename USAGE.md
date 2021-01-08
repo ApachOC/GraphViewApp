@@ -35,7 +35,7 @@ This feature is useful for testing purposes, but due to performance reasons it's
 
 ## Graph editor
 
-![Graph editor screenshot](/doc/img/project_creator.png)
+![Graph editor screenshot](/doc/img/graph_editor.png)
 
 In the picture above you can see the graph editor interface. Most of the page is taken up by the graph editor canvas.
 This canvas visually shows the graph nodes and edges as circles and arrows, where circle represents node and arrow edge
