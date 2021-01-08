@@ -8,7 +8,6 @@ services:
       - "mongo"
     container_name: graph-app
     volumes:
-      - temp:/data/temp
       - libs:/data/libs
   mongo:
     image: "mongo:4.4.2"
@@ -18,7 +17,7 @@ services:
     volumes:
       - db:/data/db
       - configdb:/data/configdb
-      - ./mongodb-init:/docker-entrypoint-initdb.d
+      - ./initialize-mongodb.js:/docker-entrypoint-initdb.d/init.js:ro
     environment:
       MONGO_INITDB_DATABASE: graph-app
       #MONGO_INITDB_ROOT_USERNAME: root
@@ -26,5 +25,4 @@ services:
 volumes:
   db:
   configdb:
-  temp:
   libs:

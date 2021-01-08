@@ -23,8 +23,8 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
       <excludeFolder url="file://$MODULE_DIR$/node" />
-      <excludeFolder url="file://$MODULE_DIR$/src/main/resources/frontend/dist" />
-      <excludeFolder url="file://$MODULE_DIR$/src/main/resources/frontend/tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/src/main/angular/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/src/main/angular/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/src/main/resources/public" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/target" />

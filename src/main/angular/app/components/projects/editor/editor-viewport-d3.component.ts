@@ -64,9 +64,9 @@ export class EditorViewportD3Component implements AfterViewInit {
 
     private ready = false;
 
-    private width = 1800;
+    private width = 1800; //todo dynamic
 
-    private height = 800;
+    private height = 800; //todo dynamic
 
     private snapDistance = 25;
 
@@ -78,8 +78,7 @@ export class EditorViewportD3Component implements AfterViewInit {
 
     public hoverData: any = {}; //{ name: string, x: number, y: number, p: number, show: number }
 
-    constructor(private alerts: AlertService) {
-    }
+    constructor(private alerts: AlertService) { }
 
     ngAfterViewInit(): void {
         this.initializeD3();
@@ -227,7 +226,7 @@ export class EditorViewportD3Component implements AfterViewInit {
         this.sim = forceSimulation(this.nodes)
             .stop()
             .force('link', forceLink(this.edges))
-            .force('center', forceCenter(this.width/2, this.height/2))
+            .force('center', forceCenter(0, 0))
             .force('charge', forceManyBody())
             .alphaMin(0.01)
             .on('end', () => {

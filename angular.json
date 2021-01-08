@@ -12,7 +12,7 @@
       "i18n": {
         "sourceLocale": "en-US",
         "locales": {
-          "en": "src/main/resources/frontend/locales/en-US.xlf"
+          "en": "src/main/angular/locales/en-US.xlf"
         }
       },
       "architect": {
@@ -20,17 +20,17 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "src/main/resources/public",
-            "index": "src/main/resources/frontend/index.html",
-            "main": "src/main/resources/frontend/main.ts",
-            "polyfills": "src/main/resources/frontend/polyfills.ts",
+            "index": "src/main/angular/index.html",
+            "main": "src/main/angular/main.ts",
+            "polyfills": "src/main/angular/polyfills.ts",
             "tsConfig": "tsconfig.json",
             "aot": true,
             "assets": [
-              "src/main/resources/frontend/favicon.ico",
-              "src/main/resources/frontend/assets"
+              "src/main/angular/favicon.ico",
+              "src/main/angular/assets"
             ],
             "styles": [
-              "src/main/resources/frontend/styles.css",
+              "src/main/angular/styles.css",
               "./node_modules/bootstrap/dist/css/bootstrap.css",
               "./node_modules/@fortawesome/fontawesome-free/css/all.css"
             ],
@@ -40,8 +40,8 @@
             "production": {
               "fileReplacements": [
                 {
-                  "replace": "src/main/resources/frontend/environments/environment.ts",
-                  "with": "src/main/resources/frontend/environments/environment.prod.ts"
+                  "replace": "src/main/angular/environments/environment.ts",
+                  "with": "src/main/angular/environments/environment.prod.ts"
                 }
               ],
               "optimization": true,

@@ -1,6 +1,8 @@
 package cz.zcu.kiv.wernerv.config;
 
+import com.mongodb.AuthenticationMechanism;
 import com.mongodb.MongoClientSettings;
+import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import cz.zcu.kiv.wernerv.models.UserModel;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
@@ -66,7 +68,6 @@ public class MongoConfiguration {
             return new cz.zcu.kiv.wernerv.config.MongoConfiguration.TestSeeder(mongo);
         }
     }
-
 
     private static class TestSeeder implements CommandLineRunner {
 

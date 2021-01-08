@@ -74,7 +74,7 @@ public class SecurityConfiguration {
                     .antMatchers(HttpMethod.DELETE, "/api/users/**").hasAuthority("admin")
                     // Anyone can list and run available libs
                     .antMatchers(HttpMethod.GET, "/api/libs").permitAll()
-                    .antMatchers(HttpMethod.GET, "/api/libs/*/run").permitAll()
+                    .antMatchers(HttpMethod.POST, "/api/libs/*/run").permitAll()
                     // Only admin can manage the libs
                     .antMatchers(HttpMethod.POST, "/api/libs").hasAuthority("admin")
                     .antMatchers(HttpMethod.DELETE, "/api/libs").hasAuthority("admin")

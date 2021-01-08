@@ -21,7 +21,7 @@ public class LibraryRepository {
     private final MongoLibraryRepository libRepo;
     private final MongoLibraryPathRepository pathRepo;
 
-    @Value("${libstorage.location:target/libstorage/}")
+    @Value("${storage.libs:target/libstorage/}")
     private String RESOURCES_DIR;
 
     public LibraryRepository(MongoLibraryRepository libRepo,
@@ -44,7 +44,7 @@ public class LibraryRepository {
         libRepo.insert(lib);
         pathRepo.insert(new LibraryPath(id, path));
         // No, I didn't just spend 9.5 hours of my life debugging why the database clears every time a file is uploaded.
-        // And no the issues was definitely not caused by the file being put into default class directory, while Idea
+        // And no the issues was definitely not caused by the file being put into default class directory, while IDE
         // killed and restarted the app including the seeding script every time a change was detected...
         //todo better way of saving the libs
     }
