@@ -13,6 +13,10 @@ The register button allows the user to create new account, the account must firs
 allow access to other parts of the app.
 Upon logging in the options will be replaced by users full name and logout button.
 
+Note that upon initialization there are 2 default users with following usernames / passwords:
+Administrator: admin / pass
+User: user / pass
+
 ### Project menu
 In the top left corner resides the *Project menu* from which the user can create new projects.   
 Registered users can also save and load projects from remote storage here.
@@ -92,5 +96,5 @@ Button above the table can be used to create new users manually.
 New libraries can be uploaded to the server using this interface. The upload button opens a dialog where the user can
 upload the library JAR, input name and description and any additional parameters.
 
-The table lists all libraries present in the system. clicking the cross on the right side of each row will remove said
-library from system.
+The table lists all libraries currently present in the system. clicking the cross on the right side of each row will
+remove selected library from system.
