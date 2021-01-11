@@ -7,6 +7,7 @@ import com.mongodb.ServerAddress;
 import cz.zcu.kiv.wernerv.models.UserModel;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -20,10 +21,16 @@ import java.util.Arrays;
 
 import static java.util.Collections.singletonList;
 
-@EnableMongoRepositories
+/**
+ * This class contains Spring configurations regarding MongoDB
+ */
+@EnableMongoRepositories()
 @Order(1)
 public class MongoConfiguration {
 
+    /**
+     * This config should be used on production environment.
+     */
     @Configuration
     @Profile("prod")
     public static class MongoConfigurationProd extends AbstractMongoClientConfiguration {
@@ -41,6 +48,10 @@ public class MongoConfiguration {
         }
     }
 
+    /**
+     * This config should be used only on testing environment.
+     * It uses embedded MongoDB instance to store data.
+     */
     @Configuration
     @Profile({"test", "default"})
     public static class MongoConfigurationTest extends AbstractMongoClientConfiguration {
@@ -69,6 +80,9 @@ public class MongoConfiguration {
         }
     }
 
+    /**
+     * This CMD-line runner inserts initial data into the embedded Mongo instance
+     */
     private static class TestSeeder implements CommandLineRunner {
 
         private final MongoTemplate mongo;

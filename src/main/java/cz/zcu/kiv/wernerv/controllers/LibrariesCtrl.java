@@ -12,10 +12,17 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controller which handles library management.
+ */
 @RestController
 @RequestMapping("/api")
 public class LibrariesCtrl {
 
+
+    /**
+     * Class which represents the data when calling library
+     */
     private static class LibraryCall {
         public ProjectData project;
         public Map<String, String> args;
@@ -30,11 +37,21 @@ public class LibrariesCtrl {
         this.runService = runService;
     }
 
+    /**
+     * List all libraries
+     * @return List of libraries
+     */
     @GetMapping("/libs")
     public List<LibraryModel> list() {
         return libraryStorage.listAll();
     }
 
+    /**
+     * Create new library
+     * @param libString Library object String in the multipart data
+     * @param file Library file
+     * @throws Exception Thrown when the libString couldn't be converted.
+     */
     @PostMapping("/libs")
     public void upload(@RequestParam("metadata") String libString,
                        @RequestParam("file") MultipartFile file) throws Exception {
@@ -43,11 +60,24 @@ public class LibrariesCtrl {
         libraryStorage.save(lib, file);
     }
 
+    /**
+     * Delete a libary
+     * @param id ID of library to delete
+     * @throws IOException Thrown when the library file couldn't be found or deleted.
+     */
     @DeleteMapping("/libs/{id}")
     public void delete(@PathVariable String id) throws IOException {
         libraryStorage.delete(id);
     }
 
+    /**
+     * Run a library
+     * @param id ID of a library to run
+     * @param callData Run parameters
+     * @return List of computed values
+     * @throws IOException Couldn't create or write to temporary file
+     * @throws InterruptedException The library process was interrupted
+     */
     @PostMapping("/libs/{id}/run")
     public Map<String, Float> run(@PathVariable String id,
                                   @RequestBody LibraryCall callData ) throws IOException, InterruptedException {

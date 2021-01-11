@@ -7,18 +7,22 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.*;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -29,6 +33,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 
+/**
+ * This class contains Spring Security configuration.
+ */
 @EnableWebSecurity
 @Order(0)
 public class SecurityConfiguration {
@@ -38,6 +45,8 @@ public class SecurityConfiguration {
     public static class BasicSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
         @Autowired MongoUserDetailsService userDetailsService;
+
+        @Autowired Environment environment;
 
         @Bean
         public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
@@ -59,7 +68,8 @@ public class SecurityConfiguration {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http.anonymous().and().authorizeRequests()
+            CsrfConfigurer<HttpSecurity> csrf =
+                    http.anonymous().and().authorizeRequests()
                     // Allow access to the site
                     .antMatchers("/", "/*").permitAll()
                     // Allow login for everyone
@@ -94,8 +104,26 @@ public class SecurityConfiguration {
                     .failureHandler(new SimpleUrlAuthenticationFailureHandler())
                     .and().logout().logoutUrl("/api/logout")
                     .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
-                    //todo now to enable CSRF protection across domains
-                    .and().cors().and().csrf().disable();
+                    .and().cors().and().csrf();
+
+            // Disable CSRF protection on test
+            String[] profiles = environment.getActiveProfiles();
+            boolean useCSRF = true;
+            if (profiles.length == 0) {
+                useCSRF = false;
+            } else {
+                for (String profile : profiles) {
+                    if (profile.equals("test")) {
+                        useCSRF = false;
+                        break;
+                    }
+                }
+            }
+            if (useCSRF) {
+                csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+            } else {
+                csrf.disable();
+            }
         }
 
         @Override
