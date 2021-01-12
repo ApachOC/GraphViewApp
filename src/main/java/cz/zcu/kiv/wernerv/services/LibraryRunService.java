@@ -26,7 +26,7 @@ public class LibraryRunService {
     /*
     TODO this is stupid and works for example library only, some better library API option must be discussed.
      */
-    public void run(String id, Map<String, String> args, ProjectData data, String username) throws IOException, InterruptedException {
+    public void run(String id, Map<String, String> args, ProjectData data, String path) throws IOException, InterruptedException {
         // create temporary files
         Path edgeFileInPath = createTmpEdgeFile(data);
         Path nodeFileInPath = createTmpNodeFile(data);
@@ -66,7 +66,7 @@ public class LibraryRunService {
                     Files.deleteIfExists(tmpFileOutPath);
                     Files.deleteIfExists(nodeFileInPath);
 
-                    simp.convertAndSend("/result/err", err);
+                    simp.convertAndSend("/result/err" + path, err);
                 } else {
                     Map<String, Float> values = new HashMap<>();
                     BufferedReader bfr = new BufferedReader(new FileReader(tmpFileOutPath.toFile()));
@@ -88,15 +88,15 @@ public class LibraryRunService {
 
                     if (values.values().size() > 0) {
                         Thread.sleep(5000);
-                        simp.convertAndSend("/result/lib", values);
+                        simp.convertAndSend("/result/lib" + path, values);
                     } else {
                         String message = new BufferedReader(new InputStreamReader(proc.getInputStream()))
                                 .lines().collect(Collectors.joining("\n"));
-                        simp.convertAndSend("/result/err", message);
+                        simp.convertAndSend("/result/err" + path, message);
                     }
                 }
             } catch (IOException | InterruptedException e) {
-                simp.convertAndSend("/result/err", e.getMessage());
+                simp.convertAndSend("/result/err" + path, e.getMessage());
             }
         });
         t.start();

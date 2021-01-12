@@ -46,8 +46,8 @@ export class LibrarySelectionModalComponent implements OnInit{
             .forEach(key => delete this.parameters[key]);
 
         // run the selected library
-        this.rest.runLibrary(this.project, this.libraryId, this.parameters).then((result) => {
-            this.modal.close(result);
+        this.rest.runLibrary(this.project, this.libraryId, this.parameters).then((result: any) => {
+            this.modal.close(result.path);
         });
     }
 }

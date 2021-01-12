@@ -6,6 +6,7 @@ import cz.zcu.kiv.wernerv.models.LibraryPath;
 import cz.zcu.kiv.wernerv.models.ProjectData;
 import cz.zcu.kiv.wernerv.repos.LibraryRepository;
 import cz.zcu.kiv.wernerv.services.LibraryRunService;
+import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -32,6 +33,7 @@ public class LibrariesCtrl {
     private static class LibraryCall {
         public ProjectData project;
         public Map<String, String> args;
+        public String path;
     }
 
     private final LibraryRepository libraryStorage;
@@ -80,15 +82,20 @@ public class LibrariesCtrl {
      * Run a library
      * @param id ID of a library to run
      * @param callData Run parameters
-     * @return List of computed values
+     * @return Websocket path under which the values will be sent in due time
      * @throws IOException Couldn't create or write to temporary file
      * @throws InterruptedException The library process was interrupted
      */
     @PostMapping("/libs/{id}/run")
-    public HttpStatus run(@PathVariable String id,
-                                  @RequestBody LibraryCall callData,
-                                  Principal user) throws IOException, InterruptedException {
-        runService.run(id, callData.args, callData.project, user.getName());
-        return HttpStatus.ACCEPTED;
+    public Path run(@PathVariable String id, @RequestBody LibraryCall callData) throws IOException, InterruptedException {
+        String path = "/" + new ObjectId().toString();
+        runService.run(id, callData.args, callData.project, path);
+        Path p = new Path();
+        p.path = path;
+        return p;
+    }
+
+    private static class Path {
+        public String path;
     }
 }

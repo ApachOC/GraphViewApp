@@ -30,7 +30,7 @@ export class RestLibsService extends RestBase {
     }
 
     runLibrary(project: ProjectData, libId: string, args: Record<string, string>) {
-        return this.http.post<Record<string, number>>(`${environment.apiUrl}/libs/${libId}/run`, {
+        return this.http.post(`${environment.apiUrl}/libs/${libId}/run`, {
             project: project,
             args: args
         }).toPromise();

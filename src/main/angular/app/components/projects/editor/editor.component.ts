@@ -1,9 +1,7 @@
-import {DoCheck, Component, ElementRef, Input, OnInit, ViewChild, OnDestroy} from "@angular/core";
+import {Component, Input, OnInit, OnDestroy} from "@angular/core";
 import {ProjectData} from "../../../models/project-models";
-import {RestLibsService} from "../../../services/rest-libs.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {LibrarySelectionModalComponent} from "./library-selection-modal.component";
-import {webSocket} from "rxjs/webSocket";
 import {RxStompService} from "@stomp/ng2-stompjs";
 import {AlertService} from "../../../services/alert.service";
 import {Subscription} from "rxjs";
@@ -59,25 +57,13 @@ export class EditorComponent implements OnInit, OnDestroy {
     constructor(private modalService: NgbModal, private stompService: RxStompService, private alerts: AlertService) {  }
 
     ngOnInit(): void {
-        this.stompResultSub = this.stompService.watch('/result/lib').subscribe((msg) => {
-            const result = JSON.parse(msg.body);
-            for (let id in result) {
-                if (result.hasOwnProperty(id)) {
-                    this.nodeMap[id].data.personalization = result[id];
-                }
-            }
-            this.alerts.pushAlert("success", "Library work finished, check node personalization.");
-        });
-        this.stompErrSub = this.stompService.watch('/result/err').subscribe((err) => {
-            this.alerts.pushAlert("danger", err.body);
-        });
         this.initializeNodes();
         this.initializeEdges();
     }
 
     ngOnDestroy() {
-        this.stompResultSub.unsubscribe();
-        this.stompErrSub.unsubscribe();
+        this.stompResultSub?.unsubscribe();
+        this.stompErrSub?.unsubscribe();
     }
 
     public removeNode(node: ChartNode) {
@@ -121,7 +107,20 @@ export class EditorComponent implements OnInit, OnDestroy {
     public runLibrary() {
         const modalRef = this.modalService.open(LibrarySelectionModalComponent);
         modalRef.componentInstance.project = this.project;
-        modalRef.result.then(() => {
+        modalRef.result.then((path) => {
+            this.ngOnDestroy();
+            this.stompResultSub = this.stompService.watch('/result/lib' + path).subscribe((msg) => {
+                const result = JSON.parse(msg.body);
+                for (let id in result) {
+                    if (result.hasOwnProperty(id)) {
+                        this.nodeMap[id].data.personalization = result[id];
+                    }
+                }
+                this.alerts.pushAlert("success", "Library work finished, check node personalization.");
+            });
+            this.stompErrSub = this.stompService.watch('/result/err' + path).subscribe((err) => {
+                this.alerts.pushAlert("danger", err.body);
+            });
             this.alerts.pushAlert("info", "Library work in progress, please wait for results.");
         });
     }
