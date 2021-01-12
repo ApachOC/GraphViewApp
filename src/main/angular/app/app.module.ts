@@ -32,6 +32,7 @@ import {EditorViewportD3Component} from "./components/projects/editor/editor-vie
 import {LibrarySelectionModalComponent} from "./components/projects/editor/library-selection-modal.component";
 import {AlertComponent, AlertHostComponent} from "./components/generic/alert-host.component";
 import {AlertService} from "./services/alert.service";
+import {TextPromptModalComponent} from "./components/generic/text-prompt-modal.component";
 
 const routes: Routes = [
     { path: "projects", component: ProjectManagerComponent },
@@ -62,7 +63,8 @@ const routes: Routes = [
         EditorViewportD3Component,
         LibrarySelectionModalComponent,
         AlertHostComponent,
-        AlertComponent
+        AlertComponent,
+        TextPromptModalComponent
     ],
     imports: [
         BrowserModule,

@@ -4,6 +4,7 @@ import {ProjectData} from "../../../models/project-models";
 import {SessionService} from "../../../services/session.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ProjectSelectionModalComponent} from "./project-selection-modal.component";
+import {TextPromptModalComponent} from "../../generic/text-prompt-modal.component";
 
 @Component({
     templateUrl: './project-manager.component.html'
@@ -48,5 +49,15 @@ export class ProjectManagerComponent {
                 this.currentProject = this.projects[0];
             }
         }
+    }
+
+    renameProject() {
+        const modal = this.modals.open(TextPromptModalComponent);
+        modal.componentInstance.title = "Rename project";
+        modal.componentInstance.label = "Project title";
+        modal.componentInstance.value = this.currentProject.title;
+        modal.result.then((newTitle) => {
+            this.currentProject.title = newTitle;
+        });
     }
 }

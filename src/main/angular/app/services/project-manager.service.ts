@@ -58,6 +58,12 @@ export class ProjectManagerService {
     saveProject(currentProject: ProjectData) {
         this.rest.saveProjectData(currentProject).then(() => {
             this.alerts.pushAlert("info", "Project was saved successfully.")
+        }, (e) => {
+            let msg = "Couldn't save the project!";
+            if (e.status == 409) {
+                msg += "\n Project with the same name already exists.";
+            }
+            this.alerts.pushAlert("danger", msg)
         });
     }
 }

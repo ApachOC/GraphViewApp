@@ -21,6 +21,7 @@
                 </a>
                 <div ngbDropdownMenu aria-labelledby="navFileDropdown">
                     <button ngbDropdownItem (click)="newProject()">New project</button>
+                    <button ngbDropdownItem (click)="renameProject()">Rename project</button>
                     <!--<button ngbDropdownItem>Download results</button>-->
                     <div class="dropdown-divider" *ngIf="user.authenticated"></div>
                     <button ngbDropdownItem *ngIf="user.authenticated"
