@@ -94,6 +94,8 @@ public class SecurityConfiguration {
                     .antMatchers(HttpMethod.GET, "/api/projects/**").hasAuthority("user")
                     // Allow all OPTION request
                     .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    // Only admin can access administration
+                    .antMatchers("/administration/**").hasAuthority("admin")
                     // Deny everything else
                     .anyRequest().denyAll()
                     // Setup login and authentication

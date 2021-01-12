@@ -31,7 +31,11 @@ export class SessionService {
     constructor(private mgmt: RestUsersService,
                 private http: HttpClient,
                 private router: Router) {
-        mgmt.getUser().then((user) => this.currentUser = user)
+        this.authenticate();
+    }
+
+    public async authenticate() {
+        this.currentUser = await this.mgmt.getUser();
     }
 
     login(credentials) {

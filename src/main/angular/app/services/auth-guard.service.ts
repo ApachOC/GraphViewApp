@@ -9,11 +9,12 @@ export class AuthGuardService implements CanActivate {
     constructor(private session: SessionService, private _router: Router) {
     }
 
-    canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+    async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
+        await this.session.authenticate().then()
         if (this.session.authenticated && this.session.user.roles.includes(next.data.role)) {
             return true;
         }
-        this._router.navigate(['/']);
+        await this._router.navigate(['/']);
         return false;
     }
 
