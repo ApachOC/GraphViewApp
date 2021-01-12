@@ -70,8 +70,6 @@ public class SecurityConfiguration {
         protected void configure(HttpSecurity http) throws Exception {
             CsrfConfigurer<HttpSecurity> csrf =
                     http.anonymous().and().authorizeRequests()
-                    // Allow access to the site
-                    .antMatchers("/", "/*").permitAll()
                     // Allow login for everyone
                     .antMatchers(HttpMethod.POST, "/api/login").permitAll()
                     // Registration too
@@ -94,10 +92,8 @@ public class SecurityConfiguration {
                     .antMatchers(HttpMethod.GET, "/api/projects/**").hasAuthority("user")
                     // Allow all OPTION request
                     .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    // Only admin can access administration
-                    .antMatchers("/administration/**").hasAuthority("admin")
-                    // Deny everything else
-                    .anyRequest().denyAll()
+                    // Permit everything else
+                    .anyRequest().permitAll()
                     // Setup login and authentication
                     .and().exceptionHandling().authenticationEntryPoint(authEntryPoint())
                     .and().formLogin()
