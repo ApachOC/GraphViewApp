@@ -1,8 +1,12 @@
-import {DoCheck, Component, ElementRef, Input, OnInit, ViewChild} from "@angular/core";
+import {DoCheck, Component, ElementRef, Input, OnInit, ViewChild, OnDestroy} from "@angular/core";
 import {ProjectData} from "../../../models/project-models";
 import {RestLibsService} from "../../../services/rest-libs.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {LibrarySelectionModalComponent} from "./library-selection-modal.component";
+import {webSocket} from "rxjs/webSocket";
+import {RxStompService} from "@stomp/ng2-stompjs";
+import {AlertService} from "../../../services/alert.service";
+import {Subscription} from "rxjs";
 
 export class ChartEdge {
     constructor(
@@ -30,7 +34,7 @@ export class ChartNode {
     selector: 'graph-editor',
     templateUrl: './editor.component.html'
 })
-export class EditorComponent implements OnInit {
+export class EditorComponent implements OnInit, OnDestroy {
 
     private static count = 0;
 
@@ -46,13 +50,34 @@ export class EditorComponent implements OnInit {
 
     public editorId = EditorComponent.count++;
 
+    private stompResultSub: Subscription;
+
+    private stompErrSub: Subscription;
+
     @Input() public project: ProjectData;
 
-    constructor(private modalService: NgbModal) {  }
+    constructor(private modalService: NgbModal, private stompService: RxStompService, private alerts: AlertService) {  }
 
     ngOnInit(): void {
+        this.stompResultSub = this.stompService.watch('/result/lib').subscribe((msg) => {
+            const result = JSON.parse(msg.body);
+            for (let id in result) {
+                if (result.hasOwnProperty(id)) {
+                    this.nodeMap[id].data.personalization = result[id];
+                }
+            }
+            this.alerts.pushAlert("success", "Library work finished, check node personalization.");
+        });
+        this.stompErrSub = this.stompService.watch('/result/err').subscribe((err) => {
+            this.alerts.pushAlert("danger", err.body);
+        });
         this.initializeNodes();
         this.initializeEdges();
+    }
+
+    ngOnDestroy() {
+        this.stompResultSub.unsubscribe();
+        this.stompErrSub.unsubscribe();
     }
 
     public removeNode(node: ChartNode) {
@@ -96,14 +121,8 @@ export class EditorComponent implements OnInit {
     public runLibrary() {
         const modalRef = this.modalService.open(LibrarySelectionModalComponent);
         modalRef.componentInstance.project = this.project;
-        modalRef.result.then((result: Record<string, number>) => {
-                if (!!result) {
-                    for (let id in result) {
-                        if (result.hasOwnProperty(id)) {
-                            this.nodeMap[id].data.personalization = result[id];
-                        }
-                    }
-                }
+        modalRef.result.then(() => {
+            this.alerts.pushAlert("info", "Library work in progress, please wait for results.");
         });
     }
 

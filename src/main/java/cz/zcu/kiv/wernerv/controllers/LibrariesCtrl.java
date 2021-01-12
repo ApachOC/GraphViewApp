@@ -2,13 +2,19 @@ package cz.zcu.kiv.wernerv.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.zcu.kiv.wernerv.models.LibraryModel;
+import cz.zcu.kiv.wernerv.models.LibraryPath;
 import cz.zcu.kiv.wernerv.models.ProjectData;
 import cz.zcu.kiv.wernerv.repos.LibraryRepository;
 import cz.zcu.kiv.wernerv.services.LibraryRunService;
+import org.springframework.http.HttpStatus;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -79,8 +85,10 @@ public class LibrariesCtrl {
      * @throws InterruptedException The library process was interrupted
      */
     @PostMapping("/libs/{id}/run")
-    public Map<String, Float> run(@PathVariable String id,
-                                  @RequestBody LibraryCall callData ) throws IOException, InterruptedException {
-        return runService.run(id, callData.args, callData.project);
+    public HttpStatus run(@PathVariable String id,
+                                  @RequestBody LibraryCall callData,
+                                  Principal user) throws IOException, InterruptedException {
+        runService.run(id, callData.args, callData.project, user.getName());
+        return HttpStatus.ACCEPTED;
     }
 }

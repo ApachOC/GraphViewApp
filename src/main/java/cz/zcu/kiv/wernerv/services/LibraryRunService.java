@@ -2,28 +2,31 @@ package cz.zcu.kiv.wernerv.services;
 
 import cz.zcu.kiv.wernerv.models.ProjectData;
 import cz.zcu.kiv.wernerv.repos.MongoLibraryPathRepository;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.jar.JarException;
 import java.util.stream.Collectors;
 
 @Service
 public class LibraryRunService {
 
     private final MongoLibraryPathRepository pathRepo;
+    private final SimpMessagingTemplate simp;
 
-    public LibraryRunService(MongoLibraryPathRepository pathRepo) {
+    public LibraryRunService(MongoLibraryPathRepository pathRepo,
+                             SimpMessagingTemplate simp) {
         this.pathRepo = pathRepo;
+        this.simp = simp;
     }
 
     /*
     TODO this is stupid and works for example library only, some better library API option must be discussed.
      */
-    public Map<String, Float> run(String id, Map<String, String> args, ProjectData data) throws IOException, InterruptedException {
+    public void run(String id, Map<String, String> args, ProjectData data, String username) throws IOException, InterruptedException {
         // create temporary files
         Path edgeFileInPath = createTmpEdgeFile(data);
         Path nodeFileInPath = createTmpNodeFile(data);
@@ -50,47 +53,53 @@ public class LibraryRunService {
         // run the library
         String[] libArgs = new String[libArgList.size()];
         libArgList.toArray(libArgs);
-        Process proc = Runtime.getRuntime().exec(libArgs);
-        int exitCode = proc.waitFor();
-        if (exitCode != 0) {
-            String err = new BufferedReader(new InputStreamReader(proc.getErrorStream()))
-                    .lines().collect(Collectors.joining("\n"));
-            String std = new BufferedReader(new InputStreamReader(proc.getInputStream()))
-                    .lines().collect(Collectors.joining("\n"));
+        Thread t = new Thread(() -> {
+            try {
+                Process proc = Runtime.getRuntime().exec(libArgs);
+                int exitCode = proc.waitFor();
+                if (exitCode != 0) {
+                    String err = new BufferedReader(new InputStreamReader(proc.getErrorStream()))
+                            .lines().collect(Collectors.joining("\n"));
 
-            // clean up
-            Files.deleteIfExists(edgeFileInPath);
-            Files.deleteIfExists(tmpFileOutPath);
-            Files.deleteIfExists(nodeFileInPath);
+                    // clean up
+                    Files.deleteIfExists(edgeFileInPath);
+                    Files.deleteIfExists(tmpFileOutPath);
+                    Files.deleteIfExists(nodeFileInPath);
 
-            throw new JarException(err);
-        } else {
-            Map<String, Float> values = new HashMap<>();
-            BufferedReader bfr = new BufferedReader(new FileReader(tmpFileOutPath.toFile()));
-            bfr.lines().forEach((line) -> {
-                String[] fields = line.split(";");
-                float value;
-                try {
-                    value = Float.parseFloat(fields[2]);
-                    values.put(fields[0], value);
-                } catch (Exception e) {
-                    // ignore
+                    simp.convertAndSend("/result/err", err);
+                } else {
+                    Map<String, Float> values = new HashMap<>();
+                    BufferedReader bfr = new BufferedReader(new FileReader(tmpFileOutPath.toFile()));
+                    bfr.lines().forEach((line) -> {
+                        String[] fields = line.split(";");
+                        float value;
+                        try {
+                            value = Float.parseFloat(fields[2]);
+                            values.put(fields[0], value);
+                        } catch (Exception e) {
+                            // ignore
+                        }
+                    });
+
+                    // clean up
+                    Files.deleteIfExists(edgeFileInPath);
+                    Files.deleteIfExists(tmpFileOutPath);
+                    Files.deleteIfExists(nodeFileInPath);
+
+                    if (values.values().size() > 0) {
+                        Thread.sleep(5000);
+                        simp.convertAndSend("/result/lib", values);
+                    } else {
+                        String message = new BufferedReader(new InputStreamReader(proc.getInputStream()))
+                                .lines().collect(Collectors.joining("\n"));
+                        simp.convertAndSend("/result/err", message);
+                    }
                 }
-            });
-
-            // clean up
-            Files.deleteIfExists(edgeFileInPath);
-            Files.deleteIfExists(tmpFileOutPath);
-            Files.deleteIfExists(nodeFileInPath);
-
-            if (values.values().size() > 0) {
-                return values;
-            } else {
-                String message = new BufferedReader(new InputStreamReader(proc.getInputStream()))
-                        .lines().collect(Collectors.joining("\n"));
-                throw new JarException(message);
+            } catch (IOException | InterruptedException e) {
+                simp.convertAndSend("/result/err", e.getMessage());
             }
-        }
+        });
+        t.start();
     }
 
     private Path createTmpNodeFile(ProjectData data) throws IOException {
