@@ -46,6 +46,7 @@ export class UserAdministrationComponent implements OnInit {
     editUser(user: UserModel) {
         let modal = this.modalService.open(UserDetailsModalComponent);
         modal.componentInstance.update = true;
+        modal.componentInstance.title = "Update user info";
         modal.componentInstance.userObj = { ...user };
         modal.componentInstance.userObj.roles = Object.assign([], user.roles);
         modal.result.then(() => {

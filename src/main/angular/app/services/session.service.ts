@@ -48,11 +48,8 @@ export class SessionService {
     }
 
     logout() {
-        this.http.post(`${environment.apiUrl}/logout`, {}).subscribe(() => {
-            this.currentUser = null;
-            this.router.navigateByUrl("/");
-        }, (error) => {
-            this.currentUser = null;
+        this.http.post(`${environment.apiUrl}/logout`, {}).toPromise().finally(() => {
+            this.mgmt.getUser().then((user) => this.currentUser = user);
             this.router.navigateByUrl("/");
         });
     }
@@ -61,7 +58,7 @@ export class SessionService {
         return this.mgmt.addUser(user);
     }
 
-    save() {
-        return this.mgmt.updateUser(this.currentUser);
+    save(user: UserModel) {
+        return this.mgmt.updateUser(user);
     }
 }

@@ -25,7 +25,7 @@ export class ProjectManagerComponent {
     constructor(private mgr: ProjectManagerService, public user: SessionService, private modals: NgbModal) { }
 
     newProject() {
-        this.mgr.newProject();
+        this.mgr.newProject(true);
     }
 
     saveProject() {

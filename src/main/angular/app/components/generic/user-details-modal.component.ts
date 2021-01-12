@@ -23,7 +23,7 @@ export class UserDetailsModalComponent {
     submit() {
         let promise: Promise<Object>;
         if (this.update) {
-            promise = this.user.save();
+            promise = this.user.save(this.userObj);
         } else {
             promise = this.user.register(this.userObj);
         }
