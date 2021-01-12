@@ -35,7 +35,7 @@ public class UsersCtrl {
     @PostMapping("/users")
     public void register(@RequestBody UserModel newUser) throws Exception {
         if (repo.findByUsername(newUser.getUsername()) != null) {
-            throw new Exception("User already exists!");
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
         PasswordEncoder enc = new BCryptPasswordEncoder();
         newUser.setPassword(enc.encode(newUser.getPassword()));

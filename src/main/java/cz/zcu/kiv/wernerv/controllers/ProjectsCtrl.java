@@ -5,7 +5,9 @@ import cz.zcu.kiv.wernerv.models.ProjectMapping;
 import cz.zcu.kiv.wernerv.repos.MongoProjectMappingRepository;
 import cz.zcu.kiv.wernerv.repos.MongoProjectRepository;
 import org.bson.types.ObjectId;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.List;
@@ -40,10 +42,16 @@ public class ProjectsCtrl {
     @PostMapping("/projects")
     public ProjectMapping saveProject(@RequestBody ProjectData projectData, Principal user) {
         String userName = user.getName();
+        Optional<ProjectMapping> conflict = mappingRepo.findByOwnerAndName(userName, projectData.title);
+        if (conflict.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
+        }
+
         Optional<ProjectMapping> existing = mappingRepo.findByOwnerAndId(userName, projectData.id);
         ProjectMapping record;
         if (existing.isPresent()) {
-            record = existing.get();
+            projectRepo.save(projectData);
+            return existing.get();
         } else {
             String newId = new ObjectId().toString();
             String newTitle = projectData.title.trim();
@@ -55,9 +63,9 @@ public class ProjectsCtrl {
             record.owner = userName;
             record.current = false;
             mappingRepo.insert(record);
+            projectRepo.insert(projectData);
+            return record;
         }
-        projectRepo.insert(projectData);
-        return record;
     }
 
     @GetMapping("/projects/{id}")

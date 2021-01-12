@@ -12,4 +12,5 @@ public interface MongoProjectMappingRepository extends MongoRepository<ProjectMa
     List<ProjectMapping> findByOwner(String owner);
     List<ProjectMapping> findByOwnerAndCurrent(String owner, boolean current);
     Optional<ProjectMapping> findByOwnerAndId(String owner, String id);
+    Optional<ProjectMapping> findByOwnerAndName(String userName, String title);
 }

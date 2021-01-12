@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 @Document(collection = "users")
 public class UserModel implements UserDetails {
 
+    @Id
     private String username;
 
     private String password;

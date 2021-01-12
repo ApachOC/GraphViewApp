@@ -109,8 +109,6 @@ public class MongoConfiguration {
                     singletonList("user"),
                     new ArrayList<>()
             ));
-
-            //todo WS 202 lib response
         }
     }
 }
