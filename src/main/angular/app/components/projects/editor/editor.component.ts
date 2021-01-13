@@ -7,10 +7,17 @@ import {AlertService} from "../../../services/alert.service";
 import {Subscription} from "rxjs";
 
 export class ChartEdge {
+
+    private static _id = 0
+
+    public readonly id: number;
+
     constructor(
         public source: {x: number, y: number},
         public target: {x: number, y: number}
-    ) {}
+    ) {
+        this.id = ChartEdge._id++;
+    }
 }
 
 export class ChartNode {

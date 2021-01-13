@@ -246,7 +246,7 @@ export class EditorViewportD3Component implements AfterViewInit {
         // get selection
         const nodes = this.nodeRoot
             .selectAll(".graph-node")
-            .data(this.nodes);
+            .data(this.nodes, (d: ChartNode) => d.data.id);
 
         // clear nodes
         nodes.exit().remove();
@@ -307,8 +307,7 @@ export class EditorViewportD3Component implements AfterViewInit {
         // get selection
         const edges = this.edgeRoot
             .selectAll(".graph-edge")
-            .data(this.edges)
-
+            .data(this.edges, (e: ChartEdge) => e.id);
 
         // clear edges
         edges.exit().remove();
