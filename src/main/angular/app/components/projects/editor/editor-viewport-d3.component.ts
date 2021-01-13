@@ -174,10 +174,11 @@ export class EditorViewportD3Component implements AfterViewInit {
                         source: <ChartNode> edge.source,
                         target: closest
                     });
-                } else {
-                    this.selection = null;
                 }
-                this.edges.splice(this.edges.indexOf(edge), 1);
+
+                this.selection = null;
+                const index = this.edges.indexOf(edge);
+                this.edges.splice(index, 1);
             }
         }
     }
@@ -318,7 +319,13 @@ export class EditorViewportD3Component implements AfterViewInit {
             .append("line")
             .attr('marker-end',`url(#arrow-${this.id})`)
             .attr("class", "graph-edge")
-            .style("stroke", "#aaa");
+            .style("stroke", "#aaa")
+            .each((edge) => {
+                const index = this.dirtyEdges.indexOf(edge);
+                if (index < 0) {
+                    this.dirtyEdges.push(edge);
+                }
+            });
 
         // update values
         edges
