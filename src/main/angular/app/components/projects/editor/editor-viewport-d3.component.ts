@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, DoCheck, Input, Output, EventEmitter, OnChanges} from "@angular/core";
-import {forceCenter, forceLink, forceManyBody, forceSimulation, Simulation} from 'd3-force';
+import {forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, Simulation} from 'd3-force';
 import * as d3 from 'd3';
 import {zoomTransform} from 'd3-zoom';
 import {ChartEdge, ChartNode} from "./editor.component";
@@ -9,6 +9,9 @@ import {AlertService} from "../../../services/alert.service";
 @Component({
     selector: 'editor-viewport-d3',
     template: `<div class="graph-editor-viewer-canvas">
+        <div class="spinner-overlay" *ngIf="!initialized">
+            <div class="spinner-border"></div>
+        </div>
         <div id="graph-editor-tooltip-{{id}}" class="d3-tooltip"
              [style]="{'left': hoverData.x + 'px', 'top': hoverData.y + 'px', 'opacity': hoverData.show}">
             <span>Name: {{ hoverData.name }}<br>
@@ -77,6 +80,8 @@ export class EditorViewportD3Component implements AfterViewInit {
     private dirtyEdges: ChartEdge[] = [];
 
     public hoverData: any = {}; //{ name: string, x: number, y: number, p: number, show: number }
+
+    public initialized = false;
 
     constructor(private alerts: AlertService) { }
 
@@ -225,14 +230,18 @@ export class EditorViewportD3Component implements AfterViewInit {
         this.nodeRoot = this.root.append("g");
 
         this.sim = forceSimulation(this.nodes)
-            .stop()
-            .force('link', forceLink(this.edges))
+            .force('link', forceLink(this.edges).distance(80))
             .force('center', forceCenter(0, 0))
-            .force('charge', forceManyBody())
-            .alphaMin(0.01)
+            .force('charge', forceManyBody().strength(-20).distanceMax(100))
+            .force('collide', forceCollide().radius(50))
+            .alphaMin(0.1)
             .on('end', () => {
                 this.dirtyNodes = this.dirtyNodes.concat(this.nodes)
-                this.alerts.pushAlert("info", "Graph layout was recalculated.")
+                if (this.initialized) {
+                    this.alerts.pushAlert("info", "Graph layout was recalculated.")
+                } else {
+                    this.initialized = true;
+                }
             });
 
         this.ready = true;
