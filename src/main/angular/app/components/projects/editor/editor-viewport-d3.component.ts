@@ -6,6 +6,11 @@ import {ChartEdge, ChartNode} from "./editor.component";
 import {interval} from "rxjs";
 import {AlertService} from "../../../services/alert.service";
 
+//todo
+// Save As
+// Multiselect
+// Size by rank
+
 @Component({
     selector: 'editor-viewport-d3',
     template: `<div class="graph-editor-viewer-canvas">

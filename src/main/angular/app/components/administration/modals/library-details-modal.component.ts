@@ -1,32 +1,50 @@
-import {Component} from '@angular/core';
+import {Component, OnDestroy} from '@angular/core';
 
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {LibraryObject, LibraryParameter, RestLibsService} from "../../../services/rest-libs.service";
 import {NgxDropzoneChangeEvent} from "ngx-dropzone";
+import {AlertService} from "../../../services/alert.service";
 
 @Component({
     templateUrl: './library-details-modal.component.html'
 })
-export class LibraryDetailsModalComponent {
+export class LibraryDetailsModalComponent implements OnDestroy{
 
     libraryObj = new LibraryObject();
 
     acceptFiles = "application/x-java-archive,application/java-archive";
 
-    libraryFile: File;
+    predefinedArguments: Record<string, string>;
 
-    constructor(public modal: NgbActiveModal, private rest: RestLibsService) {}
+    saved = false;
+
+    constructor(public modal: NgbActiveModal,
+                private rest: RestLibsService,
+                private alerts: AlertService) {}
 
     submit() {
-        this.rest.addLibrary(this.libraryObj, this.libraryFile).then(() => {
-            this.modal.close(true);
+        this.rest.addLibraryModel(this.libraryObj).then(() => {
+            this.saved = true;
+            this.modal.close(this.saved);
         });
     }
 
     onAddFile(event: NgxDropzoneChangeEvent) {
         if (event.addedFiles.length > 0) {
-            this.libraryFile = event.addedFiles.pop();
+            this.rest.addLibraryFile(event.addedFiles.pop())
+                .then((result) => {
+                    this.libraryObj.id = result.value;
+                    this.alerts.pushAlert("success", "Library file was uploaded successfully.");
+                    this.getHelp();
+                }, () => {
+                    this.alerts.pushAlert("danger", "Error while uploding the library.");
+                });
         }
+    }
+
+    async getHelp() {
+        this.predefinedArguments = await this.rest.getLibraryHelp(this.libraryObj.id);
+        //todo populate some list
     }
 
     newParameter() {
@@ -35,6 +53,12 @@ export class LibraryDetailsModalComponent {
 
     removeParameter(parameter: LibraryParameter) {
         this.libraryObj.parameters.splice(this.libraryObj.parameters.indexOf(parameter), 1);
+    }
+
+    ngOnDestroy(): void {
+        if (this.libraryObj.id && !this.saved) {
+            this.rest.deleteLibrary(this.libraryObj.id);
+        }
     }
 }
 

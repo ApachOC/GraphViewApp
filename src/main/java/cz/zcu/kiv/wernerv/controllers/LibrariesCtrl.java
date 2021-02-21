@@ -1,21 +1,15 @@
 package cz.zcu.kiv.wernerv.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.zcu.kiv.wernerv.controllers.msg.LibraryCall;
+import cz.zcu.kiv.wernerv.controllers.msg.Message;
 import cz.zcu.kiv.wernerv.models.LibraryModel;
-import cz.zcu.kiv.wernerv.models.LibraryPath;
-import cz.zcu.kiv.wernerv.models.ProjectData;
 import cz.zcu.kiv.wernerv.repos.LibraryRepository;
-import cz.zcu.kiv.wernerv.services.LibraryRunService;
+import cz.zcu.kiv.wernerv.services.LibraryRunnerService;
 import org.bson.types.ObjectId;
-import org.springframework.http.HttpStatus;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -26,21 +20,11 @@ import java.util.Map;
 @RequestMapping("/api")
 public class LibrariesCtrl {
 
-
-    /**
-     * Class which represents the data when calling library
-     */
-    private static class LibraryCall {
-        public ProjectData project;
-        public Map<String, String> args;
-        public String path;
-    }
-
     private final LibraryRepository libraryStorage;
-    private final LibraryRunService runService;
+    private final LibraryRunnerService runService;
 
     public LibrariesCtrl(LibraryRepository libraryStorage,
-                         LibraryRunService runService) {
+                         LibraryRunnerService runService) {
         this.libraryStorage = libraryStorage;
         this.runService = runService;
     }
@@ -54,28 +38,24 @@ public class LibrariesCtrl {
         return libraryStorage.listAll();
     }
 
-    /**
-     * Create new library
-     * @param libString Library object String in the multipart data
-     * @param file Library file
-     * @throws Exception Thrown when the libString couldn't be converted.
-     */
-    @PostMapping("/libs")
-    public void upload(@RequestParam("metadata") String libString,
-                       @RequestParam("file") MultipartFile file) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        LibraryModel lib = mapper.readValue(libString, LibraryModel.class);
-        libraryStorage.save(lib, file);
+    @GetMapping("/libs/{id}")
+    public LibraryModel get(@PathVariable String id) {
+        return libraryStorage.get(id);
     }
 
-    /**
-     * Delete a libary
-     * @param id ID of library to delete
-     * @throws IOException Thrown when the library file couldn't be found or deleted.
-     */
-    @DeleteMapping("/libs/{id}")
-    public void delete(@PathVariable String id) throws IOException {
-        libraryStorage.delete(id);
+    @GetMapping("/libs/{id}/help")
+    public Map<?, ?> help(@PathVariable String id) throws IOException, InterruptedException {
+        return this.runService.getHelp(id);
+    }
+
+    @PostMapping("/libs")
+    public Message upload(@RequestParam("file") MultipartFile file) throws IOException {
+        return new Message(libraryStorage.saveFile(file));
+    }
+
+    @PostMapping("/libs/{id}")
+    public void setup(@PathVariable String id, @RequestBody LibraryModel libraryModel) {
+        libraryStorage.insertModel(libraryModel);
     }
 
     /**
@@ -87,15 +67,19 @@ public class LibrariesCtrl {
      * @throws InterruptedException The library process was interrupted
      */
     @PostMapping("/libs/{id}/run")
-    public Path run(@PathVariable String id, @RequestBody LibraryCall callData) throws IOException, InterruptedException {
+    public Map<String, Float> run(@PathVariable String id, @RequestBody LibraryCall callData) throws IOException, InterruptedException {
         String path = "/" + new ObjectId().toString();
-        runService.run(id, callData.args, callData.project, path);
-        Path p = new Path();
-        p.path = path;
-        return p;
+        Map<String, Float> result = runService.run(id, callData.args, callData.project, path);
+        return result;
     }
 
-    private static class Path {
-        public String path;
+    /**
+     * Delete a libary
+     * @param id ID of library to delete
+     * @throws IOException Thrown when the library file couldn't be found or deleted.
+     */
+    @DeleteMapping("/libs/{id}")
+    public void delete(@PathVariable String id) throws IOException {
+        libraryStorage.delete(id);
     }
 }

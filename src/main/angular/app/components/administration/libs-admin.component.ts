@@ -28,7 +28,7 @@ export class LibraryAdministrationComponent implements OnInit{
         modal.componentInstance.message = "Warning!\nThis action is irreversible!\n";
         modal.componentInstance.withInput = "DELETE";
         modal.result.then(() => {
-            this.rest.deleteLibrary(lib).finally(() => {
+            this.rest.deleteLibrary(lib.id).finally(() => {
                 this.loadLibs();
             });
         });

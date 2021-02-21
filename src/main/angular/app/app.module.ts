@@ -33,8 +33,6 @@ import {LibrarySelectionModalComponent} from "./components/projects/editor/libra
 import {AlertComponent, AlertHostComponent} from "./components/generic/alert-host.component";
 import {AlertService} from "./services/alert.service";
 import {TextPromptModalComponent} from "./components/generic/text-prompt-modal.component";
-import {InjectableRxStompConfig, RxStompService, rxStompServiceFactory} from "@stomp/ng2-stompjs";
-import {myRxStompConfig} from "./other/stomp-config";
 
 const routes: Routes = [
     { path: "projects", component: ProjectManagerComponent },
@@ -89,16 +87,7 @@ const routes: Routes = [
       RestLibsService,
       RestProjectsService,
       AlertService,
-      { provide: HTTP_INTERCEPTORS, useClass: XhrInterceptor, multi: true },
-    {
-        provide: InjectableRxStompConfig,
-        useValue: myRxStompConfig,
-    },
-    {
-        provide: RxStompService,
-        useFactory: rxStompServiceFactory,
-        deps: [InjectableRxStompConfig],
-    }],
+      { provide: HTTP_INTERCEPTORS, useClass: XhrInterceptor, multi: true }],
     bootstrap: [ AppRootComponent ]},
   )
 export class AppModule { }

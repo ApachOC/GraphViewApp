@@ -34,19 +34,18 @@ public class LibraryRepository {
         return libRepo.findAll();
     }
 
-    public void save(LibraryModel lib, MultipartFile file) throws Exception {
+    public String saveFile(MultipartFile file) throws IOException {
         Path newFile = Paths.get(RESOURCES_DIR + new Date().getTime() + "-" + file.getOriginalFilename());
         Files.createDirectories(newFile.getParent());
         Files.write(newFile, file.getBytes());
         String path = newFile.toAbsolutePath().toString();
         String id = new ObjectId().toString();
-        lib.id = id;
-        libRepo.insert(lib);
         pathRepo.insert(new LibraryPath(id, path));
-        // No, I didn't just spend 9.5 hours of my life debugging why the database clears every time a file is uploaded.
-        // And no the issues was definitely not caused by the file being put into default class directory, while IDE
-        // killed and restarted the app including the seeding script every time a change was detected...
-        //todo better way of saving the libs
+        return id;
+    }
+
+    public void insertModel(LibraryModel lib) {
+        libRepo.insert(lib);
     }
 
     public void delete(String id) throws IOException {
@@ -57,5 +56,13 @@ public class LibraryRepository {
             Files.delete(Paths.get(path));
             pathRepo.deleteById(id);
         }
+    }
+
+    public LibraryModel get(String id) {
+        Optional<LibraryModel> libOpt = libRepo.findById(id);
+        if (libOpt.isPresent()) {
+            return libOpt.get();
+        }
+        throw new IllegalArgumentException();
     }
 }

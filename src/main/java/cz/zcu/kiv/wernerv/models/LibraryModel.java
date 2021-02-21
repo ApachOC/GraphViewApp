@@ -17,14 +17,4 @@ public class LibraryModel {
 
     public List<LibraryParameter> parameters;
 
-    public String nodeInputArg;
-
-    public String edgeInputArg;
-
-    public String inputFileType;
-
-    public String outputArg;
-
-    public String outputFileType;
-
 }

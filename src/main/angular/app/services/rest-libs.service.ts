@@ -12,25 +12,32 @@ export class RestLibsService extends RestBase {
         return this.http.get<LibraryObject[]>(`${environment.apiUrl}/libs`).toPromise();
     }
 
-    addLibrary(lib: LibraryObject, file: File) {
-        //const headers = new HttpHeaders({ 'enctype': 'multipart/form-data' });
+    getLibrary(id: string): Promise<LibraryObject> {
+        return this.http.get<LibraryObject>(`${environment.apiUrl}/libs/${id}`).toPromise();
+    }
+
+    getLibraryHelp(id: string): Promise<Record<string, string>> {
+        return this.http.get<Record<string, string>>(`${environment.apiUrl}/libs/${id}/help`).toPromise();
+    }
+
+
+    addLibraryFile(file: File): Promise<{value: string}> {
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('metadata', JSON.stringify(lib));
 
-        return this.http.post(`${environment.apiUrl}/libs`, formData).toPromise();
+        return this.http.post<{value: string}>(`${environment.apiUrl}/libs`, formData).toPromise();
     }
 
-    updateLibrary(lib: LibraryObject) {
-        return this.http.put(`${environment.apiUrl}/libs`, lib).toPromise();
+    addLibraryModel(lib: LibraryObject) {
+        return this.http.post(`${environment.apiUrl}/libs/${lib.id}`, lib).toPromise();
     }
 
-    deleteLibrary(lib: LibraryObject) {
-        return this.http.delete(`${environment.apiUrl}/libs/${lib.id}`).toPromise();
+    deleteLibrary(id: string) {
+        return this.http.delete(`${environment.apiUrl}/libs/${id}`).toPromise();
     }
 
-    runLibrary(project: ProjectData, libId: string, args: Record<string, string>) {
-        return this.http.post(`${environment.apiUrl}/libs/${libId}/run`, {
+    runLibrary(project: ProjectData, libId: string, args: Record<string, string>): Promise<Record<string, number>> {
+        return this.http.post<Record<string, number>>(`${environment.apiUrl}/libs/${libId}/run`, {
             project: project,
             args: args
         }).toPromise();
@@ -42,11 +49,6 @@ export class LibraryObject {
     name: string = '';
     description: string = '';
     parameters: LibraryParameter[] = [];
-    nodeInputArg: string = '';
-    edgeInputArg: string = '';
-    inputFileType: string = '';
-    outputArg: string = '';
-    outputFileType: string = '';
 }
 
 export class LibraryParameter {

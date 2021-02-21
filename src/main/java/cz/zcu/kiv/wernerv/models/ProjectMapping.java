@@ -16,6 +16,4 @@ public class ProjectMapping {
     public String owner;
 
     public boolean current;
-
-    public List<String> extraValueNames;
 }

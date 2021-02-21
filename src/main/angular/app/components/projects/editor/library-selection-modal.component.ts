@@ -47,7 +47,7 @@ export class LibrarySelectionModalComponent implements OnInit{
 
         // run the selected library
         this.rest.runLibrary(this.project, this.libraryId, this.parameters).then((result: any) => {
-            this.modal.close(result.path);
+            this.modal.close(result);
         });
     }
 }
