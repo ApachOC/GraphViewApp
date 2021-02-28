@@ -3,6 +3,7 @@ package cz.zcu.kiv.wernerv.controllers;
 import cz.zcu.kiv.wernerv.controllers.msg.LibraryCall;
 import cz.zcu.kiv.wernerv.controllers.msg.Message;
 import cz.zcu.kiv.wernerv.models.LibraryModel;
+import cz.zcu.kiv.wernerv.models.LibraryParameter;
 import cz.zcu.kiv.wernerv.repos.LibraryRepository;
 import cz.zcu.kiv.wernerv.services.LibraryRunnerService;
 import org.bson.types.ObjectId;
@@ -44,7 +45,7 @@ public class LibrariesCtrl {
     }
 
     @GetMapping("/libs/{id}/help")
-    public Map<?, ?> help(@PathVariable String id) throws IOException, InterruptedException {
+    public List<LibraryParameter> help(@PathVariable String id) throws IOException, InterruptedException {
         return this.runService.getHelp(id);
     }
 
