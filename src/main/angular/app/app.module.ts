@@ -24,7 +24,10 @@ import {ConfirmModalComponent} from "./components/administration/modals/confirm-
 import {UserAdministrationComponent} from "./components/administration/user-admin.component";
 import {LibraryAdministrationComponent} from "./components/administration/libs-admin.component";
 import {AuthGuardService} from "./services/auth-guard.service";
-import {LibraryDetailsModalComponent} from "./components/administration/modals/library-details-modal.component";
+import {
+    LibraryDetailsModalComponent,
+    LibraryParameterModalComponent
+} from "./components/administration/modals/library-details-modal.component";
 import {RestLibsService} from "./services/rest-libs.service";
 import {RestProjectsService} from "./services/rest-projects.service";
 import {ProjectSelectionModalComponent} from "./components/projects/manager/project-selection-modal.component";
@@ -59,6 +62,7 @@ const routes: Routes = [
         UserAdministrationComponent,
         LibraryAdministrationComponent,
         LibraryDetailsModalComponent,
+        LibraryParameterModalComponent,
         ProjectSelectionModalComponent,
         EditorViewportD3Component,
         LibrarySelectionModalComponent,

@@ -1,3 +1,4 @@
+<form #form>
     <div class="modal-header">
         <h4 class="modal-title" id="modal-basic-title">Upload new library</h4>
         <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
@@ -14,37 +15,36 @@
             <div class="form-group">
                 <label for="name">Library name:</label>
                 <input type="text" class="form-control" id="name" name="name"
-                       [(ngModel)]="libraryObj.name" required minlength="4"
-                       #name="ngModel"/>
+                       [(ngModel)]="libraryObj.name" required minlength="4"/>
 
             </div>
             <div class="form-group">
                 <label for="description">Description:</label>
                 <input type="text" class="form-control" id="description" name="description"
-                       [(ngModel)]="libraryObj.description" required minlength="4"
-                       #description="ngModel"/>
+                       [(ngModel)]="libraryObj.description" required minlength="4"/>
             </div>
             <label>Parameters:</label>
                 <table class="table table-striped table-hover w-100" *ngIf="libraryObj.parameters.length else noParams">
                     <thead>
                     <tr>
-                        <th style="width:25%">Name:</th>
-                        <th style="width:25%">Argument:</th>
-                        <th style="width:20%">Type:</th>
-                        <th style="width:25%">Default value:</th>
-                        <th>Mandatory</th>
+                        <th style="width:25%">Name</th>
+                        <th style="width:25%">Argument</th>
+                        <th style="width:20%">Type</th>
+                        <th style="width:20%">Mandatory</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr *ngFor="let parameter of libraryObj.parameters">
-                        <td [ngModel]="parameter.name"></td>
-                        <td [ngModel]="parameter.option"></td>
-                        <td [ngModel]="parameter.type"></td>
-                        <td [ngModel]="parameter.defaultValue"></td>
+                    <tr *ngFor="let parameter of libraryObj.parameters" [ngbTooltip]="parameter.description"
+                        (click)="updateParameter(parameter)" style="cursor: pointer">
+                        <td>{{parameter.name}}</td>
+                        <td>{{parameter.option}}</td>
+                        <td>{{parameter.type}}</td>
                         <td>
-                            <label>
-                                <input class="form-check-inline" type="checkbox" [(ngModel)]="parameter.mandatory">
-                            </label>
+                            <span *ngIf="parameter.mandatory else notMandatory">Yes</span>
+                            <ng-template #notMandatory>No</ng-template>
+                        </td>
+                        <td>
                             <button class="btn" (click)="removeParameter(parameter)">
                                 <i class="fa fa-times"></i>
                             </button>
@@ -54,13 +54,15 @@
                 </table>
                 <ng-template #noParams>
                     <div class="col-12">
-                        <span>No parameters present.</span>
+                        <span>No parameters available.</span>
                     </div>
                 </ng-template>
                 <hr/>
                 <label>
-                <select class="form-control">
-                    <option selected hidden disabled>Use predefined parameter</option>
+                <select #parameterSelect class="form-control"
+                        (change)="selectParameter(parameterSelect.value); parameterSelect.value = 'none'">
+                    <option selected hidden disabled value="none">Use predefined parameter</option>
+                    <option *ngFor="let parameter of selectableParameters">{{parameter.name}}</option>
                 </select>
             </label>
         <button class="btn btn-primary float-right" (click)="newParameter()">Add custom parameter</button>
@@ -69,6 +71,7 @@
         </div>
 
     <div class="modal-footer">
-        <button type="button" class="btn btn-primary" [disabled]="invalid()" (click)="submit()">Submit</button>
-        <button type="button" class="btn btn-outline-dark" (click)="modal.close()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="!(form.reportValidity()) || submit()">Submit</button>
+        <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss()">Cancel</button>
     </div>
+</form>

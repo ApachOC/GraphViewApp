@@ -16,8 +16,8 @@ export class RestLibsService extends RestBase {
         return this.http.get<LibraryObject>(`${environment.apiUrl}/libs/${id}`).toPromise();
     }
 
-    getLibraryHelp(id: string): Promise<Record<string, string>> {
-        return this.http.get<Record<string, string>>(`${environment.apiUrl}/libs/${id}/help`).toPromise();
+    getLibraryHelp(id: string): Promise<LibraryParameter[]> {
+        return this.http.get<LibraryParameter[]>(`${environment.apiUrl}/libs/${id}/help`).toPromise();
     }
 
 
@@ -54,7 +54,7 @@ export class LibraryObject {
 export class LibraryParameter {
     name: string;
     option: string;
-    defaultValue: string | number;
+    description: string;
     type: LibraryParameterType;
     mandatory: boolean;
 
