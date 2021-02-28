@@ -33,10 +33,15 @@ public class ProjectsCtrl {
     }
 
     @GetMapping("/projects/current")
-    public List<ProjectMapping> getCurrent(Principal user)
+    public ProjectMapping getCurrent(Principal user)
     {
         String name = user.getName();
-        return mappingRepo.findByOwnerAndCurrent(name, true);
+        List<ProjectMapping> found = mappingRepo.findByOwnerAndCurrent(name, true);
+        if (found.size() < 1) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } else {
+            return found.get(0);
+        }
     }
 
     @PostMapping("/projects")

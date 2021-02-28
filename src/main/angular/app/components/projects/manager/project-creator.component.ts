@@ -1,17 +1,17 @@
-import {Component, Input, OnInit, TemplateRef} from '@angular/core';
+import {Component, Input, TemplateRef} from '@angular/core';
 import {NgxDropzoneChangeEvent} from "ngx-dropzone";
 import '@angular/common';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ProjectData} from "../../../models/project-models";
 import {RestProjectsService} from "../../../services/rest-projects.service";
 import {SessionService} from "../../../services/session.service";
-import {Alert, AlertService} from "../../../services/alert.service";
+import {AlertService} from "../../../services/alert.service";
 
 @Component({
     selector: 'project-creator',
     templateUrl: './project-creator.component.html'
 })
-export class ProjectCreatorComponent implements OnInit {
+export class ProjectCreatorComponent {
 
     @Input() project: ProjectData
 
@@ -22,7 +22,7 @@ export class ProjectCreatorComponent implements OnInit {
         firstLineHeader: true,
 
         id: 0, name: 1, personalization: 2,
-        values: ['1', '2', '3']
+        labels: ['1', '2', '3']
     }
     edgeImportOptions = {
         show: false,
@@ -31,25 +31,24 @@ export class ProjectCreatorComponent implements OnInit {
         generateLayout: true,
 
         from: 0, to: 1, weight: 2,
-        values: ['1', '2', '3']
+        labels: ['1', '2', '3']
     }
 
-    private existingNames: string[] = [];
-
     private csvLines: string[][];
+
+    get density(): number {
+        if (this.project.nodeCount) {
+            return this.project.edgeCount / (this.project.nodeCount * (this.project.nodeCount - 1))
+        } else {
+            return 0
+        }
+
+    }
 
     constructor(private modalService: NgbModal,
                 private rest: RestProjectsService,
                 private user: SessionService,
                 private alerts: AlertService) { }
-
-    ngOnInit() {
-        if (this.user.authenticated) {
-            this.rest.listProjects().then((records) => {
-                this.existingNames = records.map((record) => record.name);
-            });
-        }
-    }
 
     public async onAddFile(event: NgxDropzoneChangeEvent) {
         if (event.addedFiles.length) {
@@ -88,8 +87,10 @@ export class ProjectCreatorComponent implements OnInit {
             case 'application/csv':
                 const lines = await this.parseCSV(file);
                 if (this.project.state === ProjectData.State.Empty) {
+                    this.nodeImportOptions.labels = lines[0];
                     this.nodeImportOptions.show = true;
                 } else {
+                    this.edgeImportOptions.labels = lines[0];
                     this.edgeImportOptions.show = true;
                 }
                 return lines;
@@ -139,11 +140,8 @@ export class ProjectCreatorComponent implements OnInit {
         this.alerts.pushAlert("success", "Edges were imported successfully!");
     }
 
-    readyProject() {
-        if (this.existingNames.includes(this.project.title)) {
-            this.alerts.pushAlert("danger",
-                `Project with name '${this.project.title}' already exists!`);
-        } else {
+    readyProject(projectName: HTMLInputElement) {
+        if (projectName.reportValidity()) {
             this.project.ready = true;
         }
     }

@@ -16,11 +16,11 @@ export class ProjectManagerComponent {
     }
 
     get currentProject(): ProjectData {
-        return this.mgr.current;
+        return this.mgr.currentProject;
     };
 
     set currentProject(project) {
-        this.mgr.current = project;
+        this.mgr.currentProject = project;
     }
 
     constructor(private mgr: ProjectManagerService, public user: SessionService, private modals: NgbModal) { }
@@ -59,5 +59,27 @@ export class ProjectManagerComponent {
         modal.result.then((newTitle) => {
             this.currentProject.title = newTitle;
         });
+    }
+
+    getProjectTitle(project: ProjectData) {
+        let thisTitle = project.title?.trim();
+        if (!thisTitle || !thisTitle.length) {
+            thisTitle = "Untitled project";
+        } else {
+            let count = 0;
+            for (let p of this.projects) {
+                if (p == project) {
+                    break;
+                }
+                if (p.title == project.title) {
+                    count++;
+                }
+            }
+
+            if (count > 0) {
+                thisTitle += ` (${count})`
+            }
+        }
+        return thisTitle;
     }
 }

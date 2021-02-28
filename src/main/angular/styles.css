@@ -63,13 +63,53 @@
     color: white;
 }
 
+.card-header.project-header {
+    padding-left: 0;
+    padding-top: 0;
+}
+
 .nav-tabs .nav-item-project .nav-link {
     background: lightgray;
     color: black;
+    cursor: pointer;
+    border: none;
+    border-radius: 0;
+    padding-left: 1.5rem;
+    padding-right: 1rem;
+}
+
+.nav-tabs .nav-item-project .nav-link:last-child {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+.nav-tabs .nav-item-project .nav-link:hover {
+    background: silver;
 }
 
 .nav-tabs .nav-item-project .nav-link.active {
     background: cadetblue;
+    color: white;
+}
+
+.nav-tabs .nav-item-project .dropdown-toggle,
+.nav-tabs .nav-item-project .fa {
+    color: black;
+}
+
+.nav-tabs .nav-item-project .dropdown-toggle:after {
+    content: none;
+}
+
+.nav-tabs .nav-item-project .nav-link:not(.active) .dropdown-toggle {
+    text-decoration: none;
+}
+
+.nav-tabs .nav-item-project .nav-link .fa-times:hover {
+    color: indianred;
+}
+
+.nav-tabs .nav-item-project .active .dropdown-toggle,
+.nav-tabs .nav-item-project .active .fa {
     color: white;
 }
 

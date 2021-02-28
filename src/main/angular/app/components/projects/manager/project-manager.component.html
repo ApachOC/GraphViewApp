@@ -1,44 +1,49 @@
 <div class="card border-0">
-    <div class="card-header" [hidden]="projects.length === 1">
+    <div class="card-header project-header">
         <ul class="nav nav-tabs card-header-tabs" [sortablejs]="projects">
             <li class="nav-item nav-item-project" *ngFor="let project of projects">
                 <a class="nav-link"
                         (click)="currentProject = project"
-                        [class.active]="currentProject === project">
-                    <span>{{project.title}}</span>
-                    <button class="btn" (click)="$event.stopPropagation(); closeProject(project)">
-                        <i class="fa fa-times fa-sm"></i>
-                    </button>
+                        [class.active]="currentProject == project">
+                    <div class="d-inline" ngbDropdown>
+                        <a [hidden]="currentProject != project" ngbDropdownToggle id="projectDropdownToggle" role="button">
+                            <span>{{ getProjectTitle(project) }}</span>
+                            <i class="fa fa-caret-down fa-sm ml-2"></i>
+                        </a>
+                        <a [hidden]="currentProject == project" class="dropdown-toggle">
+                            {{ getProjectTitle(project) }}
+                        </a>
+                        <div ngbDropdownMenu aria-labelledby="projectDropdownToggle">
+                            <button ngbDropdownItem (click)="renameProject()">Rename project</button>
+                            <!--<button ngbDropdownItem>Download results</button>-->
+                            <div class="dropdown-divider" *ngIf="user.authenticated"></div>
+                            <button ngbDropdownItem *ngIf="user.authenticated"
+                                    (click)="saveProject()">Save project</button>
+                            <button ngbDropdownItem *ngIf="user.authenticated"
+                                    (click)="loadProject()">Load project</button>
+                        </div>
+                    </div>
+                    <i class="ml-2 pl-2 fa fa-times fa-sm" (click)="$event.stopPropagation(); closeProject(project)"
+                            [hidden]="projects.length == 1">
+                    </i>
+                </a>
+            </li>
+            <li class="nav-item nav-item-project">
+                <a class="nav-link" (click)="newProject()">
+                    <i class="fa fa-plus"></i>
                 </a>
             </li>
         </ul>
     </div>
     <nav class="navbar navbar-project">
         <ul class="navbar-nav">
-            <li class="nav-item" ngbDropdown>
-                <a class="nav-link" ngbDropdownToggle id="navFileDropdown" role="button">
-                    Project
-                </a>
-                <div ngbDropdownMenu aria-labelledby="navFileDropdown">
-                    <button ngbDropdownItem (click)="newProject()">New project</button>
-                    <button ngbDropdownItem (click)="renameProject()">Rename project</button>
-                    <!--<button ngbDropdownItem>Download results</button>-->
-                    <div class="dropdown-divider" *ngIf="user.authenticated"></div>
-                    <button ngbDropdownItem *ngIf="user.authenticated"
-                            (click)="saveProject()">Save project</button>
-                    <button ngbDropdownItem *ngIf="user.authenticated"
-                            (click)="loadProject()">Load project</button>
-                </div>
+            <li class="nav-item" ngbDropdown *ngIf="projects.length < 2">
             </li>
         </ul>
     </nav>
     <div class="card-body" *ngFor="let project of projects" [hidden]="currentProject !== project">
         <div class="container-fluid" *ngIf="project.ready; else projectCreator">
-            <div class="row">
-                <div class="col">
-                    <graph-editor [project]="project"></graph-editor>
-                </div>
-            </div>
+            <graph-editor [project]="project"></graph-editor>
         </div>
         <ng-template #projectCreator>
             <project-creator [project]="project"></project-creator>

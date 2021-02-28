@@ -9,7 +9,7 @@ import {AlertService} from "./alert.service";
 })
 export class ProjectManagerService {
     projectList: ProjectData[] = [];
-    current: ProjectData;
+    currentProject: ProjectData;
 
     constructor(private rest: RestProjectsService,
                 private user: SessionService,
@@ -26,31 +26,21 @@ export class ProjectManagerService {
     }
 
     newProject(current?: boolean) {
-        const defaultName = 'Untitled project'
-
-        let count = 0;
-        this.projectList.forEach(prj => {
-            if (prj.title.startsWith(defaultName)) {
-                count++;
-            }
-        });
-
         const newProj = new ProjectData();
-        newProj.title = count ? `${defaultName}  (${count})` : defaultName;
         this.addProject(newProj, current);
     }
 
     addProject(projectData: ProjectData, current?: boolean) {
         this.projectList.push(projectData);
         if (current) {
-            this.current = projectData;
+            this.currentProject = projectData;
         }
     }
 
     loadProject(id: string) {
         this.rest.loadProjectData(id).then((project) => {
             this.projectList.push(project);
-            this.current = project;
+            this.currentProject = project;
             project.ready = true;
         });
     }
