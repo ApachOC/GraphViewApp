@@ -1,6 +1,8 @@
-        <div class="graph-editor-viewer">
-            <div class="graph-editor-toolbars">
-                <div class="btn-group-vertical">
+<editor-viewport-d3 [nodes]="nodes" [edges]="edges" [tool]="currentTool" [id]="editorId.toString()"
+                        (addNode)="addNode($event)" (removeNode)="removeNode($event)"
+                        (addEdge)="addEdge($event)" #viewport></editor-viewport-d3>
+    <div class="graph-editor-toolbars">
+        <div class="btn-group-vertical">
                     <button class="btn btn-outline-primary" [class.active]="currentTool == 'SELECT'"
                             (click)="currentTool = 'SELECT'" ngbTooltip="Select and manipulate nodes">
                         <i class="fa fa-lg fa-hand-pointer"></i>
@@ -37,7 +39,3 @@
                     </button>
                 </div>
             </div>
-        <editor-viewport-d3 [nodes]="nodes" [edges]="edges" [tool]="currentTool" [id]="editorId"
-                            (addNode)="addNode($event)" (removeNode)="removeNode($event)"
-                            (addEdge)="addEdge($event)" #viewport></editor-viewport-d3>
-    </div>

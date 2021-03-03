@@ -13,7 +13,7 @@ import {AlertService} from "../../../services/alert.service";
 
 @Component({
     selector: 'editor-viewport-d3',
-    template: `<div class="graph-editor-viewer-canvas">
+    template: `
         <div class="spinner-overlay" *ngIf="!initialized">
             <div class="spinner-border"></div>
         </div>
@@ -22,7 +22,7 @@ import {AlertService} from "../../../services/alert.service";
             <span>Name: {{ hoverData.name }}<br>
                 Personalization: {{ hoverData.p }}</span>
         </div>
-        <svg id="canvas-{{id}}">
+        <svg class="graph-editor-canvas" id="canvas-{{id}}">
             <defs>
                 <filter id="select-filter-{{id}}" width="125%" height="125%">
                     <feGaussianBlur result="blurOut" in="offOut" stdDeviation="0.8" />
@@ -33,7 +33,7 @@ import {AlertService} from "../../../services/alert.service";
                 </marker>
             </defs>
         </svg>
-    </div>`
+    `
 })
 export class EditorViewportD3Component implements AfterViewInit {
 
@@ -71,10 +71,6 @@ export class EditorViewportD3Component implements AfterViewInit {
     private transform: d3.ZoomTransform;
 
     private ready = false;
-
-    private width = 1800; //todo dynamic
-
-    private height = 800; //todo dynamic
 
     private snapDistance = 25;
 
@@ -207,39 +203,52 @@ export class EditorViewportD3Component implements AfterViewInit {
      * @private
      */
     private initializeD3() {
+        const zoomBehavior = d3.zoom()
+            .filter((e) => {
+                switch (e.type) {
+                    case "mousedown":
+                        return !e.ctrlKey && (e.button === 2 || e.button === 1)
+                    case "wheel":
+                        return e.button === 0
+                    default:
+                        return false
+                }
+            })
+            .on("zoom", e => this.root.attr("transform", (this.transform = e.transform)));
+
         this.canvas = <d3.Selection<SVGSVGElement, unknown, HTMLElement, unknown>>
             d3.select("#canvas-" + this.id)
-            .attr("width", this.width)
-            .attr("height", this.height)
-            .call(d3.zoom()
-                .filter((e) => {
-                    switch (e.type) {
-                        case "mousedown":
-                            return !e.ctrlKey && (e.button === 2 || e.button === 1)
-                        case "wheel":
-                            return e.button === 0
-                        default:
-                            return false
-                    }
-                })
-                .on("zoom", e => this.root.attr("transform", (this.transform = e.transform)))
-            )
+            .call(zoomBehavior)
             .on("contextmenu", (d) => { if (!d.ctrlKey) d.preventDefault()})
             .on("click", (e) => this.onClickCanvas(e));
 
-        // get default transform
-        this.transform = zoomTransform(this.canvas.node());
-
+        // insert container elements
         this.root = this.canvas.append("g");
         this.edgeRoot = this.root.append("g");
         this.nodeRoot = this.root.append("g");
 
+        // calculate canvas dimensions
+        const offset = document.getElementById("project-body").getBoundingClientRect().y;
+        this.canvas.style("height", `calc(100vh - ${offset}px)`);
+        const dimensions = this.canvas.node().getBoundingClientRect();
+        this.canvas.call(zoomBehavior.transform,
+            d3.zoomIdentity.translate(dimensions.width / 2, dimensions.height / 2));
+
+        // get default transform
+        this.transform = zoomTransform(this.canvas.node());
+
+        // setup layout simulation
         this.sim = forceSimulation(this.nodes)
             .force('link', forceLink(this.edges).distance(80))
             .force('center', forceCenter(0, 0))
             .force('charge', forceManyBody().strength(-20).distanceMax(100))
             .force('collide', forceCollide().radius(50))
             .alphaMin(0.1)
+            .on('tick', () => {
+                if (!this.initialized) {
+                    this.dirtyNodes = this.dirtyNodes.concat(this.nodes)
+                }
+            })
             .on('end', () => {
                 this.dirtyNodes = this.dirtyNodes.concat(this.nodes)
                 if (this.initialized) {

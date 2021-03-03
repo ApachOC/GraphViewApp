@@ -1,6 +1,6 @@
 <div class="card border-0">
     <div class="card-header project-header">
-        <ul class="nav nav-tabs card-header-tabs" [sortablejs]="projects">
+        <ul class="nav nav-tabs border-0" [sortablejs]="projects">
             <li class="nav-item nav-item-project" *ngFor="let project of projects">
                 <a class="nav-link"
                         (click)="currentProject = project"
@@ -34,15 +34,11 @@
                 </a>
             </li>
         </ul>
+        <div class="navbar-project">
+        </div>
     </div>
-    <nav class="navbar navbar-project">
-        <ul class="navbar-nav">
-            <li class="nav-item" ngbDropdown *ngIf="projects.length < 2">
-            </li>
-        </ul>
-    </nav>
-    <div class="card-body" *ngFor="let project of projects" [hidden]="currentProject !== project">
-        <div class="container-fluid" *ngIf="project.ready; else projectCreator">
+    <div class="card-body" id="project-body" *ngFor="let project of projects" [hidden]="currentProject !== project">
+        <div *ngIf="project.ready; else projectCreator">
             <graph-editor [project]="project"></graph-editor>
         </div>
         <ng-template #projectCreator>

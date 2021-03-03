@@ -1,24 +1,28 @@
-.graph-editor-viewer-canvas {
-    border: 1px solid black;
+graph-editor {
+    position: relative;
+    display: block;
+    margin: -1.25rem;
+}
+
+.graph-editor-canvas {
     width: 100%;
     height: 800px;
     overflow: hidden;
 }
 
-.graph-editor-viewer {
-    display: flex;
-}
-
-.graph-editor-viewer .btn-group-vertical .btn {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    border-right: none;
-}
-
-.graph-editor-viewer .graph-editor-toolbars {
+graph-editor .graph-editor-toolbars {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    width: 3rem;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    bottom: 1rem;
+}
+
+graph-editor .graph-editor-toolbars .btn:not(:hover) {
+    background: white;
 }
 
 .administration-table tbody tr {
@@ -56,16 +60,15 @@
 
 .navbar-project {
     background: cadetblue;
-    color: white;
-}
-
-.navbar-project a {
-    color: white;
+    height: 1rem;
 }
 
 .card-header.project-header {
-    padding-left: 0;
-    padding-top: 0;
+    padding: 0;
+}
+
+.nav-tabs .nav-item.nav-item-project {
+    margin-bottom: 0;
 }
 
 .nav-tabs .nav-item-project .nav-link {
@@ -78,9 +81,8 @@
     padding-right: 1rem;
 }
 
-.nav-tabs .nav-item-project .nav-link:last-child {
+.nav-tabs .nav-item-project:last-child .nav-link {
     padding-left: 1rem;
-    padding-right: 1rem;
 }
 .nav-tabs .nav-item-project .nav-link:hover {
     background: silver;
@@ -146,12 +148,13 @@
 }
 
 .spinner-overlay {
-    position: static;
-    width: 100%;
+    position: absolute;
     height: 100%;
+    width: 100%;
     top: 0;
     left: 0;
-    background-color: white;
+    background-color: #ffffff88;
+    backdrop-filter: blur(3px);
 }
 
 .spinner-overlay .spinner-border {
