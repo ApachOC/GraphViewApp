@@ -36,6 +36,7 @@ import {LibrarySelectionModalComponent} from "./components/projects/editor/libra
 import {AlertComponent, AlertHostComponent} from "./components/generic/alert-host.component";
 import {AlertService} from "./services/alert.service";
 import {TextPromptModalComponent} from "./components/generic/text-prompt-modal.component";
+import {EditorDetailsComponent} from "./components/projects/editor/editor-details.component";
 
 const routes: Routes = [
     { path: "projects", component: ProjectManagerComponent },
@@ -68,7 +69,8 @@ const routes: Routes = [
         LibrarySelectionModalComponent,
         AlertHostComponent,
         AlertComponent,
-        TextPromptModalComponent
+        TextPromptModalComponent,
+        EditorDetailsComponent
     ],
     imports: [
         BrowserModule,

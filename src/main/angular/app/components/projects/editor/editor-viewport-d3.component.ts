@@ -8,7 +8,6 @@ import {AlertService} from "../../../services/alert.service";
 
 //todo
 // Save As
-// Multiselect
 // Size by rank
 
 @Component({
@@ -22,7 +21,7 @@ import {AlertService} from "../../../services/alert.service";
             <span>Name: {{ hoverData.name }}<br>
                 Personalization: {{ hoverData.p }}</span>
         </div>
-        <svg class="graph-editor-canvas" id="canvas-{{id}}" viewBox="0 0 1912 864">
+        <svg class="graph-editor-canvas" id="canvas-{{id}}">
             <defs>
                 <filter id="select-filter-{{id}}" width="125%" height="125%">
                     <feGaussianBlur result="blurOut" in="offOut" stdDeviation="0.8" />
@@ -50,13 +49,16 @@ export class EditorViewportD3Component implements AfterViewInit {
     public tool = "SELECT";
 
     @Output()
-    public addNode =new EventEmitter<{x: number, y: number}>();
+    public addNode = new EventEmitter<{x: number, y: number}>();
 
     @Output()
     public addEdge = new EventEmitter<{source: ChartNode, target: ChartNode}>();
 
     @Output()
     public removeNode = new EventEmitter<ChartNode>();
+
+    @Output()
+    public selectNodes = new EventEmitter<ChartNode[]>();
 
     public sim: Simulation<ChartNode, undefined>;
 
@@ -74,11 +76,11 @@ export class EditorViewportD3Component implements AfterViewInit {
 
     private snapDistance = 25;
 
-    private selected: ChartNode[] = [];
-
     private selectPoint: {x: number, y: number}
 
     private selectRect: d3.Selection<SVGRectElement, unknown, any, any>;
+
+    private selectedNodes: ChartNode[] = [];
 
     private tmpAdd: ChartEdge | ChartNode;
 
@@ -113,11 +115,12 @@ export class EditorViewportD3Component implements AfterViewInit {
     private onClickNode(event: MouseEvent, node: ChartNode) {
         if (this.tool == "SELECT") {
             if (event.ctrlKey) {
-                this.selected.push(node)
+                this.selectedNodes.push(node)
             } else {
-                this.dirtyNodes = this.dirtyNodes.concat(this.selected);
-                this.selected = [node]
+                this.dirtyNodes = this.dirtyNodes.concat(this.selectedNodes);
+                this.selectedNodes = [node]
             }
+            this.selectNodes.emit(this.selectedNodes);
         }
         if (this.tool == "REMOVE") {
             this.removeNode.emit(node);
@@ -241,12 +244,23 @@ export class EditorViewportD3Component implements AfterViewInit {
             return node.x > startX && node.x < endX &&
                 node.y > startY && node.y < endY;
         });
+
+        const oldSelection = this.selectedNodes;
         if (!append) {
-            this.dirtyNodes = this.dirtyNodes.concat(this.selected)
-            this.selected = nodesInBox;
+            this.dirtyNodes = this.dirtyNodes.concat(this.selectedNodes)
+            this.selectedNodes = nodesInBox;
         } else {
-            this.selected = this.selected.concat(nodesInBox);
+            this.selectedNodes = this.selectedNodes.concat(nodesInBox);
         }
+
+        let selectionHasChanged = oldSelection.length != this.selectedNodes.length;
+        for (let i = 0; i < oldSelection.length && !selectionHasChanged; i++) {
+            selectionHasChanged = !this.selectedNodes.includes(oldSelection[i]);
+        }
+        if (selectionHasChanged) {
+            this.selectNodes.emit(this.selectedNodes);
+        }
+
     }
 
     private onMouseover(d: ChartNode) {
@@ -383,7 +397,7 @@ export class EditorViewportD3Component implements AfterViewInit {
             });
 
         nodes
-            .filter((node) => this.selected.includes(node))
+            .filter((node) => this.selectedNodes.includes(node))
             .attr("class", "graph-node selected")
             .attr("filter", `url(#select-filter-${this.id})`);
     }

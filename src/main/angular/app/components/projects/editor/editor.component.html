@@ -1,19 +1,19 @@
-<editor-viewport-d3 [nodes]="nodes" [edges]="edges" [tool]="currentTool" [id]="editorId.toString()"
+<editor-viewport-d3 [nodes]="nodes" [edges]="edges" [id]="editorId.toString()"
                         (addNode)="addNode($event)" (removeNode)="removeNode($event)"
-                        (addEdge)="addEdge($event)" #viewport></editor-viewport-d3>
-    <div class="graph-editor-toolbars">
+                        (addEdge)="addEdge($event)" (selectNodes)="onSelection($event)" #viewport></editor-viewport-d3>
+    <div class="graph-editor-toolbars toolbar-left">
         <div class="btn-group-vertical">
-                    <button class="btn btn-outline-primary" [class.active]="currentTool == 'SELECT'"
-                            (click)="currentTool = 'SELECT'" ngbTooltip="Select and manipulate nodes">
+                    <button class="btn btn-outline-primary" [class.active]="viewport.tool == 'SELECT'"
+                            (click)="viewport.tool = 'SELECT'" ngbTooltip="Select and manipulate nodes">
                         <i class="fa fa-lg fa-hand-pointer"></i>
                     </button>
-                    <button class="btn btn-outline-primary" [class.active]="currentTool == 'ADD'"
-                            (click)="currentTool = 'ADD'" ngbTooltip="Create nodes & edges">
+                    <button class="btn btn-outline-primary" [class.active]="viewport.tool == 'ADD'"
+                            (click)="viewport.tool = 'ADD'" ngbTooltip="Create nodes & edges">
                         <i class="fa fa-lg fa-project-diagram"></i>
                         <i class="fa fa-plus" style="position:absolute;top:17px;right:10px;font-size:0.5em"></i>
                     </button>
-                    <button class="btn btn-outline-primary" [class.active]="currentTool == 'REMOVE'"
-                            (click)="currentTool = 'REMOVE'" ngbTooltip="Remove nodes & edges">
+                    <button class="btn btn-outline-primary" [class.active]="viewport.tool == 'REMOVE'"
+                            (click)="viewport.tool = 'REMOVE'" ngbTooltip="Remove nodes & edges">
                         <i class="fa fa-lg fa-project-diagram"></i>
                         <i class="fa fa-minus" style="position:absolute;top:17px;right:10px;font-size:0.5em"></i>
                     </button>
@@ -39,3 +39,12 @@
                     </button>
                 </div>
             </div>
+<div class="graph-editor-toolbars toolbar-right">
+    <button class="btn btn-outline-primary" (click)="details.expanded = !details.expanded"
+            placement="left" ngbTooltip="Show/hide selection properties">
+        <i class="fa fa-lg" [class.fa-arrow-alt-circle-left]="!details.expanded"
+           [class.fa-arrow-alt-circle-right]="details.expanded"></i>
+    </button>
+</div>
+<graph-editor-details #details [selectedNodes]="selectedNodes"
+                      [class.expanded]="details.expanded"></graph-editor-details>

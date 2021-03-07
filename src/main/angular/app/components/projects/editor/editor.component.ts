@@ -1,9 +1,8 @@
-import {Component, Input, OnInit, OnDestroy} from "@angular/core";
+import {Component, Input, OnInit} from "@angular/core";
 import {ProjectData} from "../../../models/project-models";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {LibrarySelectionModalComponent} from "./library-selection-modal.component";
 import {AlertService} from "../../../services/alert.service";
-import {Subscription} from "rxjs";
 
 export class ChartEdge {
 
@@ -50,11 +49,11 @@ export class EditorComponent implements OnInit {
 
     public labels: string[];
 
-    public currentTool: string = "SELECT";
-
     public editorId = EditorComponent.count++;
 
     @Input() public project: ProjectData;
+
+    public selectedNodes: ChartNode[] = [];
 
     constructor(private modalService: NgbModal, private alerts: AlertService) {  }
 
@@ -139,5 +138,9 @@ export class EditorComponent implements OnInit {
             this.edges.push(edgeObj);
         });
         return;
+    }
+
+    onSelection(nodes: ChartNode[]) {
+        this.selectedNodes = nodes;
     }
 }

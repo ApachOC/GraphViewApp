@@ -1,0 +1,40 @@
+<div class="card detail-card">
+    <div class="card-header">
+        <p class="card-title" *ngIf="selectedNodes.length > 1 ">Selected: <strong>{{selectedNodes.length}}</strong> nodes</p>
+        <p class="card-title" *ngIf="selectedNodes.length === 1 ">Selected: <strong>{{selectedNodes[0].data.name}}</strong></p>
+        <p class="card-title" *ngIf="!selectedNodes.length">Selection is empty</p>
+    </div>
+    <div *ngIf="selectedNodes.length == 1" class="card-body">
+        <p><strong>Node details:</strong></p>
+        <table *ngFor="let node of selectedNodes">
+            <tr>
+                <td>Node ID:</td>
+                <td>{{node.data.id}}</td>
+            </tr>
+            <tr>
+                <td>Coordinates:</td>
+                <td>({{node.x | number}}, {{node.y | number}})</td>
+            </tr>
+            <tr>
+                <td>Personalization:</td>
+                <td>
+                    <input type="number" class="form-control" [(ngModel)]="personalization">
+                </td>
+            </tr>
+        </table>
+        <hr>
+        <p><strong>Calculated properties:</strong></p>
+        <p>TODO</p>
+    </div>
+    <div *ngIf="selectedNodes.length > 1" class="card-body">
+        <table>
+            <tr>
+                <td>Set personalization:</td>
+                <td>
+                    <input type="number" class="form-control" [(ngModel)]="personalization">
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div *ngIf="!selectedNodes.length" class="card-body">TODO show graph details (or something else?)</div>
+</div>
