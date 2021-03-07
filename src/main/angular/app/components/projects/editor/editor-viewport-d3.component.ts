@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, DoCheck, Input, Output, EventEmitter, OnChanges} from "@angular/core";
+import {AfterViewInit, Component, Input, Output, EventEmitter} from "@angular/core";
 import {forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, Simulation} from 'd3-force';
 import * as d3 from 'd3';
 import {zoomTransform} from 'd3-zoom';
@@ -22,7 +22,7 @@ import {AlertService} from "../../../services/alert.service";
             <span>Name: {{ hoverData.name }}<br>
                 Personalization: {{ hoverData.p }}</span>
         </div>
-        <svg class="graph-editor-canvas" id="canvas-{{id}}">
+        <svg class="graph-editor-canvas" id="canvas-{{id}}" viewBox="0 0 1912 864">
             <defs>
                 <filter id="select-filter-{{id}}" width="125%" height="125%">
                     <feGaussianBlur result="blurOut" in="offOut" stdDeviation="0.8" />
@@ -74,7 +74,13 @@ export class EditorViewportD3Component implements AfterViewInit {
 
     private snapDistance = 25;
 
-    private selection: ChartNode | ChartEdge;
+    private selected: ChartNode[] = [];
+
+    private selectPoint: {x: number, y: number}
+
+    private selectRect: d3.Selection<SVGRectElement, unknown, any, any>;
+
+    private tmpAdd: ChartEdge | ChartNode;
 
     private dirtyNodes: ChartNode[] = [];
 
@@ -106,10 +112,12 @@ export class EditorViewportD3Component implements AfterViewInit {
      */
     private onClickNode(event: MouseEvent, node: ChartNode) {
         if (this.tool == "SELECT") {
-            if (this.selection instanceof ChartNode) {
-                this.dirtyNodes.push(this.selection);
+            if (event.ctrlKey) {
+                this.selected.push(node)
+            } else {
+                this.dirtyNodes = this.dirtyNodes.concat(this.selected);
+                this.selected = [node]
             }
-            this.selection = node;
         }
         if (this.tool == "REMOVE") {
             this.removeNode.emit(node);
@@ -150,7 +158,7 @@ export class EditorViewportD3Component implements AfterViewInit {
         } else if (this.tool == "ADD") {
             if (event.active) {
                 // drag in progress, update position
-                const edge = <ChartEdge> this.selection;
+                const edge = <ChartEdge> this.tmpAdd;
                 const point = edge.target;
                 const closest = this.getClosestNode(event.x, event.y, this.snapDistance);
                 if (!closest) {
@@ -163,9 +171,9 @@ export class EditorViewportD3Component implements AfterViewInit {
                 this.dirtyEdges.push(edge);
             } else if (start) {
                 // drag started, create temporary edge
-                this.selection = new ChartEdge(event.subject,
+                this.tmpAdd = new ChartEdge(event.subject,
                     {x: event.x, y: event.y});
-                this.edges.push(this.selection);
+                this.edges.push(this.tmpAdd);
             } else {
                 // drag ended
                 const closest = this.getClosestNode(event.x, event.y, this.snapDistance);
@@ -174,7 +182,7 @@ export class EditorViewportD3Component implements AfterViewInit {
                 });
 
                 // if valid node detected, create new edge
-                const edge = <ChartEdge>this.selection;
+                const edge = <ChartEdge> this.tmpAdd;
                 if (closest && closest != event.subject && !existing) {
                     this.addEdge.emit({
                         source: <ChartNode> edge.source,
@@ -182,10 +190,62 @@ export class EditorViewportD3Component implements AfterViewInit {
                     });
                 }
 
-                this.selection = null;
+                this.tmpAdd = null;
                 const index = this.edges.indexOf(edge);
                 this.edges.splice(index, 1);
             }
+        }
+    }
+
+    private onDragCanvas(e: d3.D3DragEvent<SVGSVGElement, any, any>, start: boolean) {
+        if (this.tool != "SELECT") {
+            return
+        }
+        if (start) {
+            this.selectPoint = {x: e.x, y: e.y}
+            this.selectRect = this.canvas.append("rect")
+                .attr("x", e.x).attr("y", e.y)
+                .attr("width", 0).attr("height", 0)
+                .attr("class", "selection-box");
+        } else {
+            let width = e.x - this.selectPoint.x
+            let height = e.y - this.selectPoint.y
+
+            if (width < 0) {
+                this.selectRect.attr("width", -width).attr("x", e.x)
+            } else {
+                this.selectRect.attr("width", width).attr("x", this.selectPoint.x)
+            }
+
+            if (height < 0) {
+                this.selectRect.attr("height", -height).attr("y", e.y);
+            } else {
+                this.selectRect.attr("height", height).attr("y", this.selectPoint.y);
+            }
+        }
+        this.getSelectedNodes(e.sourceEvent.ctrlKey);
+    }
+
+    private getSelectedNodes(append?: boolean) {
+        const startX = this.transform.invertX(
+            parseFloat(this.selectRect.attr("x")));
+        const startY = this.transform.invertY(
+            parseFloat(this.selectRect.attr("y")));
+
+        const endX = this.transform.invertX(this.selectPoint.x +
+            parseFloat(this.selectRect.attr("width")));
+        const endY = this.transform.invertY(this.selectPoint.y +
+            parseFloat(this.selectRect.attr("height")));
+
+        const nodesInBox = this.nodes.filter((node) => {
+            return node.x > startX && node.x < endX &&
+                node.y > startY && node.y < endY;
+        });
+        if (!append) {
+            this.dirtyNodes = this.dirtyNodes.concat(this.selected)
+            this.selected = nodesInBox;
+        } else {
+            this.selected = this.selected.concat(nodesInBox);
         }
     }
 
@@ -215,10 +275,16 @@ export class EditorViewportD3Component implements AfterViewInit {
                 }
             })
             .on("zoom", e => this.root.attr("transform", (this.transform = e.transform)));
+        const dragBehavior = d3.drag()
+            .filter((e) => !e.button)
+            .on("start", (e) => this.onDragCanvas(e, true))
+            .on("drag", (e) => this.onDragCanvas(e, false))
+            .on("end", () => { this.selectRect.remove() });
 
         this.canvas = <d3.Selection<SVGSVGElement, unknown, HTMLElement, unknown>>
             d3.select("#canvas-" + this.id)
             .call(zoomBehavior)
+            .call(dragBehavior)
             .on("contextmenu", (d) => { if (!d.ctrlKey) d.preventDefault()})
             .on("click", (e) => this.onClickCanvas(e));
 
@@ -287,7 +353,7 @@ export class EditorViewportD3Component implements AfterViewInit {
             )
             .on("click", (e, d) => this.onClickNode(e, d))
             .on("mouseover", (e: MouseEvent, d) => this.onMouseover(d))
-            .on("mouseout", (e, d) => this.hoverData.show = 0)
+            .on("mouseout", () => this.hoverData.show = 0)
             .each((d) => this.dirtyNodes.push(d));
 
         // update values
@@ -317,7 +383,7 @@ export class EditorViewportD3Component implements AfterViewInit {
             });
 
         nodes
-            .filter((node) => node == this.selection)
+            .filter((node) => this.selected.includes(node))
             .attr("class", "graph-node selected")
             .attr("filter", `url(#select-filter-${this.id})`);
     }
