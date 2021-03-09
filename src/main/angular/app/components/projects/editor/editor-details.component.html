@@ -101,9 +101,16 @@
                         </tr>
                         <tr *ngFor="let timestamp of project.history[result]; index as i"
                             (click)="selectedResult.emit([result, i])"
-                            class="result-row" ngbTooltip="Show this run in the viewport">
+                            class="result-row" ngbTooltip="Show in viewport" #topTooltip="ngbTooltip">
                             <td>{{i}}</td>
-                            <td>{{ dateTime(timestamp) }}</td>
+                            <td>
+                                {{ dateTime(timestamp) }}
+                                <button class="btn btn-sm float-right py-0" ngbTooltip="Remove from history"
+                                        (click)="removeFromHistory.emit([result, i]); $event.stopPropagation()"
+                                        (mouseover)="topTooltip.close()">
+                                    <i class="fa fa-sm fa-times"></i>
+                                </button>
+                            </td>
                         </tr>
                     </table>
                 </div>

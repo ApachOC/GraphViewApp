@@ -18,6 +18,9 @@ export class EditorDetailsComponent {
     @Output()
     public selectedResult = new EventEmitter<[string, number]>();
 
+    @Output()
+    public removeFromHistory = new EventEmitter<[string, number]>();
+
     public expanded = true
 
     expandedCollapse: NgbCollapse;
@@ -80,6 +83,13 @@ export class EditorDetailsComponent {
     }
 
     dateTime(timestamp: number) {
-        return "Just now..."
+        const date = new Date(timestamp);
+        const formatOptions = {
+            year: 'numeric', month: 'numeric', day: 'numeric',
+            hour: 'numeric', minute: 'numeric', second: 'numeric',
+            hour12: false
+        };
+        const idf = new Intl.DateTimeFormat('default', formatOptions);
+        return idf.format(date)
     }
 }

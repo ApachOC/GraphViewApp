@@ -2,6 +2,7 @@ package cz.zcu.kiv.wernerv.models;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.util.Pair;
 
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,10 @@ public class ProjectData {
 
     public List<Edge> edges;
 
+    public Pair<String, Integer> showResults;
+
+    public Map<String, List<Long>> history;
+
     public static class Node {
 
         public String id;
@@ -30,7 +35,7 @@ public class ProjectData {
 
         public float personalization;
 
-        public Map <String, String> extraValues;
+        public Map <String, List<String>> extraValues;
     }
 
     public static class Edge {

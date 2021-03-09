@@ -104,6 +104,7 @@ export class EditorComponent implements OnInit {
         const modalRef = this.modalService.open(LibrarySelectionModalComponent);
         modalRef.componentInstance.project = this.project;
         modalRef.result.then((results) => {
+            let parIndex = 0;
             for (let par of results.nodeLabels) {
                 for (let id in results.nodeResults) {
                     // save result to node history
@@ -111,7 +112,7 @@ export class EditorComponent implements OnInit {
                         if (!this.nodeMap[id].data.extraValues.hasOwnProperty(par)) {
                             this.nodeMap[id].data.extraValues[par] = [];
                         }
-                        this.nodeMap[id].data.extraValues[par].push(results.nodeResults[id]);
+                        this.nodeMap[id].data.extraValues[par].push(results.nodeResults[id][parIndex]);
                     }
                 }
 
@@ -120,7 +121,7 @@ export class EditorComponent implements OnInit {
                     this.project.history[par] = [];
                 }
                 this.project.history[par].push(Date.now())
-
+                parIndex++;
             }
             // todo also implement edges
 
