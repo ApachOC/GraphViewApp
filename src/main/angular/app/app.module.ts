@@ -4,11 +4,11 @@ import { NgModule } from '@angular/core';
 import { AppRootComponent } from './components/app-root.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import { LoginModalComponent } from "./components/generic/login-modal.component";
-import {NgbAlertModule, NgbDropdownModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbAlertModule, NgbDropdownModule, NgbModule, NgbCollapseModule} from "@ng-bootstrap/ng-bootstrap";
 import {ProjectCreatorComponent} from "./components/projects/manager/project-creator.component";
 import {NgxDropzoneModule} from "ngx-dropzone";
 import {ProjectManagerComponent} from "./components/projects/manager/project-manager.component";
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {SortablejsModule} from "ngx-sortablejs";
 import {FormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
@@ -24,10 +24,7 @@ import {ConfirmModalComponent} from "./components/administration/modals/confirm-
 import {UserAdministrationComponent} from "./components/administration/user-admin.component";
 import {LibraryAdministrationComponent} from "./components/administration/libs-admin.component";
 import {AuthGuardService} from "./services/auth-guard.service";
-import {
-    LibraryDetailsModalComponent,
-    LibraryParameterModalComponent
-} from "./components/administration/modals/library-details-modal.component";
+import {LibraryDetailsModalComponent, LibraryParameterModalComponent} from "./components/administration/modals/library-details-modal.component";
 import {RestLibsService} from "./services/rest-libs.service";
 import {RestProjectsService} from "./services/rest-projects.service";
 import {ProjectSelectionModalComponent} from "./components/projects/manager/project-selection-modal.component";
@@ -80,12 +77,13 @@ const routes: Routes = [
         NgbDropdownModule,
         NgxDropzoneModule,
         BrowserAnimationsModule,
+        NgbCollapseModule,
         NgbModule,
         SortablejsModule,
         CommonModule,
         RouterModule.forRoot(routes)
     ],
-  providers: [
+    providers: [
       SessionService,
       ProjectManagerService,
       RestUsersService,
@@ -94,6 +92,6 @@ const routes: Routes = [
       RestProjectsService,
       AlertService,
       { provide: HTTP_INTERCEPTORS, useClass: XhrInterceptor, multi: true }],
-    bootstrap: [ AppRootComponent ]},
-  )
+    bootstrap: [ AppRootComponent ]
+})
 export class AppModule { }

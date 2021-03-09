@@ -206,3 +206,20 @@ graph-editor-details .detail-card {
 graph-editor-details.expanded {
     width: 20rem;
 }
+
+.result-card .card-header {
+    padding: 0.5rem 0.5rem;
+    cursor: pointer;
+}
+
+.result-card .card-body {
+    padding: 0.5rem 0.5rem;
+}
+
+.result-card .result-row {
+    cursor: pointer;
+}
+
+.result-card .result-row:hover {
+    background: #f0f0f0;
+}

@@ -42,7 +42,6 @@ export class ProjectCreatorComponent {
         } else {
             return 0
         }
-
     }
 
     constructor(private modalService: NgbModal,

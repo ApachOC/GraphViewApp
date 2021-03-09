@@ -106,10 +106,21 @@ export class EditorComponent implements OnInit {
         modalRef.result.then((results) => {
             for (let par of results.nodeLabels) {
                 for (let id in results.nodeResults) {
+                    // save result to node history
                     if (results.nodeResults.hasOwnProperty(id)) {
-                        this.nodeMap[id].data.extraValues[par] = results.nodeResults[id];
+                        if (!this.nodeMap[id].data.extraValues.hasOwnProperty(par)) {
+                            this.nodeMap[id].data.extraValues[par] = [];
+                        }
+                        this.nodeMap[id].data.extraValues[par].push(results.nodeResults[id]);
                     }
                 }
+
+                // save result to project history
+                if (!this.project.history.hasOwnProperty(par)) {
+                    this.project.history[par] = [];
+                }
+                this.project.history[par].push(Date.now())
+
             }
             // todo also implement edges
 

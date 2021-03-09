@@ -5,11 +5,13 @@ export class ProjectData {
 
     nodes: ProjectData.Node[] = [];
 
-    extraValueNames: string[];
-
     ready: boolean;
 
     edges: ProjectData.Edge[] = [];
+
+    showResults: [string, number] | null;
+
+    history: Record<string, number[]> = {};
 
     get state(): ProjectData.State {
         if (this.nodeCount > 0) {
@@ -52,7 +54,7 @@ export namespace ProjectData {
         y = 0;
         personalization: number;
 
-        extraValues: Record<string, any> = {};
+        extraValues: Record<string, string[]> = {};
 
         constructor(public id: string, public name: string, pers?: number) {
             this.personalization = pers || 1.0;

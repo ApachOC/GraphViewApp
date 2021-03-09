@@ -1,11 +1,16 @@
 <div class="card detail-card">
     <div class="card-header">
-        <p class="card-title" *ngIf="selectedNodes.length > 1 ">Selected: <strong>{{selectedNodes.length}}</strong> nodes</p>
-        <p class="card-title" *ngIf="selectedNodes.length === 1 ">Selected: <strong>{{selectedNodes[0].data.name}}</strong></p>
-        <p class="card-title" *ngIf="!selectedNodes.length">Selection is empty</p>
+        <p class="card-title" *ngIf="selectedNodes.length > 1 ">
+            Selected <strong>{{selectedNodes.length}}</strong> nodes
+        </p>
+        <p class="card-title" *ngIf="selectedNodes.length === 1 ">
+            <strong>{{selectedNodes[0].data.name}}</strong>
+        </p>
+        <p class="card-title" *ngIf="!selectedNodes.length">
+            <strong>Graph properties</strong>
+        </p>
     </div>
     <div *ngIf="selectedNodes.length == 1" class="card-body">
-        <p><strong>Node details:</strong></p>
         <table *ngFor="let node of selectedNodes">
             <tr>
                 <td>Node ID:</td>
@@ -16,25 +21,93 @@
                 <td>({{node.x | number}}, {{node.y | number}})</td>
             </tr>
             <tr>
-                <td>Personalization:</td>
-                <td>
-                    <input type="number" class="form-control" [(ngModel)]="personalization">
+                <td colspan="2" class="form-group">
+                    <hr>
+                    <label for="singlePersonalization">Personalization:</label>
+                    <input id="singlePersonalization" type="number" class="form-control"
+                           [(ngModel)]="personalization">
                 </td>
             </tr>
         </table>
-        <hr>
-        <p><strong>Calculated properties:</strong></p>
-        <p>TODO</p>
+        <div *ngIf="hasExtraValues">
+            <hr>
+            <p>Calculated values:</p>
+            <div class="card result-card" *ngFor="let result of extraValueNames;">
+                <div class="card-header" (click)="expandResult(resultCollapse)">
+                    {{result}}
+                </div>
+                <div class="card-body" ngbCollapse #resultCollapse="ngbCollapse">
+                    <table class="table">
+                        <tr>
+                            <th>Run</th>
+                            <th>Result</th>
+                        </tr>
+                        <tr *ngFor="let value of extraValues[result]; index as i"
+                            (click)="selectedResult.emit([result, i])"
+                            class="result-row" ngbTooltip="Show this run in the viewport">
+                            <td>{{i}}</td>
+                            <td>{{ formatValue(value) }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
     <div *ngIf="selectedNodes.length > 1" class="card-body">
+        <label for="multiPersonalization">Personalization:</label>
+        <input id="multiPersonalization" type="number" class="form-control"
+               [(ngModel)]="personalization">
+    </div>
+    <div *ngIf="!selectedNodes.length" class="card-body">
         <table>
             <tr>
-                <td>Set personalization:</td>
                 <td>
-                    <input type="number" class="form-control" [(ngModel)]="personalization">
+                    Nodes:
+                </td>
+                <td>
+                    {{ project.nodeCount }}
                 </td>
             </tr>
+            <tr>
+                <td>
+                    Edges:
+                </td>
+                <td>
+                    {{ project.edgeCount }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Density:
+                </td>
+                <td>
+                    {{ density | percent }}
+                </td>
+            </tr>
+
         </table>
+        <div *ngIf="projectHistoryNames.length > 0">
+            <hr>
+            <p>Calculated value history:</p>
+            <div class="card result-card" *ngFor="let result of projectHistoryNames;">
+                <div class="card-header" (click)="expandResult(resultCollapse)">
+                    {{result}}
+                </div>
+                <div class="card-body" ngbCollapse #resultCollapse="ngbCollapse">
+                    <table class="table">
+                        <tr>
+                            <th>Run</th>
+                            <th>Timestamp</th>
+                        </tr>
+                        <tr *ngFor="let timestamp of project.history[result]; index as i"
+                            (click)="selectedResult.emit([result, i])"
+                            class="result-row" ngbTooltip="Show this run in the viewport">
+                            <td>{{i}}</td>
+                            <td>{{ dateTime(timestamp) }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
-    <div *ngIf="!selectedNodes.length" class="card-body">TODO show graph details (or something else?)</div>
 </div>
