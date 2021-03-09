@@ -52,7 +52,7 @@ export namespace ProjectData {
         y = 0;
         personalization: number;
 
-        extraValues: Record<string, any>;
+        extraValues: Record<string, any> = {};
 
         constructor(public id: string, public name: string, pers?: number) {
             this.personalization = pers || 1.0;

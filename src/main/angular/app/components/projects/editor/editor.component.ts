@@ -103,12 +103,16 @@ export class EditorComponent implements OnInit {
     public runLibrary() {
         const modalRef = this.modalService.open(LibrarySelectionModalComponent);
         modalRef.componentInstance.project = this.project;
-        modalRef.result.then((result) => {
-            for (let id in result) {
-                if (result.hasOwnProperty(id)) {
-                    this.nodeMap[id].data.personalization = result[id];
+        modalRef.result.then((results) => {
+            for (let par of results.nodeLabels) {
+                for (let id in results.nodeResults) {
+                    if (results.nodeResults.hasOwnProperty(id)) {
+                        this.nodeMap[id].data.extraValues[par] = results.nodeResults[id];
+                    }
                 }
             }
+            // todo also implement edges
+
             this.alerts.pushAlert("success", "Library work finished, check node personalization.");
         });
     }

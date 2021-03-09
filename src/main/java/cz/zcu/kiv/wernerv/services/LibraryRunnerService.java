@@ -2,6 +2,7 @@ package cz.zcu.kiv.wernerv.services;
 
 import cz.zcu.kiv.wernerv.models.LibraryParameter;
 import cz.zcu.kiv.wernerv.models.LibraryPath;
+import cz.zcu.kiv.wernerv.models.LibraryResults;
 import cz.zcu.kiv.wernerv.models.ProjectData;
 import cz.zcu.kiv.wernerv.repos.MongoLibraryPathRepository;
 import org.springframework.stereotype.Service;
@@ -58,7 +59,7 @@ public class LibraryRunnerService {
         return args;
     }
 
-    public Map<String, Float> run(String id, Map<String, String> args, ProjectData data, String path) throws IOException, InterruptedException {
+    public LibraryResults run(String id, Map<String, String> args, ProjectData data, String path) throws IOException, InterruptedException {
         // find library file
         Optional<LibraryPath> jarPathOpt = pathRepo.findById(id);
         if (!jarPathOpt.isPresent()) {
@@ -87,8 +88,11 @@ public class LibraryRunnerService {
 
         // send the data
         PrintWriter pw = new PrintWriter(proc.getOutputStream());
+        pw.println("DATA");
         writeNodeData(data, pw);
         writeEdgeData(data, pw);
+        pw.println("END_DATA");
+        pw.flush();
 
         // get results
         int exitCode = proc.waitFor();
@@ -97,45 +101,65 @@ public class LibraryRunnerService {
                     .lines().collect(Collectors.joining("\n"));
             throw new RuntimeException(err);
         } else {
-            Map<String, Float> values = new HashMap<>();
-            boolean loadResults = false;
+            LibraryResults results = new LibraryResults();
             Scanner sc = new Scanner(new InputStreamReader(proc.getInputStream()));
+            boolean loadNodes = false;
+            boolean loadEdges = false;
+            boolean loading = false;
 
+            readLoop:
             while (sc.hasNextLine()) {
-                String line = sc.nextLine();
-                if (!loadResults) {
-                    loadResults = line.equals("RESULTS");
-                } else {
-                    if (line.equals("END_RESULTS")) {
-                        break;
+                String[] fields = sc.nextLine().trim().split(";");
+                String[] values = Arrays.copyOfRange(fields, 1, fields.length);
+                switch (fields[0]) {
+                    case "RESULTS":
+                        loading = true;
+                        continue readLoop;
+                    case "NODES":
+                        loadNodes = true;
+                        results.nodeLabels = values;
+                        continue readLoop;
+                    case "EDGES":
+                        loadEdges = true;
+                        results.edgeLabels = values;
+                        continue readLoop;
+                    case "END_NODES":
+                        loadNodes = false;
+                        continue readLoop;
+                    case "END_EDGES":
+                        loadEdges = false;
+                        continue readLoop;
+                    case "END_RESULTS":
+                        break readLoop;
+                }
+
+                if (loading) {
+                    if (loadNodes) {
+                        results.nodeResults.put(fields[0], values);
                     }
-                    String[] fields = line.split(";");
-                    try {
-                        values.put(fields[0], Float.parseFloat(fields[2]));
-                    } catch(Exception e) {
-                        // ignore invalid lines
+                    if (loadEdges) {
+                        results.edgeResults.put(fields[0], values);
                     }
                 }
             }
 
-            return values;
+            return results;
         }
     }
 
     private void writeNodeData(ProjectData data, PrintWriter pw) {
-
+        pw.println("NODES");
         for (ProjectData.Node node : data.nodes) {
             pw.println(node.id + ";" + node.name + ";" + node.personalization);
         }
-        pw.println("END_DATA");
-        pw.flush();
+        pw.println("END_NODES");
     }
 
     private void writeEdgeData(ProjectData data, PrintWriter pw) {
+        pw.println("EDGES");
         for (ProjectData.Edge edge : data.edges) {
             pw.println(edge.sourceId + ";" + edge.targetId + ";" + edge.weight);
         }
-        pw.println("END_DATA");
-        pw.flush();
+        pw.println("END_EDGES");
     }
 }

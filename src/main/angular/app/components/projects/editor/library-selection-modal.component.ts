@@ -1,8 +1,7 @@
-import {Component, Input, OnInit, Optional} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {RestProjectsService} from "../../../services/rest-projects.service";
-import {ProjectData, ProjectRecord} from "../../../models/project-models";
+import {ProjectData} from "../../../models/project-models";
 import {LibraryObject, RestLibsService} from "../../../services/rest-libs.service";
 
 @Component({
@@ -46,7 +45,7 @@ export class LibrarySelectionModalComponent implements OnInit{
             .forEach(key => delete this.parameters[key]);
 
         // run the selected library
-        this.rest.runLibrary(this.project, this.libraryId, this.parameters).then((result: any) => {
+        this.rest.runLibrary(this.project, this.libraryId, this.parameters).then((result) => {
             this.modal.close(result);
         });
     }

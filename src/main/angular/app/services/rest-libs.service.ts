@@ -36,8 +36,8 @@ export class RestLibsService extends RestBase {
         return this.http.delete(`${environment.apiUrl}/libs/${id}`).toPromise();
     }
 
-    runLibrary(project: ProjectData, libId: string, args: Record<string, string>): Promise<Record<string, number>> {
-        return this.http.post<Record<string, number>>(`${environment.apiUrl}/libs/${libId}/run`, {
+    runLibrary(project: ProjectData, libId: string, args: Record<string, string>): Promise<LibraryResults> {
+        return this.http.post<LibraryResults>(`${environment.apiUrl}/libs/${libId}/run`, {
             project: project,
             args: args
         }).toPromise();
@@ -61,6 +61,13 @@ export class LibraryParameter {
     constructor(init?:Partial<LibraryParameter>) {
         Object.assign(this, init);
     }
+}
+
+export class LibraryResults {
+    nodeLabels: string[]
+    edgeLabels: string[]
+    nodeResults: Record<string, string[]>
+    edgeResults: Record<string, string[]>
 }
 
 export enum LibraryParameterType {

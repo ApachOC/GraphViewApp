@@ -4,6 +4,7 @@ import cz.zcu.kiv.wernerv.controllers.msg.LibraryCall;
 import cz.zcu.kiv.wernerv.controllers.msg.Message;
 import cz.zcu.kiv.wernerv.models.LibraryModel;
 import cz.zcu.kiv.wernerv.models.LibraryParameter;
+import cz.zcu.kiv.wernerv.models.LibraryResults;
 import cz.zcu.kiv.wernerv.repos.LibraryRepository;
 import cz.zcu.kiv.wernerv.services.LibraryRunnerService;
 import org.bson.types.ObjectId;
@@ -68,10 +69,9 @@ public class LibrariesCtrl {
      * @throws InterruptedException The library process was interrupted
      */
     @PostMapping("/libs/{id}/run")
-    public Map<String, Float> run(@PathVariable String id, @RequestBody LibraryCall callData) throws IOException, InterruptedException {
+    public LibraryResults run(@PathVariable String id, @RequestBody LibraryCall callData) throws IOException, InterruptedException {
         String path = "/" + new ObjectId().toString();
-        Map<String, Float> result = runService.run(id, callData.args, callData.project, path);
-        return result;
+        return runService.run(id, callData.args, callData.project, path);
     }
 
     /**
