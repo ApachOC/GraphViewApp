@@ -26,9 +26,9 @@ export class EditorDetailsComponent {
     expandedCollapse: NgbCollapse;
 
     get personalization () {
-        let p = this.selectedNodes[0].data.personalization;
+        let p = this.selectedNodes[0].personalization;
         for (let node of this.selectedNodes) {
-            if (node.data.personalization != p) {
+            if (node.personalization != p) {
                 return null;
             }
         }
@@ -37,7 +37,7 @@ export class EditorDetailsComponent {
 
     set personalization(value) {
         for (let node of this.selectedNodes) {
-            node.data.personalization = value;
+            node.personalization = value;
         }
     }
 

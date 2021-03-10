@@ -5,6 +5,7 @@ import {zoomTransform} from 'd3-zoom';
 import {ChartEdge, ChartNode} from "./editor.component";
 import {interval} from "rxjs";
 import {AlertService} from "../../../services/alert.service";
+import {PropertyMapping} from "./property-mapping";
 
 //todo
 // Save As
@@ -48,6 +49,9 @@ export class EditorViewportD3Component implements AfterViewInit {
     @Input()
     public tool = "SELECT";
 
+    @Input()
+    public mapping: PropertyMapping;
+
     @Output()
     public addNode = new EventEmitter<{x: number, y: number}>();
 
@@ -84,10 +88,6 @@ export class EditorViewportD3Component implements AfterViewInit {
 
     private tmpAdd: ChartEdge | ChartNode;
 
-    private dirtyNodes: ChartNode[] = [];
-
-    private dirtyEdges: ChartEdge[] = [];
-
     public hoverData: any = {}; //{ name: string, x: number, y: number, p: number, show: number }
 
     public initialized = false;
@@ -117,7 +117,9 @@ export class EditorViewportD3Component implements AfterViewInit {
             if (event.ctrlKey) {
                 this.selectedNodes.push(node)
             } else {
-                this.dirtyNodes = this.dirtyNodes.concat(this.selectedNodes);
+                this.selectedNodes.forEach((n) => {
+                    n.dirty = true;
+                });
                 this.selectedNodes = [node]
             }
             this.selectNodes.emit(this.selectedNodes);
@@ -126,7 +128,7 @@ export class EditorViewportD3Component implements AfterViewInit {
             this.removeNode.emit(node);
         }
         event.stopPropagation();
-        this.dirtyNodes.push(node);
+        node.dirty = true;
     }
 
     /**
@@ -157,7 +159,6 @@ export class EditorViewportD3Component implements AfterViewInit {
         if (this.tool == "SELECT") {
             event.subject.x = event.x;
             event.subject.y = event.y;
-            this.dirtyNodes.push(event.subject);
         } else if (this.tool == "ADD") {
             if (event.active) {
                 // drag in progress, update position
@@ -171,7 +172,7 @@ export class EditorViewportD3Component implements AfterViewInit {
                     point.x = closest.x;
                     point.y = closest.y;
                 }
-                this.dirtyEdges.push(edge);
+                edge.dirty = true;
             } else if (start) {
                 // drag started, create temporary edge
                 this.tmpAdd = new ChartEdge(event.subject,
@@ -247,7 +248,9 @@ export class EditorViewportD3Component implements AfterViewInit {
 
         const oldSelection = this.selectedNodes;
         if (!append) {
-            this.dirtyNodes = this.dirtyNodes.concat(this.selectedNodes)
+            this.selectedNodes.forEach((n) => {
+                n.dirty = true;
+            });
             this.selectedNodes = nodesInBox;
         } else {
             this.selectedNodes = this.selectedNodes.concat(nodesInBox);
@@ -266,7 +269,7 @@ export class EditorViewportD3Component implements AfterViewInit {
     private onMouseover(d: ChartNode) {
         this.hoverData.x = this.transform.applyX(d.x);
         this.hoverData.y = this.transform.applyY(d.y);
-        this.hoverData.p = d.data.personalization;
+        this.hoverData.p = d.personalization;
         this.hoverData.name = d.data.name;
         this.hoverData.show = 0.8;
     }
@@ -324,13 +327,7 @@ export class EditorViewportD3Component implements AfterViewInit {
             .force('charge', forceManyBody().strength(-20).distanceMax(100))
             .force('collide', forceCollide().radius(50))
             .alphaMin(0.1)
-            .on('tick', () => {
-                if (!this.initialized) {
-                    this.dirtyNodes = this.dirtyNodes.concat(this.nodes)
-                }
-            })
             .on('end', () => {
-                this.dirtyNodes = this.dirtyNodes.concat(this.nodes)
                 if (this.initialized) {
                     this.alerts.pushAlert("info", "Graph layout was recalculated.")
                 } else {
@@ -367,22 +364,36 @@ export class EditorViewportD3Component implements AfterViewInit {
             )
             .on("click", (e, d) => this.onClickNode(e, d))
             .on("mouseover", (e: MouseEvent, d) => this.onMouseover(d))
-            .on("mouseout", () => this.hoverData.show = 0)
-            .each((d) => this.dirtyNodes.push(d));
+            .on("mouseout", () => this.hoverData.show = 0);
+
+
+        // refresh mapping info
+        // todo find less intensive way to do this
+        let dirtyCount = 0;
+        nodes.each((n) => {
+            if (n.dirty) {
+                dirtyCount++;
+            }
+        })
+        if (dirtyCount && this.mapping.refresh()) {
+            nodes.each((n) => {
+                n.dirty = true;
+            })
+        }
 
         // update values
         nodes
             .filter((node) => {
-                const index = this.dirtyNodes.indexOf(node);
-                if (index >= 0) {
-                    this.dirtyNodes.splice(index, 1);
+                if (node.dirty) {
+                    node.dirty = false;
+                    dirtyCount++;
                     return true;
                 }
                 return false;
             })
             .attr("class", "graph-node")
             .attr("r", 10)
-            .style("fill", "cadetblue")
+            .style("fill", (n) => this.mapping.getColor(n))
             .attr("cx", (d) => { return d.x; })
             .attr("cy", (d) => { return d.y; })
             .attr("stroke", "#000")
@@ -391,9 +402,9 @@ export class EditorViewportD3Component implements AfterViewInit {
             .attr("filter", "none")
             // if the node has changed, its edges may change as well
             .each((d) => {
-                this.dirtyEdges = this.dirtyEdges.concat(
-                    this.edges.filter((edge) => edge.source == d || edge.target == d)
-                );
+                this.edges.forEach((edge) => {
+                    edge.dirty = edge.dirty || edge.source == d || edge.target == d;
+                });
             });
 
         nodes
@@ -423,19 +434,13 @@ export class EditorViewportD3Component implements AfterViewInit {
             .attr('marker-end',`url(#arrow-${this.id})`)
             .attr("class", "graph-edge")
             .style("stroke", "#aaa")
-            .each((edge) => {
-                const index = this.dirtyEdges.indexOf(edge);
-                if (index < 0) {
-                    this.dirtyEdges.push(edge);
-                }
-            });
+            .each((edge) => { edge.dirty = true });
 
         // update values
         edges
             .filter((edge) => {
-                const index = this.dirtyEdges.indexOf(edge);
-                if (index >= 0) {
-                    this.dirtyEdges.splice(index, 1);
+                if (edge.dirty) {
+                    edge.dirty = false;
                     return true;
                 }
                 return false;

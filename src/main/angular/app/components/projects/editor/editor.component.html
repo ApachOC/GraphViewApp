@@ -1,4 +1,4 @@
-<editor-viewport-d3 [nodes]="nodes" [edges]="edges" [id]="editorId.toString()"
+<editor-viewport-d3 [nodes]="nodes" [edges]="edges" [id]="editorId.toString()" [mapping]="mapping"
                         (addNode)="addNode($event)" (removeNode)="removeNode($event)"
                         (addEdge)="addEdge($event)" (selectNodes)="onSelection($event)" #viewport></editor-viewport-d3>
     <div class="graph-editor-toolbars toolbar-left">

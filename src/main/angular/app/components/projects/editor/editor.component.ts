@@ -3,12 +3,15 @@ import {ProjectData} from "../../../models/project-models";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {LibrarySelectionModalComponent} from "./library-selection-modal.component";
 import {AlertService} from "../../../services/alert.service";
+import {PropertyMapping} from "./property-mapping";
 
 export class ChartEdge {
 
     private static _id = 0
 
     public readonly id: number;
+
+    public dirty: boolean = true;
 
     constructor(
         public source: {x: number, y: number},
@@ -20,17 +23,48 @@ export class ChartEdge {
 
 export class ChartNode {
 
-    public get x() { return this.data.x; }
+    public get x() {
+        return this.data.x;
+    }
 
-    public set x(value) { this.data.x = value; }
+    public set x(value) {
+        this.data.x = value;
+        this.dirty = true;
+    }
 
-    public get y() { return this.data.y; }
+    public get y() {
+        return this.data.y;
+    }
 
-    public set y(value) { this.data.y = value; }
+    public set y(value) {
+        this.data.y = value;
+        this.dirty = true;
+    }
 
-    public visible: boolean;
+    public get personalization() {
+        return this.data.personalization;
+    }
+
+    public set personalization(value) {
+        this.data.personalization = value;
+        this.dirty = true;
+    }
+
+    public dirty: boolean = true;
 
     constructor(public readonly data: ProjectData.Node) { }
+
+    public getExtra(value: string) {
+        return this.data.extraValues[value];
+    }
+
+    public putExtra(value: string, result: string) {
+        if (!this.data.extraValues.hasOwnProperty(value)) {
+            this.data.extraValues[value] = [];
+        }
+        this.data.extraValues[value].push(result);
+        this.dirty = true;
+    }
 }
 
 @Component({
@@ -55,11 +89,14 @@ export class EditorComponent implements OnInit {
 
     public selectedNodes: ChartNode[] = [];
 
+    public mapping: PropertyMapping;
+
     constructor(private modalService: NgbModal, private alerts: AlertService) {  }
 
     ngOnInit(): void {
         this.initializeNodes();
         this.initializeEdges();
+        this.mapping = new PropertyMapping(this.project);
     }
 
     public removeNode(node: ChartNode) {
@@ -109,10 +146,7 @@ export class EditorComponent implements OnInit {
                 for (let id in results.nodeResults) {
                     // save result to node history
                     if (results.nodeResults.hasOwnProperty(id)) {
-                        if (!this.nodeMap[id].data.extraValues.hasOwnProperty(par)) {
-                            this.nodeMap[id].data.extraValues[par] = [];
-                        }
-                        this.nodeMap[id].data.extraValues[par].push(results.nodeResults[id][parIndex]);
+                        this.nodeMap[id].putExtra(par, results.nodeResults[id][parIndex]);
                     }
                 }
 
