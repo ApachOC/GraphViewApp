@@ -27,6 +27,7 @@
     "d3": "^6.3.1",
     "d3-force": "^2.1.0",
     "d3-selection": "^2.0.0",
+    "ngx-color-picker": "^11.0.0",
     "ngx-dropzone": "^2.2.2",
     "ngx-sortablejs": "^9.0.0",
     "rxjs": "~6.6.0",

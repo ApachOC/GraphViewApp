@@ -23,6 +23,8 @@ export class EditorDetailsComponent {
 
     public expanded = true
 
+    public hidden = false
+
     expandedCollapse: NgbCollapse;
 
     get personalization () {
@@ -41,8 +43,17 @@ export class EditorDetailsComponent {
         }
     }
 
+    private _selectNewest = false;
+
     get projectHistoryNames() {
-        return Object.keys(this.project.history);
+        const names = Object.keys(this.project.history);
+        if (names.length && this._selectNewest) {
+            this._selectNewest = false;
+            setTimeout(() => this.selectedResult.emit([names[0], 0]))
+        } else {
+            this._selectNewest = true;
+        }
+        return names;
     }
 
     get extraValueNames() {
@@ -91,5 +102,16 @@ export class EditorDetailsComponent {
         };
         const idf = new Intl.DateTimeFormat('default', formatOptions);
         return idf.format(date)
+    }
+
+    toggle() {
+        if (this.expanded) {
+            this.hidden = true
+        } else {
+            setTimeout(() => {
+                this.hidden = false
+            }, 500);
+        }
+        this.expanded = !this.expanded;
     }
 }

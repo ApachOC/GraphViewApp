@@ -34,6 +34,8 @@ import {AlertComponent, AlertHostComponent} from "./components/generic/alert-hos
 import {AlertService} from "./services/alert.service";
 import {TextPromptModalComponent} from "./components/generic/text-prompt-modal.component";
 import {EditorDetailsComponent} from "./components/projects/editor/editor-details.component";
+import {EditorSettingsComponent} from "./components/projects/editor/editor-settings.component";
+import {ColorPickerModule} from "ngx-color-picker";
 
 const routes: Routes = [
     { path: "projects", component: ProjectManagerComponent },
@@ -67,7 +69,8 @@ const routes: Routes = [
         AlertHostComponent,
         AlertComponent,
         TextPromptModalComponent,
-        EditorDetailsComponent
+        EditorDetailsComponent,
+        EditorSettingsComponent
     ],
     imports: [
         BrowserModule,
@@ -81,7 +84,8 @@ const routes: Routes = [
         NgbModule,
         SortablejsModule,
         CommonModule,
-        RouterModule.forRoot(routes)
+        RouterModule.forRoot(routes),
+        ColorPickerModule
     ],
     providers: [
       SessionService,

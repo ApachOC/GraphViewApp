@@ -1,4 +1,4 @@
-<div class="card detail-card">
+<div class="card">
     <div class="card-header">
         <p class="card-title" *ngIf="selectedNodes.length > 1 ">
             Selected <strong>{{selectedNodes.length}}</strong> nodes
@@ -10,7 +10,7 @@
             <strong>Graph properties</strong>
         </p>
     </div>
-    <div *ngIf="selectedNodes.length == 1" class="card-body">
+    <div *ngIf="selectedNodes.length == 1" class="card-body px-2">
         <table *ngFor="let node of selectedNodes">
             <tr>
                 <td>Node ID:</td>
@@ -53,12 +53,12 @@
             </div>
         </div>
     </div>
-    <div *ngIf="selectedNodes.length > 1" class="card-body">
+    <div *ngIf="selectedNodes.length > 1" class="card-body px-2">
         <label for="multiPersonalization">Personalization:</label>
         <input id="multiPersonalization" type="number" class="form-control"
                [(ngModel)]="personalization">
     </div>
-    <div *ngIf="!selectedNodes.length" class="card-body">
+    <div *ngIf="!selectedNodes.length" class="card-body px-2">
         <table>
             <tr>
                 <td>

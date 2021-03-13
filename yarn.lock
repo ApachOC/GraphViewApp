@@ -173,7 +173,7 @@
     "universal-analytics" "0.4.23"
     "uuid" "8.3.0"
 
-"@angular/common@>=10.0.0 <11.0.0", "@angular/common@~10.1.6":
+"@angular/common@>=10.0.0 <11.0.0", "@angular/common@>=9.0.0", "@angular/common@~10.1.6":
   "integrity" "sha512-4ywlUHHF5ofZRTHJ/jQTHoO8Tu05Wvn+3N7swaJ9yAfiywbSE4Bop6FYsocxaxROrGS0k6Unvgj8+J7x6AeqlA=="
   "resolved" "https://registry.npmjs.org/@angular/common/-/common-10.1.6.tgz"
   "version" "10.1.6"
@@ -211,7 +211,7 @@
   "resolved" "https://registry.npmjs.org/@angular/compiler/-/compiler-9.0.0.tgz"
   "version" "9.0.0"
 
-"@angular/core@>=10.0.0 <11.0.0", "@angular/core@~10.1.6":
+"@angular/core@>=10.0.0 <11.0.0", "@angular/core@>=9.0.0", "@angular/core@~10.1.6":
   "integrity" "sha512-sUleQouCedT87VOCb49T7cm6La2VeJg1omtO5+QfjWmifNcQ/nqV56Zxov3RT7CmsVwVbkA0X5Q62oSEPAUXrw=="
   "resolved" "https://registry.npmjs.org/@angular/core/-/core-10.1.6.tgz"
   "version" "10.1.6"
@@ -223,7 +223,7 @@
   "resolved" "https://registry.npmjs.org/@angular/core/-/core-9.0.0.tgz"
   "version" "9.0.0"
 
-"@angular/forms@>=10.0.0 <11.0.0", "@angular/forms@~10.1.6":
+"@angular/forms@>=10.0.0 <11.0.0", "@angular/forms@>=9.0.0", "@angular/forms@~10.1.6":
   "integrity" "sha512-sTPnwL0r7lniv2/XU4nK3eU9osGpGD4YdJ0qLsXfR/ku4mhgbKk/taVBTmAdQwWBUOOafzU1yG9asvsm8H1Kbw=="
   "resolved" "https://registry.npmjs.org/@angular/forms/-/forms-10.1.6.tgz"
   "version" "10.1.6"
@@ -6288,6 +6288,13 @@
   "integrity" "sha1-yobR/ogoFpsBICCOPchCS524NCw="
   "resolved" "https://registry.npmjs.org/next-tick/-/next-tick-1.0.0.tgz"
   "version" "1.0.0"
+
+"ngx-color-picker@^11.0.0":
+  "integrity" "sha512-HyiFNPYLrCyYbFpLvZJaHC43RhjfDdFDij4pnvk9R46iH1scVtO6f2ibBgxRwBKKsT94KYvOH8wF8OrvztWdEw=="
+  "resolved" "https://registry.npmjs.org/ngx-color-picker/-/ngx-color-picker-11.0.0.tgz"
+  "version" "11.0.0"
+  dependencies:
+    "tslib" "^2.0.0"
 
 "ngx-dropzone@^2.2.2":
   "integrity" "sha512-REuBcPNTY33OtcZD6dw8Fq/jFqwviiYydYaCn74yig8TvDDYhtJ/BPjtvbw7uEgF4BJr/UEHbKMvkdZIyCgsww=="

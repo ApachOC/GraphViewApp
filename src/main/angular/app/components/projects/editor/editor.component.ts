@@ -193,4 +193,10 @@ export class EditorComponent implements OnInit {
     onSelection(nodes: ChartNode[]) {
         this.selectedNodes = nodes;
     }
+
+    public refreshNodes() {
+        for (let node of this.nodes) {
+            node.dirty = true;
+        }
+    }
 }

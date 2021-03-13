@@ -40,11 +40,19 @@
                 </div>
             </div>
 <div class="graph-editor-toolbars toolbar-right">
-    <button class="btn btn-outline-primary" (click)="details.expanded = !details.expanded"
+    <button class="btn btn-outline-primary" (click)="details.toggle()"
             placement="left" ngbTooltip="Show/hide selection properties">
         <i class="fa fa-lg" [class.fa-arrow-alt-circle-left]="!details.expanded"
            [class.fa-arrow-alt-circle-right]="details.expanded"></i>
     </button>
+    <button class="btn btn-outline-primary" (click)="settings.toggle()"
+            placement="left" ngbTooltip="Show/hide editor settings">
+        <i class="fa fa-lg" [class.fa-arrow-alt-circle-up]="!settings.expanded"
+           [class.fa-arrow-alt-circle-down]="settings.expanded"></i>
+    </button>
 </div>
 <graph-editor-details #details [selectedNodes]="selectedNodes" [project]="project"
-                      [class.expanded]="details.expanded"></graph-editor-details>
+                      (selectedResult)="settings.selectProperty($event)" [class.expanded]="details.expanded"
+                      [class.overflow-hidden]="details.hidden"></graph-editor-details>
+<graph-editor-settings #settings [mapping]="mapping" (change)="refreshNodes()" [class.expanded]="settings.expanded"
+                       [class.overflow-hidden]="settings.hidden" [project]="project"></graph-editor-settings>

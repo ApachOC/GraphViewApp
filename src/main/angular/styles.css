@@ -24,6 +24,12 @@ graph-editor .graph-editor-toolbars > * {
     pointer-events: initial;
 }
 
+graph-editor .graph-editor-toolbars ngb-tooltip-window {
+    position: fixed !important;
+    top: initial !important;
+    left: initial !important;
+}
+
 graph-editor .graph-editor-toolbars.toolbar-right {
     right: 1rem;
 }
@@ -188,23 +194,41 @@ editor-viewport-d3 {
 
 graph-editor-details {
     display: block;
-    overflow: hidden;
     position: absolute;
-    top: 5rem;
+    top: 4rem;
     right: 0;
-    transition: width 0.5s ease-in-out;
+    transition: width 0.3s ease-in-out;
     width: 0;
-}
-
-graph-editor-details .detail-card {
-    width: 20rem;
-    margin-top: 1rem;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
 }
 
 graph-editor-details.expanded {
     width: 20rem;
+}
+
+graph-editor-details > .card {
+    width: 20rem;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+graph-editor-settings {
+    display: block;
+    position: absolute;
+    left: 5rem;
+    right: 5rem;
+    bottom: 0;
+    transition: height 0.2s ease-in-out;
+    height: 0;
+}
+
+graph-editor-settings.expanded {
+    height: 25rem
+}
+
+graph-editor-settings > .card {
+    height: 100%;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .result-card .card-header {
@@ -213,7 +237,7 @@ graph-editor-details.expanded {
 }
 
 .result-card .card-body {
-    padding: 0.5rem 0.5rem;
+    padding: 0;
 }
 
 .result-card .result-row {
