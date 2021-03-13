@@ -392,7 +392,7 @@ export class EditorViewportD3Component implements AfterViewInit {
                 return false;
             })
             .attr("class", "graph-node")
-            .attr("r", 10)
+            .attr("r", (n) => this.mapping.getSize(n))
             .style("fill", (n) => this.mapping.getColor(n))
             .attr("cx", (d) => { return d.x; })
             .attr("cy", (d) => { return d.y; })
