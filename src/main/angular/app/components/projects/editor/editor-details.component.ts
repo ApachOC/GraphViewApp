@@ -21,9 +21,9 @@ export class EditorDetailsComponent {
     @Output()
     public removeFromHistory = new EventEmitter<[string, number]>();
 
-    public expanded = true
+    public expanded = false
 
-    public hidden = false
+    public hidden = !this.expanded
 
     expandedCollapse: NgbCollapse;
 
@@ -47,9 +47,11 @@ export class EditorDetailsComponent {
 
     get projectHistoryNames() {
         const names = Object.keys(this.project.history);
-        if (names.length && this._selectNewest) {
-            this._selectNewest = false;
-            setTimeout(() => this.selectedResult.emit([names[0], 0]))
+        if (names.length) {
+            if (this._selectNewest) {
+                this._selectNewest = false;
+                setTimeout(() => this.selectedResult.emit([names[0], 0]))
+            }
         } else {
             this._selectNewest = true;
         }

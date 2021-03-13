@@ -4,13 +4,13 @@
             <strong>Editor settings</strong>
         </p>
     </div>
-    <div class="card-body">
+    <div class="card-body row">
         <div class="col-3">
             <div class="card">
                 <div class="card-header">
                     <label for="colorMappingCheck">Map value to node color</label>
                     <input class="form-check-inline float-right" type="checkbox" id="colorMappingCheck"
-                           [(ngModel)]="enableColor" [disabled]="availableFields.length < 1">
+                           [(ngModel)]="enableColor" [disabled]="availableFields.length < 1" (change)="selectColorField()">
                 </div>
                 <div class="card-body">
                     <div class="form-group row">
@@ -18,7 +18,7 @@
                         <div class="col-4">
                             <input class="form-control form-control-sm" [(colorPicker)]="mapping.colorRange[0]"
                                    (colorPickerChange)="change.emit()" [style.background]="mapping.colorRange[0]"
-                                   id="lowColorPicker" [disabled]="disableColor"/>
+                                   type="button" id="lowColorPicker" />
                         </div>
                     </div>
                     <div class="form-group row">
@@ -34,7 +34,7 @@
                             <label for="colorFieldSelect">Bind to the following value:</label>
                             <select [(ngModel)]="selectedColorField" class="form-control form-control-sm" id="colorFieldSelect"
                                     (change)="selectColorField()" [disabled]="disableColor">
-                                <option selected hidden disabled value="none">None</option>
+                                <option [ngValue]="null" [disabled]="true" >Select from list</option>
                                 <option *ngFor="let field of availableFields">{{field}}</option>
                             </select>
                         </div>
@@ -43,7 +43,39 @@
             </div>
         </div>
         <div class="col-3">
-
+            <div class="card">
+                <div class="card-header">
+                    <label for="sizeMappingCheck">Map value to node size</label>
+                    <input class="form-check-inline float-right" type="checkbox" id="sizeMappingCheck"
+                           [(ngModel)]="enableSize" [disabled]="availableFields.length < 1" (change)="selectSizeField()">
+                </div>
+                <div class="card-body">
+                    <div class="form-group row">
+                        <label class="col-8" for="lowSizeInput">Bottom bound size value:</label>
+                        <div class="col-4">
+                            <input class="form-control form-control-sm" id="lowSizeInput" type="number"
+                                   [disabled]="disableSize" [(ngModel)]="mapping.sizeRange[0]"/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-8" for="hiSizeInput">Bottom bound size value:</label>
+                        <div class="col-4">
+                            <input class="form-control form-control-sm" id="hiSizeInput" type="number"
+                                   [disabled]="disableSize" [(ngModel)]="mapping.sizeRange[1]"/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col">
+                            <label for="sizeFieldSelect">Bind to the following value:</label>
+                            <select [(ngModel)]="selectedSizeField" class="form-control form-control-sm" id="sizeFieldSelect"
+                                    (change)="selectSizeField()" [disabled]="disableSize">
+                                <option [ngValue]="null" [disabled]="true" >Select from list</option>
+                                <option *ngFor="let field of availableFields">{{field}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="col-3">
 

@@ -9,7 +9,9 @@ import {PropertyMapping} from "./property-mapping";
 
 //todo
 // Save As
-// Size by rank
+// Separate edge arrow markers, split their rendering from edges
+// Move settings button from the path of alerts
+// Implement tooltip customization
 
 @Component({
     selector: 'editor-viewport-d3',
@@ -28,7 +30,7 @@ import {PropertyMapping} from "./property-mapping";
                     <feGaussianBlur result="blurOut" in="offOut" stdDeviation="0.8" />
                     <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
                 </filter>
-                <marker id= "arrow-{{id}}" viewBox="0 -5 10 10" refX="20" orient="auto" markerWidth="10" markerHeight="10">
+                <marker id="arrow-{{id}}" viewBox="0 -5 10 10" refX="20" orient="auto" markerWidth="10" markerHeight="10">
                     <path d="M 0,-5 L 10,0 L 0,5"></path>
                 </marker>
             </defs>
