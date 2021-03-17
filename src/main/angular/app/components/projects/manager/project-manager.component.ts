@@ -5,6 +5,7 @@ import {SessionService} from "../../../services/session.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ProjectSelectionModalComponent} from "./project-selection-modal.component";
 import {TextPromptModalComponent} from "../../generic/text-prompt-modal.component";
+import {ProjectSaverService} from "../../../services/project-saver.service";
 
 @Component({
     templateUrl: './project-manager.component.html'
@@ -23,7 +24,10 @@ export class ProjectManagerComponent {
         this.mgr.currentProject = project;
     }
 
-    constructor(private mgr: ProjectManagerService, public user: SessionService, private modals: NgbModal) { }
+    constructor(private mgr: ProjectManagerService,
+                public user: SessionService,
+                private modals: NgbModal,
+                public saver: ProjectSaverService) { }
 
     newProject() {
         this.mgr.newProject(true);

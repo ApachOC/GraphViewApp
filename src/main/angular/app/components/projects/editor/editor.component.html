@@ -37,18 +37,17 @@
                             (click)="viewport.sim.restart()">
                         <i class="fa fa-lg fa-sync-alt"></i>
                     </button>
+                    <button class="btn btn-outline-success" (click)="settings.toggle()"
+                            ngbTooltip="Show/hide editor settings" placement="right">
+                        <i class="fa fa-cogs"></i>
+                    </button>
                 </div>
             </div>
 <div class="graph-editor-toolbars toolbar-right">
     <button class="btn btn-outline-primary" (click)="details.toggle()"
-            placement="left" ngbTooltip="Show/hide selection properties">
+            container="body" ngbTooltip="Show/hide selection properties">
         <i class="fa fa-lg" [class.fa-arrow-alt-circle-left]="!details.expanded"
            [class.fa-arrow-alt-circle-right]="details.expanded"></i>
-    </button>
-    <button class="btn btn-outline-primary" (click)="settings.toggle()"
-            placement="left" ngbTooltip="Show/hide editor settings">
-        <i class="fa fa-lg" [class.fa-arrow-alt-circle-up]="!settings.expanded"
-           [class.fa-arrow-alt-circle-down]="settings.expanded"></i>
     </button>
 </div>
 <graph-editor-details #details [selectedNodes]="selectedNodes" [project]="project"

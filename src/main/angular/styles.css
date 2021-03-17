@@ -2,6 +2,7 @@ graph-editor {
     position: relative;
     display: block;
     margin: -1.25rem;
+    overflow: hidden;
 }
 
 .graph-editor-canvas {
@@ -22,12 +23,6 @@ graph-editor .graph-editor-toolbars {
 
 graph-editor .graph-editor-toolbars > * {
     pointer-events: initial;
-}
-
-graph-editor .graph-editor-toolbars ngb-tooltip-window {
-    position: fixed !important;
-    top: initial !important;
-    left: initial !important;
 }
 
 graph-editor .graph-editor-toolbars.toolbar-right {
@@ -133,8 +128,18 @@ graph-editor .graph-editor-toolbars .btn:not(:hover) {
 }
 
 .graph-node.selected {
-    stroke-opacity: 1;
+    stroke: #555555;
     stroke-width: 3px;
+}
+
+.graph-edge,
+.graph-node {
+    stroke: #555555;
+}
+
+[id ^= arrow-] {
+    stroke: #555555;
+    fill: none;
 }
 
 .d3-tooltip {

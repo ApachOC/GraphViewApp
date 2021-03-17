@@ -14,8 +14,8 @@ export class ChartEdge {
     public dirty: boolean = true;
 
     constructor(
-        public source: {x: number, y: number},
-        public target: {x: number, y: number}
+        public source: {x: number, y: number} | ProjectData.Node,
+        public target: {x: number, y: number} | ProjectData.Node
     ) {
         this.id = ChartEdge._id++;
     }

@@ -9,9 +9,8 @@ import {PropertyMapping} from "./property-mapping";
 
 //todo
 // Save As
-// Separate edge arrow markers, split their rendering from edges
-// Move settings button from the path of alerts
 // Implement tooltip customization
+// Fix layout recalculation
 
 @Component({
     selector: 'editor-viewport-d3',
@@ -30,7 +29,7 @@ import {PropertyMapping} from "./property-mapping";
                     <feGaussianBlur result="blurOut" in="offOut" stdDeviation="0.8" />
                     <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
                 </filter>
-                <marker id="arrow-{{id}}" viewBox="0 -5 10 10" refX="20" orient="auto" markerWidth="10" markerHeight="10">
+                <marker id="arrow-{{id}}" viewBox="0 -5 10 10" refX="10" orient="auto" markerWidth="10" markerHeight="10">
                     <path d="M 0,-5 L 10,0 L 0,5"></path>
                 </marker>
             </defs>
@@ -238,9 +237,11 @@ export class EditorViewportD3Component implements AfterViewInit {
         const startY = this.transform.invertY(
             parseFloat(this.selectRect.attr("y")));
 
-        const endX = this.transform.invertX(this.selectPoint.x +
+        const endX = this.transform.invertX(
+            parseFloat(this.selectRect.attr("x")) +
             parseFloat(this.selectRect.attr("width")));
-        const endY = this.transform.invertY(this.selectPoint.y +
+        const endY = this.transform.invertY(
+            parseFloat(this.selectRect.attr("y")) +
             parseFloat(this.selectRect.attr("height")));
 
         const nodesInBox = this.nodes.filter((node) => {
@@ -398,9 +399,6 @@ export class EditorViewportD3Component implements AfterViewInit {
             .style("fill", (n) => this.mapping.getColor(n))
             .attr("cx", (d) => { return d.x; })
             .attr("cy", (d) => { return d.y; })
-            .attr("stroke", "#000")
-            .attr("stroke-width", "1px")
-            .attr("stroke-opacity", "0.5")
             .attr("filter", "none")
             // if the node has changed, its edges may change as well
             .each((d) => {
@@ -435,7 +433,6 @@ export class EditorViewportD3Component implements AfterViewInit {
             .append("line")
             .attr('marker-end',`url(#arrow-${this.id})`)
             .attr("class", "graph-edge")
-            .style("stroke", "#aaa")
             .each((edge) => { edge.dirty = true });
 
         // update values
@@ -449,8 +446,24 @@ export class EditorViewportD3Component implements AfterViewInit {
             })
             .attr("x1", (d) => { return d.source.x; })
             .attr("y1", (d) => { return d.source.y; })
-            .attr("x2", (d) => { return d.target.x; })
-            .attr("y2", (d) => { return d.target.y; });
+            .attr("x2", (d) => {
+                if ("personalization" in d.target) {
+                    const dir = [d.target.x - d.source.x, d.target.y - d.source.y]
+                    const len = Math.sqrt(dir[0] * dir[0] + dir[1] * dir[1])
+                    return d.target.x - dir[0]/len * this.mapping.getSize(d.target);
+                } else {
+                    return d.target.x
+                }
+            })
+            .attr("y2", (d) => {
+                if ("personalization" in d.target) {
+                    const dir = [d.target.x - d.source.x, d.target.y - d.source.y]
+                    const len = Math.sqrt(dir[0] * dir[0] + dir[1] * dir[1])
+                    return d.target.y - dir[1]/len * this.mapping.getSize(d.target);
+                } else {
+                    return d.target.y;
+                }
+            });
     }
 
     /**

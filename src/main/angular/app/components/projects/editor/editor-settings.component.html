@@ -26,7 +26,7 @@
                         <div class="col-4">
                             <input class="form-control form-control-sm" [(colorPicker)]="mapping.colorRange[1]"
                                    (colorPickerChange)="change.emit()" [style.background]="mapping.colorRange[1]"
-                                   id="hiColorPicker" [disabled]="disableColor"/>
+                                   type="button" id="hiColorPicker" [disabled]="disableColor"/>
                         </div>
                     </div>
                     <div class="form-group row">
