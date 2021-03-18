@@ -51,6 +51,7 @@
     </button>
 </div>
 <graph-editor-details #details [selectedNodes]="selectedNodes" [project]="project"
+                      (removeFromHistory)="settings.removeFromHistory($event)"
                       (selectedResult)="settings.selectProperty($event)" [class.expanded]="details.expanded"
                       [class.overflow-hidden]="details.hidden"></graph-editor-details>
 <graph-editor-settings #settings [mapping]="mapping" (change)="refreshNodes()" [class.expanded]="settings.expanded"

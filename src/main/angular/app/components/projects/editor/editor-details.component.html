@@ -42,11 +42,11 @@
                             <th>Run</th>
                             <th>Result</th>
                         </tr>
-                        <tr *ngFor="let value of extraValues[result]; index as i"
-                            (click)="selectedResult.emit([result, i])"
+                        <tr *ngFor="let timestamp of extraValueTimestamps(result)"
+                            (click)="selectedResult.emit([result, timestamp])"
                             class="result-row" ngbTooltip="Show this run in the viewport">
-                            <td>{{i}}</td>
-                            <td>{{ formatValue(value) }}</td>
+                            <td>{{ dateTime(timestamp) }}</td>
+                            <td>{{ formatValue(extraValues[result][timestamp]) }}</td>
                         </tr>
                     </table>
                 </div>
@@ -100,7 +100,7 @@
                             <th>Timestamp</th>
                         </tr>
                         <tr *ngFor="let timestamp of project.history[result]; index as i"
-                            (click)="selectedResult.emit([result, i])"
+                            (click)="selectedResult.emit([result, timestamp])"
                             class="result-row" ngbTooltip="Show in viewport" #topTooltip="ngbTooltip">
                             <td>{{i}}</td>
                             <td>

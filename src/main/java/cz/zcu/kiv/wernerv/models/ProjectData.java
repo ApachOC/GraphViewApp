@@ -35,7 +35,7 @@ public class ProjectData {
 
         public float personalization;
 
-        public Map <String, List<String>> extraValues;
+        public Map <String, Map<String, String>> extraValues;
     }
 
     public static class Edge {

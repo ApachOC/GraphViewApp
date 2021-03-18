@@ -82,7 +82,7 @@ export class PropertyMapping {
     }
 
     private getPropValue(node: Node, prop: PropertyMappingInfo) {
-        if (prop[0] != null) {
+        if (prop[0] != null && prop[0] in node.extraValues && prop[1] in node.extraValues[prop[0]]) {
             return parseFloat(node.extraValues[prop[0]][prop[1]]);
         } else {
             return 0;

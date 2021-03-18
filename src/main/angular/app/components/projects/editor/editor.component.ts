@@ -53,18 +53,6 @@ export class ChartNode {
     public dirty: boolean = true;
 
     constructor(public readonly data: ProjectData.Node) { }
-
-    public getExtra(value: string) {
-        return this.data.extraValues[value];
-    }
-
-    public putExtra(value: string, result: string) {
-        if (!this.data.extraValues.hasOwnProperty(value)) {
-            this.data.extraValues[value] = [];
-        }
-        this.data.extraValues[value].push(result);
-        this.dirty = true;
-    }
 }
 
 @Component({
@@ -141,12 +129,16 @@ export class EditorComponent implements OnInit {
         const modalRef = this.modalService.open(LibrarySelectionModalComponent);
         modalRef.componentInstance.project = this.project;
         modalRef.result.then((results) => {
+            const timestamp = Date.now();
             let parIndex = 0;
             for (let par of results.nodeLabels) {
                 for (let id in results.nodeResults) {
                     // save result to node history
                     if (results.nodeResults.hasOwnProperty(id)) {
-                        this.nodeMap[id].putExtra(par, results.nodeResults[id][parIndex]);
+                        if (!(par in this.nodeMap[id].data.extraValues)) {
+                            this.nodeMap[id].data.extraValues[par] = {}
+                        }
+                        this.nodeMap[id].data.extraValues[par][timestamp] = results.nodeResults[id][parIndex];
                     }
                 }
 
@@ -154,7 +146,7 @@ export class EditorComponent implements OnInit {
                 if (!this.project.history.hasOwnProperty(par)) {
                     this.project.history[par] = [];
                 }
-                this.project.history[par].push(Date.now())
+                this.project.history[par].push(timestamp)
                 parIndex++;
             }
             // todo also implement edges

@@ -14,7 +14,7 @@
                 </div>
                 <div class="card-body">
                     <div class="form-group row">
-                        <label class="col-8" for="lowColorPicker">Bottom bound color value:</label>
+                        <label class="col-8" for="lowColorPicker">Lower bound color value:</label>
                         <div class="col-4">
                             <input class="form-control form-control-sm" [(colorPicker)]="mapping.colorRange[0]"
                                    (colorPickerChange)="change.emit()" [style.background]="mapping.colorRange[0]"
@@ -51,14 +51,14 @@
                 </div>
                 <div class="card-body">
                     <div class="form-group row">
-                        <label class="col-8" for="lowSizeInput">Bottom bound size value:</label>
+                        <label class="col-8" for="lowSizeInput">Lower bound size value:</label>
                         <div class="col-4">
                             <input class="form-control form-control-sm" id="lowSizeInput" type="number"
                                    [disabled]="disableSize" [(ngModel)]="mapping.sizeRange[0]"/>
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-8" for="hiSizeInput">Bottom bound size value:</label>
+                        <label class="col-8" for="hiSizeInput">Upper bound size value:</label>
                         <div class="col-4">
                             <input class="form-control form-control-sm" id="hiSizeInput" type="number"
                                    [disabled]="disableSize" [(ngModel)]="mapping.sizeRange[1]"/>

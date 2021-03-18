@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, Output} from "@angular/core";
 import {PropertyMapping} from "./property-mapping";
 import {ProjectData} from "../../../models/project-models";
+import {timestamp} from "rxjs/operators";
 
 @Component({
     selector: 'graph-editor-settings',
@@ -60,7 +61,8 @@ export class EditorSettingsComponent {
         if (this.disableColor) {
             this.mapping.colorProperty = [null, 0]
         } else {
-            const id = this.mapping.colorProperty[1];
+
+            const id = Math.max(...this.project.history[this.selectedColorField]);
             this.mapping.colorProperty = [this.selectedColorField, id];
         }
     }
@@ -69,7 +71,7 @@ export class EditorSettingsComponent {
         if (this.disableSize) {
             this.mapping.sizeProperty = [null, 0]
         } else {
-            const id = this.mapping.sizeProperty[1];
+            const id = Math.max(...this.project.history[this.selectedSizeField]);
             this.mapping.sizeProperty = [this.selectedSizeField, id];
         }
     }
@@ -88,5 +90,17 @@ export class EditorSettingsComponent {
             this.selectSizeField();
         }
         this.change.emit();
+    }
+
+    removeFromHistory(prop: [string, number]) {
+        if (prop[0] in this.project.history) {
+            this.project.history[prop[0]] = this.project.history[prop[0]].filter(timestamp => {
+                timestamp != prop[1];
+            });
+        }
+        if (this.mapping.colorProperty[0] == prop[0] && this.mapping.colorProperty[1] == prop[1]) {
+            this.enableColor = false;
+            //todo
+        }
     }
 }

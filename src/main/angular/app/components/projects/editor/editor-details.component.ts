@@ -73,6 +73,10 @@ export class EditorDetailsComponent {
         return this.selectedNodes[0].data.extraValues;
     }
 
+    extraValueTimestamps(result) {
+        return Object.keys(this.extraValues[result]).map((timestring) => parseInt(timestring));
+    }
+
     get density(): number {
         if (this.project.nodeCount) {
             return this.project.edgeCount / (this.project.nodeCount * (this.project.nodeCount - 1))
