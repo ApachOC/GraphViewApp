@@ -106,7 +106,7 @@
                             <td>
                                 {{ dateTime(timestamp) }}
                                 <button class="btn btn-sm float-right py-0" ngbTooltip="Remove from history"
-                                        (click)="removeFromHistory.emit([result, i]); $event.stopPropagation()"
+                                        (click)="removeFromHistory.emit([result, timestamp]); $event.stopPropagation()"
                                         (mouseover)="topTooltip.close()">
                                     <i class="fa fa-sm fa-times"></i>
                                 </button>
