@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, Input, Output, EventEmitter} from "@angular/core";
 import {forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, Simulation} from 'd3-force';
-import * as d3 from 'd3';
+import {Selection, ZoomTransform, D3DragEvent, zoom, drag, zoomIdentity, select} from 'd3';
 import {zoomTransform} from 'd3-zoom';
 import {ChartEdge, ChartNode} from "./editor.component";
 import {interval} from "rxjs";
@@ -8,9 +8,9 @@ import {AlertService} from "../../../services/alert.service";
 import {PropertyMapping} from "./property-mapping";
 
 //todo
-// Save As
 // Implement tooltip customization
 // Fix layout recalculation
+// Maybe turn mapping class into service
 
 @Component({
     selector: 'editor-viewport-d3',
@@ -67,15 +67,15 @@ export class EditorViewportD3Component implements AfterViewInit {
 
     public sim: Simulation<ChartNode, undefined>;
 
-    private canvas: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>;
+    private canvas: Selection<SVGSVGElement, unknown, HTMLElement, any>;
 
-    private root: d3.Selection<SVGGElement, unknown, HTMLElement, any>;
+    private root: Selection<SVGGElement, unknown, HTMLElement, any>;
 
-    private edgeRoot: d3.Selection<SVGGElement, unknown, HTMLElement, any>;
+    private edgeRoot: Selection<SVGGElement, unknown, HTMLElement, any>;
 
-    private nodeRoot: d3.Selection<SVGGElement, unknown, HTMLElement, any>;
+    private nodeRoot: Selection<SVGGElement, unknown, HTMLElement, any>;
 
-    private transform: d3.ZoomTransform;
+    private transform: ZoomTransform;
 
     private ready = false;
 
@@ -83,7 +83,7 @@ export class EditorViewportD3Component implements AfterViewInit {
 
     private selectPoint: {x: number, y: number}
 
-    private selectRect: d3.Selection<SVGRectElement, unknown, any, any>;
+    private selectRect: Selection<SVGRectElement, unknown, any, any>;
 
     private selectedNodes: ChartNode[] = [];
 
@@ -156,7 +156,7 @@ export class EditorViewportD3Component implements AfterViewInit {
      * @param start Whether the drag just started
      * @private
      */
-    private onDragNode(event: d3.D3DragEvent<SVGCircleElement, any, ChartNode>, start: boolean) {
+    private onDragNode(event: D3DragEvent<SVGCircleElement, any, ChartNode>, start: boolean) {
         if (this.tool == "SELECT") {
             event.subject.x = event.x;
             event.subject.y = event.y;
@@ -202,7 +202,7 @@ export class EditorViewportD3Component implements AfterViewInit {
         }
     }
 
-    private onDragCanvas(e: d3.D3DragEvent<SVGSVGElement, any, any>, start: boolean) {
+    private onDragCanvas(e: D3DragEvent<SVGSVGElement, any, any>, start: boolean) {
         if (this.tool != "SELECT") {
             return
         }
@@ -283,7 +283,7 @@ export class EditorViewportD3Component implements AfterViewInit {
      * @private
      */
     private initializeD3() {
-        const zoomBehavior = d3.zoom()
+        const zoomBehavior = zoom()
             .filter((e) => {
                 switch (e.type) {
                     case "mousedown":
@@ -295,14 +295,14 @@ export class EditorViewportD3Component implements AfterViewInit {
                 }
             })
             .on("zoom", e => this.root.attr("transform", (this.transform = e.transform)));
-        const dragBehavior = d3.drag()
+        const dragBehavior = drag()
             .filter((e) => !e.button)
             .on("start", (e) => this.onDragCanvas(e, true))
             .on("drag", (e) => this.onDragCanvas(e, false))
             .on("end", () => { this.selectRect.remove() });
 
-        this.canvas = <d3.Selection<SVGSVGElement, unknown, HTMLElement, unknown>>
-            d3.select("#canvas-" + this.id)
+        this.canvas = <Selection<SVGSVGElement, unknown, HTMLElement, unknown>>
+            select("#canvas-" + this.id)
             .call(zoomBehavior)
             .call(dragBehavior)
             .on("contextmenu", (d) => { if (!d.ctrlKey) d.preventDefault()})
@@ -318,7 +318,7 @@ export class EditorViewportD3Component implements AfterViewInit {
         this.canvas.style("height", `calc(100vh - ${offset}px)`);
         const dimensions = this.canvas.node().getBoundingClientRect();
         this.canvas.call(zoomBehavior.transform,
-            d3.zoomIdentity.translate(dimensions.width / 2, dimensions.height / 2));
+            zoomIdentity.translate(dimensions.width / 2, dimensions.height / 2));
 
         // get default transform
         this.transform = zoomTransform(this.canvas.node());
@@ -360,7 +360,7 @@ export class EditorViewportD3Component implements AfterViewInit {
             .enter()
             .append("circle")
             .attr("class", "graph-node")
-            .call(d3.drag()
+            .call(drag()
                 .on('start', (e) => this.onDragNode(e, true))
                 .on('drag', (e) => this.onDragNode(e, false))
                 .on('end', (e) => this.onDragNode(e, false))
@@ -371,17 +371,14 @@ export class EditorViewportD3Component implements AfterViewInit {
 
 
         // refresh mapping info
-        // todo find less intensive way to do this
         let dirtyCount = 0;
         nodes.each((n) => {
             if (n.dirty) {
                 dirtyCount++;
             }
         })
-        if (dirtyCount && this.mapping.refresh()) {
-            nodes.each((n) => {
-                n.dirty = true;
-            })
+        if (dirtyCount && this.mapping.recalculateNormalization()) {
+            nodes.each((n) => { n.dirty = true; });
         }
 
         // update values

@@ -1,6 +1,5 @@
 import {ProjectData} from "../../../models/project-models";
 import {ChartNode} from "./editor.component";
-import Node = ProjectData.Node;
 
 export type PropertyMappingInfo = [string | null, number]
 
@@ -38,7 +37,7 @@ export class PropertyMapping {
 
     constructor(private project: ProjectData) {}
 
-    public getColor(node: ChartNode | Node) {
+    public getColor(node: ChartNode | ProjectData.Node) {
         if (node instanceof ChartNode) {
             node = node.data;
         }
@@ -52,7 +51,7 @@ export class PropertyMapping {
         return output;
     }
 
-    public getSize(node: ChartNode | Node) {
+    public getSize(node: ChartNode | ProjectData.Node) {
         if (node instanceof ChartNode) {
             node = node.data;
         }
@@ -60,7 +59,7 @@ export class PropertyMapping {
         return this.sizeRange[0] + (this.sizeRange[1] - this.sizeRange[0]) * value;
     }
 
-    public refresh() {
+    public recalculateNormalization() {
         const old = this._colorNormal;
         this._colorNormal = this.calculateNormalization(this.colorProperty);
         this._sizeNormal = this.calculateNormalization(this.sizeProperty);
@@ -81,7 +80,7 @@ export class PropertyMapping {
         }
     }
 
-    private getPropValue(node: Node, prop: PropertyMappingInfo) {
+    private getPropValue(node: ProjectData.Node, prop: PropertyMappingInfo) {
         if (prop[0] != null && prop[0] in node.extraValues && prop[1] in node.extraValues[prop[0]]) {
             return parseFloat(node.extraValues[prop[0]][prop[1]]);
         } else {
@@ -89,7 +88,7 @@ export class PropertyMapping {
         }
     }
 
-    private getNormalizedValue(node: Node, prop: PropertyMappingInfo, normal: [number, number]) {
+    private getNormalizedValue(node: ProjectData.Node, prop: PropertyMappingInfo, normal: [number, number]) {
         const value = this.getPropValue(node, prop);
         const normalized = (value - normal[0]) * normal[1];
         return Math.max(Math.min(normalized, 1), 0);
