@@ -7,6 +7,9 @@ export class PropertyMapping {
 
     private _colorProperty: PropertyMappingInfo = [null, 0];
 
+    public labelSrc: string = "";
+    public tooltipFields: string[] = [];
+
     public get colorProperty() {
         return this._colorProperty;
     }
@@ -59,11 +62,49 @@ export class PropertyMapping {
         return this.sizeRange[0] + (this.sizeRange[1] - this.sizeRange[0]) * value;
     }
 
+    public getLabel(node: ChartNode | ProjectData.Node) {
+        if (node instanceof ChartNode) {
+            node = node.data;
+        }
+        if (this.labelSrc.length) {
+            return node[this.labelSrc];
+        }
+        return "";
+    }
+
+    public getTooltipData(node: ChartNode | ProjectData.Node) {
+        if (node instanceof ChartNode) {
+            node = node.data;
+        }
+        let data = `<p><strong>${node.name}</strong></p>
+                    <table>
+                        <tr><td>ID:</td><td>${node.id}</td></tr>
+                        <tr><td>Personalization:</td><td>${node.personalization}</td></tr>`;
+        for (let field of this.tooltipFields) {
+            let value = ""
+            if (field == this.colorProperty[0]) {
+                value += this.getPropValue(node, this.colorProperty).toFixed(5);
+            } else if (field == this.sizeProperty[0]) {
+                value += this.getPropValue(node, this.sizeProperty).toFixed(5);
+            } else {
+                //todo
+                value += "todo"
+            }
+            data += `\n<tr><td>${field}:</td><td>${value}</td></tr>`
+        }
+        data += "\n</table>"
+        return data;
+    }
+
     public recalculateNormalization() {
         const old = this._colorNormal;
         this._colorNormal = this.calculateNormalization(this.colorProperty);
         this._sizeNormal = this.calculateNormalization(this.sizeProperty);
         return old[0] != this._colorNormal[0] || old[1] != this._colorNormal[1];
+    }
+
+    public removeTooltipField(field: string) {
+        this.tooltipFields = this.tooltipFields.filter(f => f != field);
     }
 
     private calculateNormalization(prop: PropertyMappingInfo): [number, number] {

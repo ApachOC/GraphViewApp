@@ -75,7 +75,7 @@ graph-editor .graph-editor-toolbars .btn:not(:hover) {
     height: 1rem;
 }
 
-.card-header.project-header {
+#project-header.card-header {
     padding: 0;
 }
 
@@ -127,14 +127,23 @@ graph-editor .graph-editor-toolbars .btn:not(:hover) {
     color: white;
 }
 
-.graph-node.selected {
+.graph-edge,
+.graph-node circle {
+    stroke: #555555;
+}
+
+.graph-node text {
+    font-size: 0.75rem;
+    font-weight: 300;
+}
+
+.graph-node.selected circle {
     stroke: #555555;
     stroke-width: 3px;
 }
 
-.graph-edge,
-.graph-node {
-    stroke: #555555;
+.graph-node.selected text {
+    font-weight: 600;
 }
 
 [id ^= arrow-] {
@@ -142,17 +151,19 @@ graph-editor .graph-editor-toolbars .btn:not(:hover) {
     fill: none;
 }
 
-.d3-tooltip {
-    position: absolute;
-    padding: 2px;
-    border-radius: 8px;
-    pointer-events: none;
-    background: #fafafa;
-    opacity: 0;
-}
-
 editor-viewport-d3 {
     display: block;
+}
+
+editor-viewport-d3 .tooltip {
+    pointer-events: none;
+}
+
+editor-viewport-d3 .tooltip .arrow:before {
+    top: 0.2rem;
+    border-width: 0.4rem 0.4rem 0.4rem 0;
+    border-right-color: #000;
+    transform: rotate(270deg);
 }
 
 .alert-overlay {
@@ -219,8 +230,8 @@ graph-editor-details > .card {
 graph-editor-settings {
     display: block;
     position: absolute;
-    left: 5rem;
-    right: 5rem;
+    left: 20rem;
+    right: 20rem;
     bottom: 0;
     transition: height 0.2s ease-in-out;
     height: 0;

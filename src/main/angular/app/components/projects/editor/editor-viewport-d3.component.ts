@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, Output, EventEmitter} from "@angular/core";
+import {AfterViewInit, Component, Input, Output, EventEmitter, ViewChild, ElementRef} from "@angular/core";
 import {forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, Simulation} from 'd3-force';
 import {Selection, ZoomTransform, D3DragEvent, zoom, drag, zoomIdentity, select} from 'd3';
 import {zoomTransform} from 'd3-zoom';
@@ -8,7 +8,6 @@ import {AlertService} from "../../../services/alert.service";
 import {PropertyMapping} from "./property-mapping";
 
 //todo
-// Implement tooltip customization
 // Fix layout recalculation
 // Maybe turn mapping class into service
 
@@ -18,10 +17,9 @@ import {PropertyMapping} from "./property-mapping";
         <div class="spinner-overlay" *ngIf="!initialized">
             <div class="spinner-border"></div>
         </div>
-        <div id="graph-editor-tooltip-{{id}}" class="d3-tooltip"
-             [style]="{'left': hoverData.x + 'px', 'top': hoverData.y + 'px', 'opacity': hoverData.show}">
-            <span>Name: {{ hoverData.name }}<br>
-                Personalization: {{ hoverData.p }}</span>
+        <div #tooltip class="tooltip" style="margin-bottom: 0.4rem">
+            <div class="arrow" style="bottom: 0; width: 0.8rem; height: 0.5rem; left: calc(50% - 0.2rem)"></div>
+            <div class="tooltip-inner"></div>
         </div>
         <svg class="graph-editor-canvas" id="canvas-{{id}}">
             <defs>
@@ -65,6 +63,9 @@ export class EditorViewportD3Component implements AfterViewInit {
     @Output()
     public selectNodes = new EventEmitter<ChartNode[]>();
 
+    @ViewChild("tooltip")
+    public tooltipElement: ElementRef<HTMLDivElement>;
+
     public sim: Simulation<ChartNode, undefined>;
 
     private canvas: Selection<SVGSVGElement, unknown, HTMLElement, any>;
@@ -88,8 +89,6 @@ export class EditorViewportD3Component implements AfterViewInit {
     private selectedNodes: ChartNode[] = [];
 
     private tmpAdd: ChartEdge | ChartNode;
-
-    public hoverData: any = {}; //{ name: string, x: number, y: number, p: number, show: number }
 
     public initialized = false;
 
@@ -157,6 +156,7 @@ export class EditorViewportD3Component implements AfterViewInit {
      * @private
      */
     private onDragNode(event: D3DragEvent<SVGCircleElement, any, ChartNode>, start: boolean) {
+        this.tooltipElement.nativeElement.classList.remove("show");
         if (this.tool == "SELECT") {
             event.subject.x = event.x;
             event.subject.y = event.y;
@@ -269,12 +269,19 @@ export class EditorViewportD3Component implements AfterViewInit {
 
     }
 
-    private onMouseover(d: ChartNode) {
-        this.hoverData.x = this.transform.applyX(d.x);
-        this.hoverData.y = this.transform.applyY(d.y);
-        this.hoverData.p = d.personalization;
-        this.hoverData.name = d.data.name;
-        this.hoverData.show = 0.8;
+    private onMouseover(e: MouseEvent, d: ChartNode) {
+        if (e.buttons) {
+            return
+        }
+        const el = this.tooltipElement.nativeElement;
+        el.children[1].innerHTML = this.mapping.getTooltipData(d);
+        const rect = el.getBoundingClientRect();
+        const screenX = this.transform.applyX(d.x);
+        const nodeY = d.y - this.mapping.getSize(d);
+        const screenY = this.transform.applyY(nodeY);
+        el.style.left = `${screenX - rect.width / 2}px`;
+        el.style.top = `${screenY - rect.height}px`;
+        el.classList.add("show");
     }
 
     /**
@@ -314,7 +321,8 @@ export class EditorViewportD3Component implements AfterViewInit {
         this.nodeRoot = this.root.append("g");
 
         // calculate canvas dimensions
-        const offset = document.getElementById("project-body").getBoundingClientRect().y;
+        const offset = document.getElementById("app-header").getBoundingClientRect().height +
+                       document.getElementById("project-header").getBoundingClientRect().height;
         this.canvas.style("height", `calc(100vh - ${offset}px)`);
         const dimensions = this.canvas.node().getBoundingClientRect();
         this.canvas.call(zoomBehavior.transform,
@@ -356,18 +364,23 @@ export class EditorViewportD3Component implements AfterViewInit {
         nodes.exit().remove();
 
         // append new nodes
-        nodes
+        const enter = nodes
             .enter()
+            .append("g")
+            .attr("class", "graph-node");
+        enter
             .append("circle")
-            .attr("class", "graph-node")
             .call(drag()
                 .on('start', (e) => this.onDragNode(e, true))
                 .on('drag', (e) => this.onDragNode(e, false))
                 .on('end', (e) => this.onDragNode(e, false))
             )
             .on("click", (e, d) => this.onClickNode(e, d))
-            .on("mouseover", (e: MouseEvent, d) => this.onMouseover(d))
-            .on("mouseout", () => this.hoverData.show = 0);
+            .on("mouseover", (e: MouseEvent, d) => this.onMouseover(e, d))
+            .on("mouseout", () => this.tooltipElement.nativeElement.classList.remove("show"));
+        enter
+            .append("text")
+            .attr("dy", "0.25rem");
 
 
         // refresh mapping info
@@ -382,7 +395,7 @@ export class EditorViewportD3Component implements AfterViewInit {
         }
 
         // update values
-        nodes
+        const dirty = nodes
             .filter((node) => {
                 if (node.dirty) {
                     node.dirty = false;
@@ -391,21 +404,29 @@ export class EditorViewportD3Component implements AfterViewInit {
                 }
                 return false;
             })
-            .attr("class", "graph-node")
-            .attr("r", (n) => this.mapping.getSize(n))
-            .style("fill", (n) => this.mapping.getColor(n))
-            .attr("cx", (d) => { return d.x; })
-            .attr("cy", (d) => { return d.y; })
-            .attr("filter", "none")
-            // if the node has changed, its edges may change as well
             .each((d) => {
                 this.edges.forEach((edge) => {
                     edge.dirty = edge.dirty || edge.source == d || edge.target == d;
                 });
-            });
+            })
+            .attr("class", "graph-node");
+        dirty
+            .select("circle")
+            .attr("r", (n) => this.mapping.getSize(n))
+            .style("fill", (n) => this.mapping.getColor(n))
+            .attr("cx", (d) => { return d.x; })
+            .attr("cy", (d) => { return d.y; })
+            .attr("filter", "none");
+        dirty
+            .select("text")
+            .attr("dx", (d) => this.mapping.getSize(d) + 3)
+            .attr("x", (d) => { return d.x; })
+            .attr("y", (d) => { return d.y; })
+            .text(d => this.mapping.getLabel(d));
 
         nodes
             .filter((node) => this.selectedNodes.includes(node))
+            .select("circle")
             .attr("class", "graph-node selected")
             .attr("filter", `url(#select-filter-${this.id})`);
     }

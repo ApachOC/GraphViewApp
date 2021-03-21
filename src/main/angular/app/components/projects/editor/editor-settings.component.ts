@@ -41,6 +41,12 @@ export class EditorSettingsComponent {
         }
     }
 
+    get tooltipFields() {
+        return this.availableFields.filter((field) => {
+            return !this.mapping.tooltipFields.includes(field)
+        });
+    }
+
     public selectedColorField: string = null;
 
     public selectedSizeField: string = null;
