@@ -37,7 +37,7 @@
                     </button>
                     -->
                     <button class="btn btn-outline-success" ngbTooltip="Recalculate layout"
-                            (click)="viewport.sim.restart()" placement="right">
+                            (click)="viewport.sim.restart(); viewport.sim.alpha(1)" placement="right">
                         <i class="fa fa-lg fa-sync-alt"></i>
                     </button>
                     <button class="btn btn-outline-success" (click)="settings.toggle()"

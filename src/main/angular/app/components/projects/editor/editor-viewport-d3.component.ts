@@ -7,10 +7,6 @@ import {interval} from "rxjs";
 import {AlertService} from "../../../services/alert.service";
 import {PropertyMapping} from "./property-mapping";
 
-//todo
-// Fix layout recalculation
-// Maybe turn mapping class into service
-
 @Component({
     selector: 'editor-viewport-d3',
     template: `
@@ -333,10 +329,10 @@ export class EditorViewportD3Component implements AfterViewInit {
 
         // setup layout simulation
         this.sim = forceSimulation(this.nodes)
-            .force('link', forceLink(this.edges).distance(80))
+            .force('link', forceLink(this.edges).distance(75).iterations(3))
             .force('center', forceCenter(0, 0))
-            .force('charge', forceManyBody().strength(-20).distanceMax(100))
-            .force('collide', forceCollide().radius(50))
+            .force('charge', forceManyBody().strength(-50))
+            .force('collide', forceCollide().radius(20))
             .alphaMin(0.1)
             .on('end', () => {
                 if (this.initialized) {
@@ -426,8 +422,8 @@ export class EditorViewportD3Component implements AfterViewInit {
 
         nodes
             .filter((node) => this.selectedNodes.includes(node))
-            .select("circle")
             .attr("class", "graph-node selected")
+            .select("circle")
             .attr("filter", `url(#select-filter-${this.id})`);
     }
 

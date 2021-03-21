@@ -3,6 +3,7 @@ import {ChartNode} from "./editor.component";
 
 export type PropertyMappingInfo = [string | null, number]
 
+// Maybe turn this class into service?
 export class PropertyMapping {
 
     private _colorProperty: PropertyMappingInfo = [null, 0];
