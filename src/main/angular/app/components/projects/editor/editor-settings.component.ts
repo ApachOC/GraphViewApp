@@ -100,9 +100,7 @@ export class EditorSettingsComponent {
     removeFromHistory(prop: [string, number]) {
         // remove from project history
         if (prop[0] in this.project.history) {
-            this.project.history[prop[0]] = this.project.history[prop[0]].filter(timestamp => {
-                timestamp != prop[1];
-            });
+            this.project.history[prop[0]] = this.project.history[prop[0]].filter(timestamp => timestamp != prop[1]);
             if (!this.project.history[prop[0]].length) {
                 delete this.project.history[prop[0]]
             }

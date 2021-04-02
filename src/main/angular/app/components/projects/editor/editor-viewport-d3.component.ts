@@ -92,6 +92,7 @@ export class EditorViewportD3Component implements AfterViewInit {
 
     ngAfterViewInit(): void {
         this.initializeD3();
+        this.mapping.recalculateNormalization();
 
         // hacky-ish but for some unknown reason Angular digest triggers before d3 events
         interval(1/60).subscribe(() => {
@@ -173,7 +174,7 @@ export class EditorViewportD3Component implements AfterViewInit {
             } else if (start) {
                 // drag started, create temporary edge
                 this.tmpAdd = new ChartEdge(event.subject,
-                    {x: event.x, y: event.y});
+                    {x: event.x, y: event.y}, 1);
                 this.edges.push(this.tmpAdd);
             } else {
                 // drag ended
@@ -447,6 +448,7 @@ export class EditorViewportD3Component implements AfterViewInit {
             .append("line")
             .attr('marker-end',`url(#arrow-${this.id})`)
             .attr("class", "graph-edge")
+            .style("stroke-width", e => this.mapping.getEdgeWidth(e))
             .each((edge) => { edge.dirty = true });
 
         // update values

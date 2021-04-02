@@ -15,7 +15,8 @@ export class ChartEdge {
 
     constructor(
         public source: {x: number, y: number} | ProjectData.Node,
-        public target: {x: number, y: number} | ProjectData.Node
+        public target: {x: number, y: number} | ProjectData.Node,
+        public weight: number
     ) {
         this.id = ChartEdge._id++;
     }
@@ -122,7 +123,7 @@ export class EditorComponent implements OnInit {
     public addEdge(val: {source: ChartNode, target: ChartNode}) {
         const projectEdge = new ProjectData.Edge(val.source.data.id, val.target.data.id);
         this.project.edges.push(projectEdge);
-        this.edges.push(new ChartEdge(val.source, val.target));
+        this.edges.push(new ChartEdge(val.source, val.target, 1));
     }
 
     public runLibrary() {
@@ -149,7 +150,6 @@ export class EditorComponent implements OnInit {
                 this.project.history[par].push(timestamp)
                 parIndex++;
             }
-            // todo also implement edges
 
             this.alerts.pushAlert("success", "Library work finished, check node personalization.");
         });
@@ -175,7 +175,8 @@ export class EditorComponent implements OnInit {
         this.project.edges.forEach((edge) =>  {
             const edgeObj = new ChartEdge(
                 this.nodeMap[edge.sourceId],
-                this.nodeMap[edge.targetId]
+                this.nodeMap[edge.targetId],
+                edge.weight
             );
             this.edges.push(edgeObj);
         });

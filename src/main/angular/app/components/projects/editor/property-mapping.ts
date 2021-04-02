@@ -1,10 +1,18 @@
 import {ProjectData} from "../../../models/project-models";
-import {ChartNode} from "./editor.component";
+import {ChartEdge, ChartNode} from "./editor.component";
 
 export type PropertyMappingInfo = [string | null, number]
 
 // Maybe turn this class into service?
 export class PropertyMapping {
+
+    //todo show difference between runs
+    //show results for selection only
+    //show history for nonexistent nodes
+    //check persistent embedded database
+    //add personalization mapping
+
+    private edgeWidth = 2
 
     private _colorProperty: PropertyMappingInfo = [null, 0];
 
@@ -39,6 +47,8 @@ export class PropertyMapping {
 
     private _sizeNormal: [number, number];
 
+    private _edgeNormal: number[];
+
     constructor(private project: ProjectData) {}
 
     public getColor(node: ChartNode | ProjectData.Node) {
@@ -61,6 +71,12 @@ export class PropertyMapping {
         }
         const value = this.getNormalizedValue(node, this.colorProperty, this._sizeNormal);
         return this.sizeRange[0] + (this.sizeRange[1] - this.sizeRange[0]) * value;
+    }
+
+    public getEdgeWidth(edge: ChartEdge) {
+        const normalized = (edge.weight - this._edgeNormal[0]) * this._edgeNormal[1];
+        const value = Math.max(Math.min(normalized, 1), 0) * this.edgeWidth;
+        return `${value}px`;
     }
 
     public getLabel(node: ChartNode | ProjectData.Node) {
@@ -101,6 +117,7 @@ export class PropertyMapping {
         const old = this._colorNormal;
         this._colorNormal = this.calculateNormalization(this.colorProperty);
         this._sizeNormal = this.calculateNormalization(this.sizeProperty);
+        this._edgeNormal = this.calculateEdgeNormalization();
         return old[0] != this._colorNormal[0] || old[1] != this._colorNormal[1];
     }
 
@@ -119,6 +136,20 @@ export class PropertyMapping {
             return [0, max]
         } else {
             return [min, 1 / (max - min)]
+        }
+    }
+
+    private calculateEdgeNormalization() {
+        let min = Number.MAX_VALUE, max = 0;
+        for (let edge of this.project.edges) {
+            min = Math.min(edge.weight, min);
+            max = Math.max(edge.weight, max);
+        }
+
+        if (min == max) {
+            return [0, 0.5];
+        } else {
+            return [min, 1 / (max - min)];
         }
     }
 
