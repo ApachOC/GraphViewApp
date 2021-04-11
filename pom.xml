@@ -92,6 +92,7 @@
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
+                        <phase>compile</phase>
                     </execution>
                     <execution>
                         <id>npm install</id>
@@ -101,6 +102,7 @@
                         <configuration>
                             <arguments>install</arguments>
                         </configuration>
+                        <phase>compile</phase>
                     </execution>
                     <execution>
                         <id>npm build</id>
@@ -110,6 +112,7 @@
                         <configuration>
                             <arguments>run-script build</arguments>
                         </configuration>
+                        <phase>compile</phase>
                     </execution>
                 </executions>
             </plugin>
@@ -130,7 +133,24 @@
                 </filesets>
               </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>default-resources</id>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
     </build>
 
     <profiles>
@@ -146,7 +166,8 @@
                 </dependency>
             </dependencies>
             <properties>
-                <spring.profiles.active>test</spring.profiles.active>
+                <spring.profile>test</spring.profile>
+                <spring.exclude/>
             </properties>
         </profile>
         <profile>
@@ -159,8 +180,8 @@
                 </dependency>
             </dependencies>
             <properties>
-                <spring.profiles.active>prod</spring.profiles.active>
-                <spring.autoconfigure.exclude>org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration</spring.autoconfigure.exclude>
+                <spring.profile>prod</spring.profile>
+                <spring.exclude>org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration</spring.exclude>
             </properties>
         </profile>
     </profiles>

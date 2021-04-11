@@ -1,13 +1,10 @@
 package cz.zcu.kiv.wernerv.config;
 
-import com.mongodb.AuthenticationMechanism;
 import com.mongodb.MongoClientSettings;
-import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import cz.zcu.kiv.wernerv.models.UserModel;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
