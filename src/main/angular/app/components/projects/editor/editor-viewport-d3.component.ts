@@ -31,7 +31,7 @@ import {PropertyMapping} from "./property-mapping";
     `
 })
 export class EditorViewportD3Component implements AfterViewInit {
-
+node
     @Input()
     public id: string;
 
@@ -333,7 +333,6 @@ export class EditorViewportD3Component implements AfterViewInit {
             .force('link', forceLink(this.edges).distance(75).iterations(3))
             .force('center', forceCenter(0, 0))
             .force('charge', forceManyBody().strength(-50))
-            .force('collide', forceCollide().radius(20))
             .alphaMin(0.1)
             .on('end', () => {
                 if (this.initialized) {

@@ -9,7 +9,6 @@ export class PropertyMapping {
     //todo show difference between runs
     //show results for selection only
     //show history for nonexistent nodes
-    //check persistent embedded database
     //add personalization mapping
 
     private edgeWidth = 2
