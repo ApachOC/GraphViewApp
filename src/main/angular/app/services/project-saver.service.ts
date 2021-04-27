@@ -17,7 +17,7 @@ export class ProjectSaverService {
         archive.file(`${project.title}-edges.csv`, edgeCSV);
 
         archive.generateAsync({type : "blob"}).then((file) => {
-            saveAs(file)
+            saveAs(file, project.title + "_project.zip")
         });
     }
 

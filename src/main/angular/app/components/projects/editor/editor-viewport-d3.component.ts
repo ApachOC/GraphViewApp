@@ -1,5 +1,15 @@
-import {AfterViewInit, Component, Input, Output, EventEmitter, ViewChild, ElementRef} from "@angular/core";
-import {forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, Simulation} from 'd3-force';
+import {
+    AfterViewInit,
+    Component,
+    Input,
+    Output,
+    EventEmitter,
+    ViewChild,
+    ElementRef,
+    OnChanges,
+    SimpleChanges
+} from "@angular/core";
+import {forceCenter, forceLink, forceManyBody, forceSimulation, Simulation} from 'd3-force';
 import {Selection, ZoomTransform, D3DragEvent, zoom, drag, zoomIdentity, select} from 'd3';
 import {zoomTransform} from 'd3-zoom';
 import {ChartEdge, ChartNode} from "./editor.component";
@@ -30,7 +40,7 @@ import {PropertyMapping} from "./property-mapping";
         </svg>
     `
 })
-export class EditorViewportD3Component implements AfterViewInit {
+export class EditorViewportD3Component implements AfterViewInit, OnChanges {
 node
     @Input()
     public id: string;
@@ -99,6 +109,17 @@ node
             this.updateNodes();
             this.updateEdges();
         });
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.nodes) {
+            for (const node of this.nodes) {
+                if (node.x != 0 || node.y != 0) {
+                    this.initialized = true;
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -340,7 +361,11 @@ node
                 } else {
                     this.initialized = true;
                 }
-            });
+            })
+            .stop();
+        if (!this.initialized) {
+            this.sim.restart();
+        }
 
         this.ready = true;
     }

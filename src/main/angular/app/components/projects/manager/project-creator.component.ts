@@ -175,8 +175,8 @@ export class ProjectCreatorComponent {
                     node.personalization = line[m.mapping["personalization"]];
                 }
                 if (m.importPosition) {
-                    node.x = line[m.mapping["x"]];
-                    node.y = line[m.mapping["y"]];
+                    node.x = parseFloat(line[m.mapping["x"]]);
+                    node.y = parseFloat(line[m.mapping["y"]]);
                 }
                 if (m.importExtras) {
                     for (const field of m.extra) {
@@ -189,6 +189,14 @@ export class ProjectCreatorComponent {
                 }
                 this.project.nodes.push(node);
         }
+
+        // save project history
+        if (this.nodeImportOptions.importExtras) {
+            for (const field of m.extra) {
+                this.project.history[field.name] = field.variants;
+            }
+        }
+
         this.alerts.pushAlert("success", "Nodes were imported successfully!");
         this.nodeImportOptions.show = false;
         this.nodesImported = true
