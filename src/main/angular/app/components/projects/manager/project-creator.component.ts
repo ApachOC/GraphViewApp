@@ -81,7 +81,7 @@ export class ProjectCreatorComponent {
                 while (from === to || prevTargets.includes(to)) {
                     to = this.project.nodes[Math.floor(Math.random() * Math.floor(count))];
                 }
-                const edge = new ProjectData.Edge(from.id, to.id);
+                const edge = new ProjectData.Edge(from.id, to.id, Math.random());
                 this.project.edges.push(edge);
                 prevTargets.push(to.id);
             }
@@ -223,7 +223,9 @@ export class ProjectCreatorComponent {
     showGenerateModal(generateModal: TemplateRef<any>) {
         this.modalService.open(generateModal,
             {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
-            this.generateGraph(result.nodeCount, result.edgeCount);
+                if (result) {
+                    this.generateGraph(result.nodeCount, result.edgeCount);
+                }
         });
     }
 }
