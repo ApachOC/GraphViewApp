@@ -26,29 +26,42 @@
                         </div>
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="usePers"
-                                   [(ngModel)]="nodeImportOptions.importPers">
+                                   [(ngModel)]="nodeImportOptions.importPersonalization">
                             <label class="form-check-label" for="usePers">Import personalization data</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="usePos"
+                                   [(ngModel)]="nodeImportOptions.importPosition">
+                            <label class="form-check-label" for="usePos">Import position data</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="useExtra"
+                                   [(ngModel)]="nodeImportOptions.importExtras">
+                            <label class="form-check-label" for="useExtra">Import extra values</label>
                         </div>
                         <hr>
                         <div class="form-group">
                             <label for="idColumn">ID Column</label>
-                            <select class="form-control" [(ngModel)]="nodeImportOptions.id" id="idColumn">
-                                <option *ngFor="let name of nodeImportOptions.labels; index as i"
-                                        value="{{i}}">{{nodeImportOptions.firstLineHeader ? name : i}}</option>
+                            <select class="form-control" [(ngModel)]="nodeImportOptions.mapping.id" id="idColumn">
+                                <option *ngFor="let field of nodeImportOptions.fields; index as i"
+                                        value="{{field.columns[0]}}">{{nodeImportOptions.firstLineHeader ? field.name : i}}
+                                </option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="nameColumn">Name Column</label>
-                            <select class="form-control" [(ngModel)]="nodeImportOptions.name" id="nameColumn">
-                                <option *ngFor="let name of nodeImportOptions.labels; index as i"
-                                        value="{{i}}">{{nodeImportOptions.firstLineHeader ? name : i}}</option>
+                            <select class="form-control" [(ngModel)]="nodeImportOptions.mapping.name" id="nameColumn">
+                                <option *ngFor="let field of nodeImportOptions.fields; index as i"
+                                        value="{{field.columns[0]}}">{{nodeImportOptions.firstLineHeader ? field.name : i}}
+                                </option>
                             </select>
                         </div>
-                        <div class="form-group" *ngIf="nodeImportOptions.importPers">
+                        <div class="form-group" *ngIf="nodeImportOptions.importPersonalization">
                             <label for="persColumn">Personalization Column</label>
-                            <select class="form-control" [(ngModel)]="nodeImportOptions.personalization" id="persColumn">
-                                <option *ngFor="let name of nodeImportOptions.labels; index as i"
-                                        value="{{i}}">{{nodeImportOptions.firstLineHeader ? name : i}}</option>
+                            <select class="form-control" [(ngModel)]="nodeImportOptions.mapping.personalization" id="persColumn">
+                                <option *ngFor="let field of nodeImportOptions.fields; index as i"
+                                        value="{{field.columns[0]}}">{{nodeImportOptions.firstLineHeader ? field.name : i}}
+                                </option>
                             </select>
                         </div>
                         <button class="btn btn-danger " (click)="nodeImportOptions.show = false">Cancel import</button>
@@ -66,31 +79,24 @@
                                    [(ngModel)]="edgeImportOptions.importWeights">
                             <label class="form-check-label" for="importWeights">Import edge weight information</label>
                         </div>
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="generateLayout"
-                                   [(ngModel)]="edgeImportOptions.generateLayout">
-                            <label class="form-check-label" for="generateLayout">
-                                Generate force directed layout during import (may slow down import considerably)
-                            </label>
-                        </div>
                         <div class="form-group">
                             <label for="sIdColumn">Source ID Column</label>
                             <select class="form-control" [(ngModel)]="edgeImportOptions.from" id="sIdColumn">
-                                <option *ngFor="let name of edgeImportOptions.labels; index as i"
+                                <option *ngFor="let name of edgeImportOptions.data[0]; index as i"
                                         value="{{i}}">{{edgeImportOptions.firstLineHeader ? name : i}}</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="dIdColumn">Destination ID Column</label>
                             <select class="form-control" [(ngModel)]="edgeImportOptions.to" id="dIdColumn">
-                                <option *ngFor="let name of edgeImportOptions.labels; index as i"
+                                <option *ngFor="let name of edgeImportOptions.data[0]; index as i"
                                         value="{{i}}">{{edgeImportOptions.firstLineHeader ? name : i}}</option>
                             </select>
                         </div>
                         <div class="form-group" *ngIf="edgeImportOptions.importWeights ">
                             <label for="weightColumn">Weight Column</label>
                             <select class="form-control" [(ngModel)]="edgeImportOptions.weight" id="weightColumn">
-                                <option *ngFor="let name of edgeImportOptions.labels; index as i"
+                                <option *ngFor="let name of edgeImportOptions.data[0]; index as i"
                                         value="{{i}}">{{edgeImportOptions.firstLineHeader ? name : i}}</option>
                             </select>
                         </div>

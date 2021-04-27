@@ -13,20 +13,6 @@ export class ProjectData {
 
     history: Record<string, number[]> = {};
 
-    get state(): ProjectData.State {
-        if (this.nodeCount > 0) {
-            if (this.edgeCount > 0) {
-                return ProjectData.State.Full
-            } else {
-                return ProjectData.State.PointCloud
-            }
-        } else if (this.edgeCount > 0) {
-            return ProjectData.State.Invalid
-        } else {
-            return ProjectData.State.Empty
-        }
-    }
-
     get nodeCount(): number {
         return this.nodes.length
     }
@@ -40,15 +26,6 @@ export class ProjectData {
 }
 
 export namespace ProjectData {
-    export enum State
-    {
-        Empty,
-        PointCloud,
-        Full,
-        Invalid,
-        Ready
-    }
-
     export class Node {
         x = 0;
         y = 0;

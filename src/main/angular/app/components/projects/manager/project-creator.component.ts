@@ -16,25 +16,35 @@ export class ProjectCreatorComponent {
     @Input() project: ProjectData
 
     acceptFiles = 'application/csv,text/csv';
+
     nodeImportOptions = {
         show: false,
-        importPers: true,
         firstLineHeader: true,
+        importPersonalization: false,
+        importPosition: false,
+        importExtras: false,
 
-        id: 0, name: 1, personalization: 2,
-        labels: ['1', '2', '3']
+        mapping: {
+            id: 0,
+            name: 1,
+            personalization: 2
+        },
+
+        fields: [],
+        data: [[]],
+        extra: []
     }
+
     edgeImportOptions = {
         show: false,
         importWeights: true,
         firstLineHeader: true,
-        generateLayout: true,
 
         from: 0, to: 1, weight: 2,
-        labels: ['1', '2', '3']
+        data: [[]]
     }
 
-    private csvLines: string[][];
+    private nodesImported = false;
 
     get density(): number {
         if (this.project.nodeCount) {
@@ -51,7 +61,7 @@ export class ProjectCreatorComponent {
 
     public async onAddFile(event: NgxDropzoneChangeEvent) {
         if (event.addedFiles.length) {
-            this.csvLines = await this.loadFile(event.addedFiles.pop());
+            await this.loadFile(event.addedFiles.pop());
         }
     }
 
@@ -80,16 +90,53 @@ export class ProjectCreatorComponent {
         this.project.ready = true;
     }
 
+    private detectNodeOptions(line: string[]) {
+        // get all fields
+        const fields = []
+        for (let i = 0; i < line.length; i++) {
+            const split = line[i].split("@");
+            let fIndex = -1;
+            if ((fIndex = fields.indexOf((el) => el.name == split[0])) >= 0) {
+                fields[fIndex].columns.push(i);
+            } else {
+                fields.push({ name: split[0], columns: [i], variants: [] });
+            }
+            if (split.length > 1) {
+                fields[fields.length - 1].variants.push(split[1]);
+            }
+        }
+
+        const perField = fields.find((el) => el.name.toLowerCase() == "personalization")
+        const posFieldX = fields.find((el) => el.name.toLowerCase() == "x");
+        const posFieldY = fields.find((el) => el.name.toLowerCase() == "y");
+
+        const extFields = fields.filter((el) => el.variants.length > 0)
+
+        this.nodeImportOptions.fields = fields
+        if (perField) {
+            this.nodeImportOptions.importPersonalization = true
+            this.nodeImportOptions.mapping.personalization = perField.columns[0];
+        }
+        if (posFieldX && posFieldY) {
+            this.nodeImportOptions.importPosition = true;
+            this.nodeImportOptions.mapping["x"] = posFieldX.columns[0];
+            this.nodeImportOptions.mapping["y"] = posFieldY.columns[0];
+        }
+        if (extFields.length) {
+            this.nodeImportOptions.importExtras = true
+            this.nodeImportOptions.extra = extFields
+        }
+    }
+
     private async loadFile(file: File): Promise<string[][]> {
         switch (file.type) {
             case 'text/csv':
             case 'application/csv':
                 const lines = await this.parseCSV(file);
-                if (this.project.state === ProjectData.State.Empty) {
-                    this.nodeImportOptions.labels = lines[0];
-                    this.nodeImportOptions.show = true;
+                if (!this.nodesImported) {
+                    this.loadNodeCSV(lines);
                 } else {
-                    this.edgeImportOptions.labels = lines[0];
+                    this.edgeImportOptions.data = lines;
                     this.edgeImportOptions.show = true;
                 }
                 return lines;
@@ -113,30 +160,50 @@ export class ProjectCreatorComponent {
         return output;
     }
 
+    private loadNodeCSV(lines: string[][]) {
+        this.detectNodeOptions(lines[0]);
+        this.nodeImportOptions.data = lines;
+        this.nodeImportOptions.show = true;
+    }
+
     public loadNodes() {
         const m = this.nodeImportOptions;
-        const lines = this.csvLines;
-        m.show = false;
-        for (let i = m.firstLineHeader ? 1 : 0; i < lines.length; i++) {
-                const line = lines[i];
-                const node = new ProjectData.Node(line[m.id], line[m.name],
-                    m.importPers ? parseInt(line[m.personalization]) : null);
+        for (let i = m.firstLineHeader ? 1 : 0; i < m.data.length; i++) {
+                const line = m.data[i];
+                const node = new ProjectData.Node(line[m.mapping.id], line[m.mapping.name]);
+                if (m.importPersonalization) {
+                    node.personalization = line[m.mapping["personalization"]];
+                }
+                if (m.importPosition) {
+                    node.x = line[m.mapping["x"]];
+                    node.y = line[m.mapping["y"]];
+                }
+                if (m.importExtras) {
+                    for (const field of m.extra) {
+                        const records = {}
+                        for (let i = 0; i < field.variants.length; i++) {
+                            records[field.variants[i]] = line[field.columns[i]]
+                        }
+                        node.extraValues[field.name] = records
+                    }
+                }
                 this.project.nodes.push(node);
         }
         this.alerts.pushAlert("success", "Nodes were imported successfully!");
+        this.nodeImportOptions.show = false;
+        this.nodesImported = true
     }
 
     public loadEdges() {
         const m = this.edgeImportOptions;
-        const lines = this.csvLines;
-        m.show = false;
-        for (let i = m.firstLineHeader ? 1 : 0; i < lines.length; i++) {
-                const line = lines[i];
+        for (let i = m.firstLineHeader ? 1 : 0; i < m.data.length; i++) {
+                const line = m.data[i];
                 const edge = new ProjectData.Edge(line[m.from], line[m.to],
                     m.importWeights ? parseInt(line[m.weight]) : null);
                 this.project.edges.push(edge);
         }
         this.alerts.pushAlert("success", "Edges were imported successfully!");
+        m.show = false;
     }
 
     readyProject(projectName: HTMLInputElement) {

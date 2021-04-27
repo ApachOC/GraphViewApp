@@ -29,7 +29,7 @@ export class ProjectSaverService {
                 continue;
             }
             for (let idx = 0; idx < extra[value].length; idx++) {
-                header += `;${value}_${idx}`;
+                header += `;${value}@${extra[idx]}`;
             }
         }
         lines.push(header)

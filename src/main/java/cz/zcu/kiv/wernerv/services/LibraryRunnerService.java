@@ -83,7 +83,6 @@ public class LibraryRunnerService {
         // run the library
         String[] libArgs = new String[libArgList.size()];
         libArgList.toArray(libArgs);
-        ProcessBuilder pb = new ProcessBuilder();
         Process proc = Runtime.getRuntime().exec(libArgs);
 
         // send the data
