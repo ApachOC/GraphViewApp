@@ -10,8 +10,9 @@ export class PropertyMapping {
     //show results for selection only
     //show history for nonexistent nodes
     //add personalization mapping
+    //node icons
 
-    private edgeWidth = 2
+    private edgeWidthRange = [0.5, 2];
 
     private _colorProperty: PropertyMappingInfo = [null, 0];
 
@@ -74,7 +75,7 @@ export class PropertyMapping {
 
     public getEdgeWidth(edge: ChartEdge) {
         const normalized = (edge.weight - this._edgeNormal[0]) * this._edgeNormal[1];
-        const value = Math.max(Math.min(normalized, 1), 0) * this.edgeWidth;
+        const value = this.edgeWidthRange[0] + (this.edgeWidthRange[1] - this.edgeWidthRange[0]) * normalized;
         return `${value}px`;
     }
 

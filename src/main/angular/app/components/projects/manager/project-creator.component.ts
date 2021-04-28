@@ -207,7 +207,7 @@ export class ProjectCreatorComponent {
         for (let i = m.firstLineHeader ? 1 : 0; i < m.data.length; i++) {
                 const line = m.data[i];
                 const edge = new ProjectData.Edge(line[m.from], line[m.to],
-                    m.importWeights ? parseInt(line[m.weight]) : null);
+                    m.importWeights ? parseFloat(line[m.weight]) : null);
                 this.project.edges.push(edge);
         }
         this.alerts.pushAlert("success", "Edges were imported successfully!");
