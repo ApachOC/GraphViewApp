@@ -375,10 +375,10 @@ node
 
         // setup layout simulation
         this.sim = forceSimulation(this.nodes)
-            .force('link', forceLink(this.edges).distance(200).iterations(3))
+            .force('link', forceLink(this.edges).distance(200))
             .force('center', forceCenter(0, 0))
             .force('charge', forceManyBody().strength(-100))
-            .force('collide', forceCollide().radius(50))
+            .force('collide', forceCollide().radius(25))
             .alphaMin(0.1)
             .on('end', () => {
                 if (this.initialized) {

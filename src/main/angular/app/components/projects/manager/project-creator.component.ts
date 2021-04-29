@@ -152,7 +152,7 @@ export class ProjectCreatorComponent {
         const lines = text.split('\n');
         lines.forEach(line => {
             const words = line.trim().split(';');
-            if (words.length > 2) {
+            if (words.length >= 2) {
                 output.push(words);
             }
         });

@@ -15,7 +15,7 @@
                         </a>
                         <div ngbDropdownMenu aria-labelledby="projectDropdownToggle">
                             <button ngbDropdownItem (click)="renameProject()">Rename project</button>
-                            <button ngbDropdownItem (click)="saver.saveProjectCSV(project)">Save to file</button>
+                            <button ngbDropdownItem (click)="exportProject()">Save to file</button>
                             <!--<button ngbDropdownItem>Download results</button>-->
                             <div class="dropdown-divider" *ngIf="user.authenticated"></div>
                             <button ngbDropdownItem *ngIf="user.authenticated"

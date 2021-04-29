@@ -6,6 +6,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ProjectSelectionModalComponent} from "./project-selection-modal.component";
 import {TextPromptModalComponent} from "../../generic/text-prompt-modal.component";
 import {ProjectSaverService} from "../../../services/project-saver.service";
+import {AlertService} from "../../../services/alert.service";
 
 @Component({
     templateUrl: './project-manager.component.html'
@@ -27,14 +28,19 @@ export class ProjectManagerComponent {
     constructor(private mgr: ProjectManagerService,
                 public user: SessionService,
                 private modals: NgbModal,
-                public saver: ProjectSaverService) { }
+                public saver: ProjectSaverService,
+                private alerts: AlertService) { }
 
     newProject() {
         this.mgr.newProject(true);
     }
 
     saveProject() {
-        this.mgr.saveProject(this.currentProject);
+        if (this.currentProject.title) {
+            this.mgr.saveProject(this.currentProject);
+        } else {
+            this.alerts.pushAlert("danger", "Warning, can't save project without a title!")
+        }
     }
 
     loadProject() {
@@ -85,5 +91,13 @@ export class ProjectManagerComponent {
             }
         }
         return thisTitle;
+    }
+
+    exportProject() {
+        if (this.currentProject.title) {
+            this.saver.saveProjectCSV(this.currentProject);
+        } else {
+            this.alerts.pushAlert("danger", "Warning, can't save project without a title!")
+        }
     }
 }

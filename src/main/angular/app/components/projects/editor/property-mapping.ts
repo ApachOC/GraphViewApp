@@ -16,7 +16,7 @@ export class PropertyMapping {
 
     private _colorProperty: PropertyMappingInfo = [null, 0];
 
-    public labelSrc: string = "";
+    public labelSrc: string = "name";
     public tooltipFields: string[] = [];
 
     public get colorProperty() {
@@ -28,7 +28,7 @@ export class PropertyMapping {
         this._colorNormal = this.calculateNormalization(this._colorProperty);
     };
 
-    public colorRange: [string, string] = ["#D7E7E7" ,"#5F9EA0"];
+    public colorRange: [string, string] = ["#77aaff" ,"#ff7777"];
 
     private _colorNormal: [number, number] = [0, 0];
 
@@ -43,7 +43,7 @@ export class PropertyMapping {
         this._sizeNormal = this.calculateNormalization(this._sizeProperty);
     };
 
-    public sizeRange: [number, number] = [10, 50];
+    public sizeRange: [number, number] = [10, 30];
 
     private _sizeNormal: [number, number];
 
