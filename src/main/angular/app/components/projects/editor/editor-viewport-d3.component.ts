@@ -7,13 +7,12 @@ import {
     ViewChild,
     ElementRef,
     OnChanges,
-    SimpleChanges
+    SimpleChanges, KeyValueDiffer, KeyValueDiffers, IterableDiffer, IterableDiffers, DoCheck
 } from "@angular/core";
-import {forceCenter, forceLink, forceManyBody, forceSimulation, Simulation} from 'd3-force';
+import {forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, Simulation} from 'd3-force';
 import {Selection, ZoomTransform, D3DragEvent, zoom, drag, zoomIdentity, select} from 'd3';
 import {zoomTransform} from 'd3-zoom';
 import {ChartEdge, ChartNode} from "./editor.component";
-import {interval} from "rxjs";
 import {AlertService} from "../../../services/alert.service";
 import {PropertyMapping} from "./property-mapping";
 
@@ -40,7 +39,7 @@ import {PropertyMapping} from "./property-mapping";
         </svg>
     `
 })
-export class EditorViewportD3Component implements AfterViewInit, OnChanges {
+export class EditorViewportD3Component implements AfterViewInit, DoCheck {
 node
     @Input()
     public id: string;
@@ -96,30 +95,55 @@ node
 
     private tmpAdd: ChartEdge | ChartNode;
 
-    public initialized = false;
+    private oldNodes = 0
 
-    constructor(private alerts: AlertService) { }
+    public initialized = false;
+    
+    private nodesDiffer: IterableDiffer<ChartNode>;
+
+    private nodeDiffers = new Array<KeyValueDiffer<string, any>>();
+
+    constructor(private alerts: AlertService,
+                private differs: KeyValueDiffers,
+                iterDiffers: IterableDiffers) {
+        this.nodesDiffer = iterDiffers.find([]).create();
+    }
 
     ngAfterViewInit(): void {
         this.initializeD3();
         this.mapping.recalculateNormalization();
-
-        // hacky-ish but for some unknown reason Angular digest triggers before d3 events
-        interval(1/60).subscribe(() => {
-            this.updateNodes();
-            this.updateEdges();
-        });
     }
 
-    ngOnChanges(changes: SimpleChanges) {
-        if (changes.nodes) {
-            for (const node of this.nodes) {
-                if (node.x != 0 || node.y != 0) {
-                    this.initialized = true;
-                    break;
+    ngDoCheck() {
+        let changeDetected = !!this.tmpAdd;
+        let nodeDiff = this.nodesDiffer.diff(this.nodes);
+        if (nodeDiff) {
+            nodeDiff.forEachRemovedItem((item) => {
+                this.nodeDiffers.splice(item.previousIndex, 1);
+            });
+            nodeDiff.forEachAddedItem((item) => {
+                const differ = this.differs.find(item.item).create<string, any>();
+                this.nodeDiffers.splice(item.currentIndex, 0, differ);
+            });
+            changeDetected = true;
+        } else {
+            this.nodes.some((node, index) => {
+                const differ = this.nodeDiffers[index];
+                const changes = differ.diff(node);
+                if (changes) {
+                    changeDetected = true;
+                    return true;
                 }
-            }
+            });
         }
+
+        if (changeDetected) {
+            setTimeout(() => {
+                this.updateNodes();
+                this.updateEdges();
+            })
+        }
+        this.oldNodes = this.nodes.length;
     }
 
     /**
@@ -351,9 +375,10 @@ node
 
         // setup layout simulation
         this.sim = forceSimulation(this.nodes)
-            .force('link', forceLink(this.edges).distance(75).iterations(3))
+            .force('link', forceLink(this.edges).distance(200).iterations(3))
             .force('center', forceCenter(0, 0))
-            .force('charge', forceManyBody().strength(-50))
+            .force('charge', forceManyBody().strength(-100))
+            .force('collide', forceCollide().radius(50))
             .alphaMin(0.1)
             .on('end', () => {
                 if (this.initialized) {
@@ -427,7 +452,7 @@ node
             })
             .each((d) => {
                 this.edges.forEach((edge) => {
-                    edge.dirty = edge.dirty || edge.source == d || edge.target == d;
+                    edge.dirty ||= edge.source == d || edge.target == d;
                 });
             })
             .attr("class", "graph-node");

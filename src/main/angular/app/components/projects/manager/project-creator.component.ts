@@ -44,7 +44,7 @@ export class ProjectCreatorComponent {
         data: [[]]
     }
 
-    private nodesImported = false;
+    private nodesImported = [];
 
     get density(): number {
         if (this.project.nodeCount) {
@@ -133,7 +133,7 @@ export class ProjectCreatorComponent {
             case 'text/csv':
             case 'application/csv':
                 const lines = await this.parseCSV(file);
-                if (!this.nodesImported) {
+                if (!this.nodesImported.length) {
                     this.loadNodeCSV(lines);
                 } else {
                     this.edgeImportOptions.data = lines;
@@ -169,25 +169,29 @@ export class ProjectCreatorComponent {
     public loadNodes() {
         const m = this.nodeImportOptions;
         for (let i = m.firstLineHeader ? 1 : 0; i < m.data.length; i++) {
-                const line = m.data[i];
-                const node = new ProjectData.Node(line[m.mapping.id], line[m.mapping.name]);
-                if (m.importPersonalization) {
-                    node.personalization = line[m.mapping["personalization"]];
-                }
-                if (m.importPosition) {
-                    node.x = parseFloat(line[m.mapping["x"]]);
-                    node.y = parseFloat(line[m.mapping["y"]]);
-                }
-                if (m.importExtras) {
-                    for (const field of m.extra) {
-                        const records = {}
-                        for (let i = 0; i < field.variants.length; i++) {
-                            records[field.variants[i]] = line[field.columns[i]]
-                        }
-                        node.extraValues[field.name] = records
+            const line = m.data[i];
+            const node = new ProjectData.Node(line[m.mapping.id], line[m.mapping.name]);
+            if (m.importPersonalization) {
+                node.personalization = line[m.mapping["personalization"]];
+            }
+            if (m.importPosition) {
+                node.x = parseFloat(line[m.mapping["x"]]);
+                node.y = parseFloat(line[m.mapping["y"]]);
+            }
+            if (m.importExtras) {
+                for (const field of m.extra) {
+                    const records = {}
+                    for (let i = 0; i < field.variants.length; i++) {
+                        records[field.variants[i]] = line[field.columns[i]]
                     }
+                    node.extraValues[field.name] = records
                 }
+            }
+
+            if (!this.nodesImported.includes(node.id)) {
+                this.nodesImported.push(node.id);
                 this.project.nodes.push(node);
+            }
         }
 
         // save project history
@@ -199,16 +203,17 @@ export class ProjectCreatorComponent {
 
         this.alerts.pushAlert("success", "Nodes were imported successfully!");
         this.nodeImportOptions.show = false;
-        this.nodesImported = true
     }
 
     public loadEdges() {
         const m = this.edgeImportOptions;
         for (let i = m.firstLineHeader ? 1 : 0; i < m.data.length; i++) {
-                const line = m.data[i];
+            const line = m.data[i];
+            if (this.nodesImported.includes(line[m.from]) && this.nodesImported.includes(line[m.to])) {
                 const edge = new ProjectData.Edge(line[m.from], line[m.to],
                     m.importWeights ? parseFloat(line[m.weight]) : null);
                 this.project.edges.push(edge);
+            }
         }
         this.alerts.pushAlert("success", "Edges were imported successfully!");
         m.show = false;

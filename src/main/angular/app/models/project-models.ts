@@ -29,13 +29,11 @@ export namespace ProjectData {
     export class Node {
         x = 0;
         y = 0;
-        personalization: number;
+        personalization = 1;
 
         extraValues: Record<string, Record<number, string>> = {};
 
-        constructor(public id: string, public name: string, pers?: number) {
-            this.personalization = pers || 1.0;
-        }
+        constructor(public id: string, public name: string) { }
     }
 
     export class Edge {
