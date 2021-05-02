@@ -68,7 +68,12 @@ public class ProjectsCtrl {
             record.owner = userName;
             record.current = false;
             mappingRepo.insert(record);
-            projectRepo.insert(projectData);
+            try {
+                projectRepo.insert(projectData);
+            } catch (Exception e) {
+                mappingRepo.delete(record);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            }
             return record;
         }
     }

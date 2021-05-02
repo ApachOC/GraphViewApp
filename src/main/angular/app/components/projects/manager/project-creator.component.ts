@@ -44,7 +44,8 @@ export class ProjectCreatorComponent {
         data: [[]]
     }
 
-    private nodesImported = [];
+    // imported nodes lookup
+    private nodesImported = {};
 
     get density(): number {
         if (this.project.nodeCount) {
@@ -133,7 +134,7 @@ export class ProjectCreatorComponent {
             case 'text/csv':
             case 'application/csv':
                 const lines = await this.parseCSV(file);
-                if (!this.nodesImported.length) {
+                if (!Object.keys(this.nodesImported).length) {
                     this.loadNodeCSV(lines);
                 } else {
                     this.edgeImportOptions.data = lines;
@@ -188,8 +189,8 @@ export class ProjectCreatorComponent {
                 }
             }
 
-            if (!this.nodesImported.includes(node.id)) {
-                this.nodesImported.push(node.id);
+            if (!this.nodesImported[node.id]) {
+                this.nodesImported[node.id] = 1;
                 this.project.nodes.push(node);
             }
         }
@@ -209,7 +210,7 @@ export class ProjectCreatorComponent {
         const m = this.edgeImportOptions;
         for (let i = m.firstLineHeader ? 1 : 0; i < m.data.length; i++) {
             const line = m.data[i];
-            if (this.nodesImported.includes(line[m.from]) && this.nodesImported.includes(line[m.to])) {
+            if (this.nodesImported[line[m.from]] && this.nodesImported[line[m.to]]) {
                 const edge = new ProjectData.Edge(line[m.from], line[m.to],
                     m.importWeights ? parseFloat(line[m.weight]) : null);
                 this.project.edges.push(edge);
