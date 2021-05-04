@@ -16,7 +16,7 @@ export class LibrarySelectionModalComponent implements OnInit{
     parameters: Record<string, string> = {};
 
     get library() {
-        return this.libraryList.find((lib) => lib.id = this.libraryId);
+        return this.libraryList.find((lib) => lib.id == this.libraryId);
     }
 
     @Input()

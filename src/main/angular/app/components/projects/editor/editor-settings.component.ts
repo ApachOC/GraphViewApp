@@ -65,8 +65,7 @@ export class EditorSettingsComponent {
     selectColorField() {
         if (this.disableColor) {
             this.mapping.colorProperty = [null, 0]
-        } else {
-
+        } else if(this.selectedColorField) {
             const id = Math.max(...this.project.history[this.selectedColorField]);
             this.mapping.colorProperty = [this.selectedColorField, id];
         }
@@ -75,7 +74,7 @@ export class EditorSettingsComponent {
     selectSizeField() {
         if (this.disableSize) {
             this.mapping.sizeProperty = [null, 0]
-        } else {
+        } else if (this.selectedSizeField){
             const id = Math.max(...this.project.history[this.selectedSizeField]);
             this.mapping.sizeProperty = [this.selectedSizeField, id];
         }

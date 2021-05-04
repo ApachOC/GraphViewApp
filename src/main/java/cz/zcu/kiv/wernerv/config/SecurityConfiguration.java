@@ -90,6 +90,7 @@ public class SecurityConfiguration {
                     .antMatchers(HttpMethod.GET, "/api/projects").hasAuthority("user")
                     .antMatchers(HttpMethod.POST, "/api/projects").hasAuthority("user")
                     .antMatchers(HttpMethod.GET, "/api/projects/**").hasAuthority("user")
+                    .antMatchers(HttpMethod.DELETE, "/api/projects/**").hasAuthority("user")
                     // Allow all OPTION request
                     .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     // Permit everything else

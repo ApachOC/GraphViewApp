@@ -226,12 +226,12 @@ export class ProjectCreatorComponent {
         }
     }
 
-    showGenerateModal(generateModal: TemplateRef<any>) {
-        this.modalService.open(generateModal,
+    async showGenerateModal(generateModal: TemplateRef<any>) {
+        await this.modalService.open(generateModal,
             {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
                 if (result) {
                     this.generateGraph(result.nodeCount, result.edgeCount);
                 }
-        });
+        }).catch(() => { });
     }
 }

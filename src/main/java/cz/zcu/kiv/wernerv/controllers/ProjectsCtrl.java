@@ -88,4 +88,18 @@ public class ProjectsCtrl {
             throw new Exception(); //todo
         }
     }
+
+    @DeleteMapping("/projects/{id}")
+    public void deleteProject(@PathVariable String id, Principal user) throws Exception {
+        String name = user.getName();
+        Optional<ProjectMapping> mapping = mappingRepo.findByOwnerAndId(name, id);
+        if (mapping.isPresent()) {
+            mappingRepo.deleteByOwnerAndId(name, id);
+            if (!mappingRepo.findById(id).isPresent()) {
+                projectRepo.deleteById(id);
+            }
+        } else {
+            throw new Exception(); //todo
+        }
+    }
 }
