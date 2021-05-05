@@ -130,20 +130,14 @@ export class ProjectCreatorComponent {
     }
 
     private async loadFile(file: File): Promise<string[][]> {
-        switch (file.type) {
-            case 'text/csv':
-            case 'application/csv':
-                const lines = await this.parseCSV(file);
-                if (!Object.keys(this.nodesImported).length) {
-                    this.loadNodeCSV(lines);
-                } else {
-                    this.edgeImportOptions.data = lines;
-                    this.edgeImportOptions.show = true;
-                }
-                return lines;
-            default:
-                return [[]];
+        const lines = await this.parseCSV(file);
+        if (!Object.keys(this.nodesImported).length) {
+            this.loadNodeCSV(lines);
+        } else {
+            this.edgeImportOptions.data = lines;
+            this.edgeImportOptions.show = true;
         }
+        return lines;
     }
 
     private async parseCSV(file: File): Promise<string[][]> {
