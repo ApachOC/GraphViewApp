@@ -152,7 +152,7 @@ export class EditorComponent implements OnInit {
             }
 
             this.alerts.pushAlert("success", "Library work finished, check node personalization.");
-        });
+        }).catch(() => {});
     }
 
     /**

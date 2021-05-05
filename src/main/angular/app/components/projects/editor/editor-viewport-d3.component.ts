@@ -348,7 +348,7 @@ node
             .filter((e) => !e.button)
             .on("start", (e) => this.onDragCanvas(e, true))
             .on("drag", (e) => this.onDragCanvas(e, false))
-            .on("end", () => { this.selectRect.remove() });
+            .on("end", () => { this.selectRect?.remove() });
 
         this.canvas = <Selection<SVGSVGElement, unknown, HTMLElement, unknown>>
             select("#canvas-" + this.id)
@@ -475,6 +475,9 @@ node
             .attr("class", "graph-node selected")
             .select("circle")
             .attr("filter", `url(#select-filter-${this.id})`);
+
+        // update simulation
+        this.sim.nodes(this.nodes);
     }
 
 
