@@ -15,7 +15,7 @@ export class ProjectCreatorComponent {
 
     @Input() project: ProjectData
 
-    acceptFiles = 'application/csv,text/csv';
+    acceptFiles = '.csv,application/csv,text/csv';
 
     nodeImportOptions = {
         show: false,
